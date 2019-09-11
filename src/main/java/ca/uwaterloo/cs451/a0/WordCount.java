@@ -68,12 +68,13 @@ public class WordCount extends Configured implements Tool { // this is the overa
 
         if ((word == "perfect") || (word == "Perfect")) { // if the word is perfect, catch the next one
           flag = true;
-          continue; // skip to next iteration
+          continue;
         } 
 
         if (flag) {
           WORD.set(word);
           context.write(WORD, ONE); // context writing in this case would be the 'emit' functionality
+          System.out.print("Hello ")
           flag = false;
         }
       }
@@ -131,10 +132,10 @@ public class WordCount extends Configured implements Tool { // this is the overa
         sum += iter.next().get();
       }
 
-      if (sum != 1) { // only forward non-trivial results
-        SUM.set(sum);
-        context.write(key, SUM);
-      }
+      // if (sum != 1) { // only forward non-trivial results
+      SUM.set(sum);
+      context.write(key, SUM);
+      // }
     }
   }
 
