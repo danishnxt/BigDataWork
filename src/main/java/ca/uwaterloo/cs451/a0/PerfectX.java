@@ -135,10 +135,10 @@ public class PerfectX extends Configured implements Tool {
           sum += iter.next().get();
         }
   
-        // if (sum != 1) { // only forward non-trivial results
+        if (sum != 1) { // only forward non-trivial results
           SUM.set(sum);
           context.write(key, SUM);
-        // }
+        }
       }
     }
   
