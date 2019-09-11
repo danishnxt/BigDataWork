@@ -59,7 +59,7 @@ public class PerfectX extends Configured implements Tool {
   
   
   
-          if ((word.equals("Perfect")) || (word.equals("perfect"))) { // if the word is perfect, catch the next one
+          if (word.equals("perfect")) { // if the word is perfect, catch the next one
               flag = true;
             continue;
           } 
@@ -124,10 +124,10 @@ public class PerfectX extends Configured implements Tool {
           sum += iter.next().get();
         }
   
-        // if (sum != 1) { // only forward non-trivial results
+        if (sum != 1) { // only forward non-trivial results
           SUM.set(sum);
           context.write(key, SUM);
-        // }
+        }
       }
     }
   
