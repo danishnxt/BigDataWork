@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package ca.uwaterloo.cs451.a0;
 
 import io.bespin.java.util.Tokenizer;
@@ -41,8 +42,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-
 
 public class PerfectX extends Configured implements Tool { 
     private static final Logger LOG = Logger.getLogger(PerfectX.class);
