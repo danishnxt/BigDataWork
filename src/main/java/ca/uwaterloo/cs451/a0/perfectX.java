@@ -44,8 +44,8 @@ import java.util.Map;
 
 
 
-public class perfectX extends Configured implements Tool { 
-    private static final Logger LOG = Logger.getLogger(perfectX.class);
+public class PerfectX extends Configured implements Tool { 
+    private static final Logger LOG = Logger.getLogger(PerfectX.class);
     public static final class MyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
   
       private static final IntWritable ONE = new IntWritable(1);
@@ -134,7 +134,7 @@ public class perfectX extends Configured implements Tool {
     /**
      * Creates an instance of this tool.
      */
-    private perfectX() {}
+    private PerfectX() {}
   
     private static final class Args {
       @Option(name = "-input", metaVar = "[path]", required = true, usage = "input path")
@@ -166,7 +166,7 @@ public class perfectX extends Configured implements Tool {
         return -1;
       }
   
-      LOG.info("Tool: " + perfectX.class.getSimpleName());
+      LOG.info("Tool: " + PerfectX.class.getSimpleName());
       LOG.info(" - input path: " + args.input);
       LOG.info(" - output path: " + args.output);
       LOG.info(" - number of reducers: " + args.numReducers);
@@ -174,8 +174,8 @@ public class perfectX extends Configured implements Tool {
   
       Configuration conf = getConf();
       Job job = Job.getInstance(conf);
-      job.setJobName(perfectX.class.getSimpleName());
-      job.setJarByClass(perfectX.class);
+      job.setJobName(PerfectX.class.getSimpleName());
+      job.setJarByClass(PerfectX.class);
   
       job.setNumReduceTasks(args.numReducers);
   
@@ -210,7 +210,7 @@ public class perfectX extends Configured implements Tool {
      * @throws Exception if tool encounters an exception
      */
     public static void main(String[] args) throws Exception {
-      ToolRunner.run(new perfectX(), args);
+      ToolRunner.run(new PerfectX(), args);
     }
   } 
   
