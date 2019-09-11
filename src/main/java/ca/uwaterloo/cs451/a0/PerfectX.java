@@ -79,17 +79,28 @@ public class PerfectX extends Configured implements Tool {
       @Override
       public void setup(Context context) throws IOException, InterruptedException {
         counts = new HashMap<>(); // keep a local count of the word in a hash yourself and emit the totals at the end
+        private boolean flag = false;
+
       }
   
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
         for (String word : Tokenizer.tokenize(value.toString())) {
-          if (counts.containsKey(word)) {
-            counts.put(word, counts.get(word)+1);
-          } else {
-            counts.put(word, 1);
+
+          if (word.equals("perfect")) {
+            flag = true;
+            continue;
           }
+          
+        if (flag) {
+          if (counts.containsKey(word)) {
+              counts.put(word, counts.get(word)+1);
+            } else {
+              counts.put(word, 1);
+            }
+        }
+
         }
       }
   
@@ -124,10 +135,10 @@ public class PerfectX extends Configured implements Tool {
           sum += iter.next().get();
         }
   
-        if (sum != 1) { // only forward non-trivial results
+        // if (sum != 1) { // only forward non-trivial results
           SUM.set(sum);
           context.write(key, SUM);
-        }
+        // }
       }
     }
   
