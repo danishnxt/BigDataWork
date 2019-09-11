@@ -66,15 +66,14 @@ public class WordCount extends Configured implements Tool { // this is the overa
         throws IOException, InterruptedException {
       for (String word : Tokenizer.tokenize(value.toString())) {
 
-        if ((word == "perfect") || (word == "Perfect")) { // if the word is perfect, catch the next one
-          flag = true;
+        if ((word.equals("Perfect"))||(word.equals("perfect")) { // if the word is perfect, catch the next one
+	  flag = true;
           continue;
         } 
 
-        if (flag) {
+        if (flag == true) {
           WORD.set(word);
           context.write(WORD, ONE); // context writing in this case would be the 'emit' functionality
-          System.out.print("Hello ");
           flag = false;
         }
       }
@@ -132,10 +131,10 @@ public class WordCount extends Configured implements Tool { // this is the overa
         sum += iter.next().get();
       }
 
-      // if (sum != 1) { // only forward non-trivial results
-      SUM.set(sum);
-      context.write(key, SUM);
-      // }
+      if (sum != 1) { // only forward non-trivial results
+        SUM.set(sum);
+        context.write(key, SUM);
+      }
     }
   }
 
