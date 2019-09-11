@@ -67,7 +67,7 @@ public class WordCount extends Configured implements Tool { // this is the overa
       for (String word : Tokenizer.tokenize(value.toString())) {
 
         if ((word.equals("Perfect"))||(word.equals("perfect")) { // if the word is perfect, catch the next one
-	  flag = true;
+	        flag = true;
           continue;
         } 
 
