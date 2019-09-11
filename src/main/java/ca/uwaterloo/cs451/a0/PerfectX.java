@@ -50,14 +50,14 @@ public class PerfectX extends Configured implements Tool {
   
       private static final IntWritable ONE = new IntWritable(1);
       private static final Text WORD = new Text();
-      private boolean flag = false; // initialize to this
+      
   
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
+
+        boolean flag = false; // initialize to this
         for (String word : Tokenizer.tokenize(value.toString())) {
-  
-  
   
           if (word.equals("perfect")) { // if the word is perfect, catch the next one
               flag = true;
