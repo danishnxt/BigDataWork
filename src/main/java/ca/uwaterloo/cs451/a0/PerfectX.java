@@ -74,18 +74,18 @@ public class PerfectX extends Configured implements Tool {
     }
   
     public static final class MyMapperIMC extends Mapper<LongWritable, Text, Text, IntWritable> {
-      private Map<String, Integer> counts;
-  
+      private Map<String, Integer> counts;	
+      private boolean flag = false;
+
       @Override
       public void setup(Context context) throws IOException, InterruptedException {
         counts = new HashMap<>(); // keep a local count of the word in a hash yourself and emit the totals at the end
-        private boolean flag = false;
-
       }
   
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
+	
         for (String word : Tokenizer.tokenize(value.toString())) {
 
           if (word.equals("perfect")) {
