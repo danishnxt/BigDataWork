@@ -15,7 +15,7 @@
  */
 package ca.uwaterloo.cs451.a0;
 
-import io.bespin.java.util.Tokenizer; // handles all the edge cases
+import io.bespin.java.util.Tokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
@@ -56,17 +56,17 @@ public class PerfectX extends Configured implements Tool {
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
 
-        boolean flag = false; // initialize to this
+        boolean flag = false; // 'perfect' found flag
         for (String word : Tokenizer.tokenize(value.toString())) {
   
-          if (word.equals("perfect")) { // if the word is perfect, catch the next one
+          if (word.equals("perfect")) { // if the word is perfect, catch the next one, turn the flag on 
               flag = true;
             continue;
           } 
   
           if (flag == true) {
             WORD.set(word);
-            context.write(WORD, ONE); // context writing in this case would be the 'emit' functionality
+            context.write(WORD, ONE); 
             flag = false;
           }
         }
@@ -74,8 +74,7 @@ public class PerfectX extends Configured implements Tool {
     }
   
     public static final class MyMapperIMC extends Mapper<LongWritable, Text, Text, IntWritable> {
-      private Map<String, Integer> counts;	
-      private boolean flag = false;
+      private Map<String, Integer> counts;
 
       @Override
       public void setup(Context context) throws IOException, InterruptedException {
@@ -85,22 +84,22 @@ public class PerfectX extends Configured implements Tool {
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
-	
+
+        boolean flag = false;
         for (String word : Tokenizer.tokenize(value.toString())) {
 
-          if (word.equals("perfect")) {
+          if (word.equals("perfect")) { // same as before, if you find an correct instance, set the flag on
             flag = true;
             continue;
           }
           
-        if (flag) {
-          if (counts.containsKey(word)) {
-              counts.put(word, counts.get(word)+1);
-            } else {
-              counts.put(word, 1);
-            }
-        }
-
+          if (flag) {
+            if (counts.containsKey(word)) {
+                counts.put(word, counts.get(word)+1);
+              } else {
+                counts.put(word, 1);
+              }
+          }
         }
       }
   
@@ -117,18 +116,15 @@ public class PerfectX extends Configured implements Tool {
         }
       }
     }
-  
-    // SO FAR -> 2 DIFFERENT MAPPERS - THE WORDY ONE Has multiple set up and tear down functions
-  
-    // Reducer: sums up all the counts.
+
     public static final class MyReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
       private static final IntWritable SUM = new IntWritable();
   
       @Override
       public void reduce(Text key, Iterable<IntWritable> values, Context context)
           throws IOException, InterruptedException {
-        // Sum up values.
-        Iterator<IntWritable> iter = values.iterator(); // get the java iterator to go over 
+
+        Iterator<IntWritable> iter = values.iterator();
         int sum = 0;
         
         while (iter.hasNext()) {
