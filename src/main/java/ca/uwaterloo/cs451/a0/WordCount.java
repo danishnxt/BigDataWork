@@ -66,7 +66,7 @@ public class WordCount extends Configured implements Tool { // this is the overa
         throws IOException, InterruptedException {
       for (String word : Tokenizer.tokenize(value.toString())) {
 
-        if (word == "Perfect") { // if the word is perfect, catch the next one
+        if ((word == "perfect") || (word == "Perfect")) { // if the word is perfect, catch the next one
           flag = true;
           continue; // skip to next iteration
         } 
