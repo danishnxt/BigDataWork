@@ -74,7 +74,7 @@ public class WordCount extends Configured implements Tool { // this is the overa
         if (flag) {
           WORD.set(word);
           context.write(WORD, ONE); // context writing in this case would be the 'emit' functionality
-          flag = false
+          flag = false;
         }
       }
     }
