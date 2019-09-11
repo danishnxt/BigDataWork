@@ -17,7 +17,7 @@
 // package io.bespin.java.mapreduce.wordcount;
 package ca.uwaterloo.cs451.a0;
 
-import io.bespin.java.util.Tokenizer;
+import io.bespin.java.util.Tokenizer; // handles all the edge cases
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
@@ -47,21 +47,35 @@ import java.util.Map;
 /**
  * Simple word count demo.
  */
-public class WordCount extends Configured implements Tool {
+public class WordCount extends Configured implements Tool { // this is the overall entire tool
+
   private static final Logger LOG = Logger.getLogger(WordCount.class);
 
   // Mapper: emits (token, 1) for every word occurrence.
+
   public static final class MyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
-    // Reuse objects to save overhead of object creation.
+  
+    // Reuse objects to save overhead of object creation // wah bhai
+  
     private static final IntWritable ONE = new IntWritable(1);
     private static final Text WORD = new Text();
+    private boolean flag = false; // initialize to this
 
     @Override
     public void map(LongWritable key, Text value, Context context)
         throws IOException, InterruptedException {
       for (String word : Tokenizer.tokenize(value.toString())) {
-        WORD.set(word);
-        context.write(WORD, ONE);
+
+        if (word == "Perfect") { // if the word is perfect, catch the next one
+          flag = true;
+          continue; // skip to next iteration
+        } 
+
+        if (flag) {
+          WORD.set(word);
+          context.write(WORD, ONE); // context writing in this case would be the 'emit' functionality
+          flag = false
+        }
       }
     }
   }
@@ -71,7 +85,7 @@ public class WordCount extends Configured implements Tool {
 
     @Override
     public void setup(Context context) throws IOException, InterruptedException {
-      counts = new HashMap<>();
+      counts = new HashMap<>(); // keep a local count of the word in a hash yourself and emit the totals at the end
     }
 
     @Override
@@ -88,33 +102,39 @@ public class WordCount extends Configured implements Tool {
 
     @Override
     public void cleanup(Context context) throws IOException, InterruptedException {
-      IntWritable cnt = new IntWritable();
+      
+      IntWritable cnt = new IntWritable(); // data types that hadoop expects
       Text token = new Text();
 
-      for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+      for (Map.Entry<String, Integer> entry : counts.entrySet()) { 
         token.set(entry.getKey());
-        cnt.set(entry.getValue());
-        context.write(token, cnt);
+        cnt.set(entry.getValue()); // setters and getters
+        context.write(token, cnt); // push values to reducer
       }
     }
   }
 
+  // SO FAR -> 2 DIFFERENT MAPPERS - THE WORDY ONE Has multiple set up and tear down functions
+
   // Reducer: sums up all the counts.
   public static final class MyReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
-    // Reuse objects.
     private static final IntWritable SUM = new IntWritable();
 
     @Override
     public void reduce(Text key, Iterable<IntWritable> values, Context context)
         throws IOException, InterruptedException {
       // Sum up values.
-      Iterator<IntWritable> iter = values.iterator();
+      Iterator<IntWritable> iter = values.iterator(); // get the java iterator to go over 
       int sum = 0;
+      
       while (iter.hasNext()) {
         sum += iter.next().get();
       }
-      SUM.set(sum);
-      context.write(key, SUM);
+
+      if (sum != 1) { // only forward non-trivial results
+        SUM.set(sum);
+        context.write(key, SUM);
+      }
     }
   }
 
