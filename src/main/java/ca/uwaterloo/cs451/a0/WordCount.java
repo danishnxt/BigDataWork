@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// package io.bespin.java.mapreduce.wordcount;
 package ca.uwaterloo.cs451.a0;
 
 import io.bespin.java.util.Tokenizer; // handles all the edge cases
@@ -45,37 +43,23 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Simple word count demo.
+ * ORIGINAL CODE AND DEMO - UNTOUCHED
  */
-public class WordCount extends Configured implements Tool { // this is the overall entire tool
+public class WordCount extends Configured implements Tool { // this is the overall entire program we select and execute
 
   private static final Logger LOG = Logger.getLogger(WordCount.class);
-
   // Mapper: emits (token, 1) for every word occurrence.
 
   public static final class MyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
-  
-    // Reuse objects to save overhead of object creation // wah bhai
-  
     private static final IntWritable ONE = new IntWritable(1);
     private static final Text WORD = new Text();
-    private boolean flag = false; // initialize to this
 
     @Override
     public void map(LongWritable key, Text value, Context context)
         throws IOException, InterruptedException {
       for (String word : Tokenizer.tokenize(value.toString())) {
-
-        if ((word.equals("Perfect"))||(word.equals("perfect"))) { // if the word is perfect, catch the next one
-	        flag = true;
-          continue;
-        } 
-
-        if (flag == true) {
           WORD.set(word);
           context.write(WORD, ONE); // context writing in this case would be the 'emit' functionality
-          flag = false;
-        }
       }
     }
   }
@@ -114,9 +98,9 @@ public class WordCount extends Configured implements Tool { // this is the overa
     }
   }
 
-  // SO FAR -> 2 DIFFERENT MAPPERS - THE WORDY ONE Has multiple set up and tear down functions
-
+  // SO FAR -> 2 DIFFERENT MAPPERS - THE IMC ONE Has multiple 'set up' and 'tear down' functions
   // Reducer: sums up all the counts.
+
   public static final class MyReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
     private static final IntWritable SUM = new IntWritable();
 
@@ -131,10 +115,8 @@ public class WordCount extends Configured implements Tool { // this is the overa
         sum += iter.next().get();
       }
 
-      // if (sum != 1) { // only forward non-trivial results
-        SUM.set(sum);
-        context.write(key, SUM);
-      // }
+      SUM.set(sum);
+      context.write(key, SUM);
     }
   }
 
