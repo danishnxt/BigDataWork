@@ -99,7 +99,7 @@ public class PerfectX extends Configured implements Tool {
               } else {
                 counts.put(word, 1);
               }
-	    flag = false;
+	          flag = false; // reset this for the next word
           }
         }
       }
