@@ -78,13 +78,13 @@ public class PerfectX extends Configured implements Tool {
       @Override
       public void setup(Context context) throws IOException, InterruptedException {
         counts = new HashMap<>(); // keep a local count of the word in a hash yourself and emit the totals at the end
-        boolean flag = false;
       }
   
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
 
+        boolean flag = false;
         
         for (String word : Tokenizer.tokenize(value.toString())) {
 
@@ -99,6 +99,7 @@ public class PerfectX extends Configured implements Tool {
               } else {
                 counts.put(word, 1);
               }
+	    flag = false;
           }
         }
       }
