@@ -12,7 +12,7 @@
 
 ### Question 3
 
-    >> Parallel Mapper count: 14  ???
+    Parallel Mapper count: 14
 
 ### Question 4
 
