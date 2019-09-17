@@ -22,7 +22,7 @@
 
 Top 10 hits for 'X'
 
-    "season" 113
+    "season" 114
     "the" 116
     "strangers" 123
     "record" 133

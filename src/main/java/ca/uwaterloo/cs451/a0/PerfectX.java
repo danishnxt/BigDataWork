@@ -197,7 +197,7 @@ public class PerfectX extends Configured implements Tool {
       job.setOutputFormatClass(TextOutputFormat.class);
   
       job.setMapperClass(args.imc ? MyMapperIMC.class : MyMapper.class);
-      job.setCombinerClass(MyReducer.class);
+     // job.setCombinerClass(MyReducer.class);
       job.setReducerClass(MyReducer.class);
   
       // Delete the output directory if it exists already.
