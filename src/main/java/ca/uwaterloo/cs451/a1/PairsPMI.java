@@ -77,7 +77,6 @@ public class PairsPMI extends Configured implements Tool {
   
       private static final IntWritable ONE = new IntWritable(1);
       private static final Text WORD_1 = new Text();
-      private static final Text WORD_2 = new Text();
        
       @Override
       public void map(LongWritable key, Text value, Context context)
@@ -99,7 +98,6 @@ public class PairsPMI extends Configured implements Tool {
         for (int i = 0; i < listSize; i++) {
           
           l1_temp = tokens.get(i); // do this get action a single time
-          WORD_1.set(l1_temp);
 
           for (int j = 0; j < listSize; j++) {
 
@@ -111,8 +109,8 @@ public class PairsPMI extends Configured implements Tool {
 
             if (!AlphaTrack.containsKey(l1_temp + l2_temp)) { // if exist in the hash map -> ignore it!
               AlphaTrack.put(l1_temp + l2_temp); // add this and emit it
-              WORD_2.set(l2_temp);
-              context.write((WORD_1, WORD_2), ONE); // sending out a tuple instead
+              WORD_1.set(l1_temp + "\t" + l2_temp); // tab added to use tuple
+              context.write((WORD_1, ONE); // sending out a tuple instead
             }
           }
         }
