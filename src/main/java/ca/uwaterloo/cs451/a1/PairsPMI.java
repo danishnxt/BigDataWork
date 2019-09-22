@@ -49,12 +49,13 @@ public class PairsPMI extends Configured implements Tool {
   
       private static final IntWritable ONE = new IntWritable(1);
       private static final Text WORD = new Text();
+      HashMap<String, int> AlphaTrack = new HashMap<String, int>(); 
+
   
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
 
-        HashMap<String, int> AlphaTrack = new HashMap<String, int>(); 
 
         for (String word : Tokenizer.tokenize(value.toString())) {
   
