@@ -39,6 +39,7 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ParserProperties;
 
 import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -47,7 +48,8 @@ import java.util.List;
 public class PairsPMI extends Configured implements Tool { 
 
     private static final Logger LOG = Logger.getLogger(PairsPMI.class);
-    // declare the global list count variable here so that it's accessible? (does that scale tho?)
+    private static HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global status
+
     public static final class MyMapperA extends Mapper<LongWritable, Text, Text, IntWritable> {
   
       private static final IntWritable ONE = new IntWritable(1);
@@ -166,6 +168,18 @@ public class PairsPMI extends Configured implements Tool {
         while (iter.hasNext()) {
           sum += iter.next().get();
         }
+
+        String full_value = value.toString()
+
+          // possible optimization -> split the string just once and save it, accessing it directly later on
+
+        String fw = full_value.split("\t", 2)[0]
+        String sw = full_value.split("\t", 2)[1]
+
+        
+
+        // now what -> so we compute all the things -> we know the total count
+        // by this point we know the total per pair - we need the counts for each of them individually
         
         SUM.set(sum);
         context.write(key, SUM);
@@ -217,16 +231,15 @@ public class PairsPMI extends Configured implements Tool {
 
       Configuration conf = getConf();
 
+      /////////////// JOB B META DATA ///////////////
+
       Job job = Job.getInstance(conf);
-
       job.setJobName(PairsPMI.class.getSimpleName());
-
       job.setJarByClass(PairsPMI.class);
-  
       job.setNumReduceTasks(args.numReducers);
   
       FileInputFormat.setInputPaths(job, new Path(args.input));
-      FileOutputFormat.setOutputPath(job, new Path(args.output));
+      FileOutputFormat.setOutputPath(job, new Path(args.output)); // CHANGE THIS TO MANUAL TEMP FILE OVERRIDE
   
       job.setMapOutputKeyClass(Text.class);
       job.setMapOutputValueClass(IntWritable.class);
@@ -234,17 +247,61 @@ public class PairsPMI extends Configured implements Tool {
       job.setOutputValueClass(IntWritable.class);
       job.setOutputFormatClass(TextOutputFormat.class);
   
-      job.setMapperClass(MyMapperB.class);
-      // job.setCombinerClass(MyReducerA.class);
+      job.setMapperClass(MyMapperA.class);
+      job.setCombinerClass(MyReducerA.class);
       job.setReducerClass(MyReducerA.class);
-  
+
+      /////////////// JOB B META DATA ///////////////
+
+      // Job job2 = Job.getInstance(conf);
+      // job2.setJobName(PairsPMI.class.getSimpleName());
+      // job2.setJarByClass(PairsPMI.class);
+      // job2.setNumReduceTasks(args.numReducers);
+
+      // FileInputFormat.setInputPaths(job2, new Path(args.input));
+      // FileOutputFormat.setOutputPath(job2, new Path(args.output));
+
+      // job2.setMapOutputKeyClass(Text.class);
+      // job2.setMapOutputValueClass(IntWritable.class);
+      // job2.setOutputKeyClass(Text.class);
+      // job2.setOutputValueClass(IntWritable.class);
+      // job2.setOutputFormatClass(TextOutputFormat.class);
+      
+      // job.setMapperClass(MyMapperB.class);
+      // job.setCombinerClass(MyReducerB.class);
+      // job.setReducerClass(MyReducerB.class);
+
       // Delete the output directory if it exists already.
       Path outputDir = new Path(args.output);
       FileSystem.get(conf).delete(outputDir, true);
   
       long startTime = System.currentTimeMillis();
-      job.waitForCompletion(true); // blocking call -> so we can have two jobs running the same thing
-      LOG.info("Job Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+      job.waitForCompletion(true); // blocking call -> so we can have the code written async
+      LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+
+      // READ DATA AND POPULATE THE NEW WORD COUNT MAP
+
+      // C:\\Users\\pankaj\\Desktop\\test.txt
+
+      File file = new File(""); 
+      BufferedReader br = new BufferedReader(new FileReader(file)); 
+      
+      String st; 
+      while ((st = br.readLine()) != null) 
+
+        // st contains the word and the thing
+        AlphaCount.put(st.split("\t", 2)[0], Integer.parseInt(st.split("\t", 2)[1]));
+        System.out.println(st.split("\t", 2)[0]);
+        System.out.println(Integer.parseInt(st.split("\t", 2)[1]));
+        System.out.println("**************************");
+
+      } 
+
+      // RUN JOB 2 
+
+
+
+      // REPORT ON JOB TIME AND EXIT
   
       return 0;
     }
