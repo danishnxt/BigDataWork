@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
 
 public class PairsPMI extends Configured implements Tool { 
 
@@ -84,9 +85,9 @@ public class PairsPMI extends Configured implements Tool {
         HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
         // just concat the strings and that should be the same thing then
 
-        List<String> tokens // match the tokenizer return type and get the full list at once
-        tokens = Tokenizer.tokenize(value.toString()) // whole list with us now
-        int listSize = tokens.size() // get the size out and run loops with "clever indexing"?
+        List<String> tokens; // match the tokenizer return type and get the full list at once
+        tokens = Tokenizer.tokenize(value.toString()); // whole list with us now
+        int listSize = tokens.size(); // get the size out and run loops with "clever indexing"?
         
         // God I really hope it really hurts like hell
 
