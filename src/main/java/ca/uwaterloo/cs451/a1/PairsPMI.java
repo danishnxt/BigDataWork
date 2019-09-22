@@ -44,8 +44,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class PairsPMI extends Configured implements Tool { 
+
     private static final Logger LOG = Logger.getLogger(PairsPMI.class);
-    public static final class MyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+    // declare the global list count variable here so that it's accessible? (does that scale tho?)
+    public static final class MyMapperA extends Mapper<LongWritable, Text, Text, IntWritable> {
   
       private static final IntWritable ONE = new IntWritable(1);
       private static final Text WORD = new Text();
@@ -67,54 +69,35 @@ public class PairsPMI extends Configured implements Tool {
         }
       }
     }
-  
-    public static final class MyMapperIMC extends Mapper<LongWritable, Text, Text, IntWritable> {
-      private Map<String, Integer> counts;
 
-      @Override
-      public void setup(Context context) throws IOException, InterruptedException {
-        counts = new HashMap<>(); // keep a local count of the word in a hash yourself and emit the totals at the end
-      }
+    ///////////////// MAPPER 2 /////////////////
+
+    public static final class MyMapperB extends Mapper<LongWritable, Text, Text, IntWritable> {
   
+      private static final IntWritable ONE = new IntWritable(1);
+      private static final Text WORD = new Text();
+       
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
 
-        boolean flag = false;
-        
-        for (String word : Tokenizer.tokenize(value.toString())) {
+        HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
 
-          if (word.equals("perfect")) { // same as before, if you find an correct instance, set the flag on
-            flag = true;
-            continue;
-          }
-          
-          if (flag) {
-            if (counts.containsKey(word)) {
-                counts.put(word, counts.get(word)+1);
-              } else {
-                counts.put(word, 1);
-              }
-	          flag = false; // reset this for the next word
-          }
-        }
-      }
+        for (String word : Tokenizer.tokenize(value.toString())) {
   
-      @Override
-      public void cleanup(Context context) throws IOException, InterruptedException {
-        
-        IntWritable cnt = new IntWritable(); // data types that hadoop expects
-        Text token = new Text();
-  
-        for (Map.Entry<String, Integer> entry : counts.entrySet()) { 
-          token.set(entry.getKey());
-          cnt.set(entry.getValue()); // setters and getters
-          context.write(token, cnt); // push values to reducer
+          // if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
+            AlphaTrack.put(word, 1); // add new word in with value 1  
+            WORD.set(word);
+            context.write(WORD, ONE); 
+          // }
+
         }
       }
     }
 
-    public static final class MyReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    ///////////////// REDUCER A /////////////////
+
+    public static final class MyReducerA extends Reducer<Text, IntWritable, Text, IntWritable> {
       private static final IntWritable SUM = new IntWritable();
   
       @Override
@@ -134,10 +117,29 @@ public class PairsPMI extends Configured implements Tool {
       }
     }
   
-    /**
-     * Creates an instance of this tool.
-     */
-    private PairsPMI() {}
+    ///////////////// REDUCER B /////////////////
+
+    public static final class MyReducerB extends Reducer<Text, IntWritable, Text, IntWritable> {
+      private static final IntWritable SUM = new IntWritable();
+  
+      @Override
+      public void reduce(Text key, Iterable<IntWritable> values, Context context) // this is standard
+          throws IOException, InterruptedException {
+
+        Iterator<IntWritable> iter = values.iterator();
+        int sum = 0;
+        
+        while (iter.hasNext()) {
+          sum += iter.next().get();
+        }
+        
+        SUM.set(sum);
+        context.write(key, SUM);
+        
+      }
+    }
+
+    private PairsPMI() {} // create an instance of the tool inside the object?
   
     private static final class Args {
       @Option(name = "-input", metaVar = "[path]", required = true, usage = "input path")
@@ -149,7 +151,7 @@ public class PairsPMI extends Configured implements Tool {
       @Option(name = "-reducers", metaVar = "[num]", usage = "number of reducers")
       int numReducers = 1;
   
-      @Option(name = "-imc", usage = "use in-mapper combining")
+      // @Option(name = "-imc", usage = "use in-mapper combining")
       boolean imc = false;
     }
   
@@ -157,10 +159,13 @@ public class PairsPMI extends Configured implements Tool {
      * Runs this tool.
      */
     @Override
-    public int run(String[] argv) throws Exception {
-      final Args args = new Args();
+    public int run(String[] argv) throws Exception { // this is fired on file first run
+
+      final Args args = new Args(); // create an object to hold God damn arguments
       CmdLineParser parser = new CmdLineParser(args, ParserProperties.defaults().withUsageWidth(100));
   
+      // we have all the arguments we'd need at this poin
+
       try {
         parser.parseArgument(argv);
       } catch (CmdLineException e) {
@@ -173,11 +178,15 @@ public class PairsPMI extends Configured implements Tool {
       LOG.info(" - input path: " + args.input);
       LOG.info(" - output path: " + args.output);
       LOG.info(" - number of reducers: " + args.numReducers);
-      LOG.info(" - use in-mapper combining: " + args.imc);
   
+      // LOG ABOVE IS FOR VERBOSE OUTPUT // 
+
       Configuration conf = getConf();
+
       Job job = Job.getInstance(conf);
+
       job.setJobName(PairsPMI.class.getSimpleName());
+
       job.setJarByClass(PairsPMI.class);
   
       job.setNumReduceTasks(args.numReducers);
@@ -192,7 +201,7 @@ public class PairsPMI extends Configured implements Tool {
       job.setOutputFormatClass(TextOutputFormat.class);
   
       job.setMapperClass(args.imc ? MyMapperIMC.class : MyMapper.class);
-     // job.setCombinerClass(MyReducer.class);
+      job.setCombinerClass(MyReducer.class);
       job.setReducerClass(MyReducer.class);
   
       // Delete the output directory if it exists already.
@@ -200,7 +209,7 @@ public class PairsPMI extends Configured implements Tool {
       FileSystem.get(conf).delete(outputDir, true);
   
       long startTime = System.currentTimeMillis();
-      job.waitForCompletion(true);
+      job.waitForCompletion(true); // blocking call -> so we can have two jobs running the same thing
       LOG.info("Job Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
   
       return 0;
@@ -215,8 +224,9 @@ public class PairsPMI extends Configured implements Tool {
 
 
     public static void main(String[] args) throws Exception {
-      ToolRunner.run(new PairsPMI(), args);
+      ToolRunner.run(new PairsPMI(), args); // tool runner class runs the 'run' function -> inside the class
     }
+
 
   } 
   
