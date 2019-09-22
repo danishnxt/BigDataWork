@@ -194,3 +194,4 @@ public class PairsPMI extends Configured implements Tool {
   
       return 0;
     }
+  }
