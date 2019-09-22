@@ -124,10 +124,6 @@ public class PairsPMI extends Configured implements Tool {
       }
     }
   
-    /**
-     * Creates an 
-     * instance of this tool.
-     */
     private PairsPMI() {}
   
     private static final class Args {
@@ -144,9 +140,6 @@ public class PairsPMI extends Configured implements Tool {
       boolean imc = false;
     }
   
-    /**
-     * Runs this tool.
-     */
     @Override
     public int run(String[] argv) throws Exception {
       final Args args = new Args();
@@ -201,16 +194,3 @@ public class PairsPMI extends Configured implements Tool {
   
       return 0;
     }
-  
-    /**
-     * Dispatches command-line arguments to the tool via the {@code ToolRunner}.
-     *
-     * @param args command-line arguments
-     * @throws Exception if tool encounters an exception
-     *
-
-    public static void main(String[] args) throws Exception {
-      ToolRunner.run(new PairsPMI(), args);
-    }
-  } 
-  
