@@ -214,8 +214,8 @@ public class PairsPMI extends Configured implements Tool {
       job.setOutputValueClass(IntWritable.class);
       job.setOutputFormatClass(TextOutputFormat.class);
   
-      job.setMapperClass(MyMapperA.class);
-      job.setCombinerClass(MyReducerA.class);
+      job.setMapperClass(MyMapperB.class);
+      // job.setCombinerClass(MyReducerA.class);
       job.setReducerClass(MyReducerA.class);
   
       // Delete the output directory if it exists already.
