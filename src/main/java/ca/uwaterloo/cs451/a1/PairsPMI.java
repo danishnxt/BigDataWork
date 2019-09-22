@@ -76,7 +76,8 @@ public class PairsPMI extends Configured implements Tool {
     public static final class MyMapperB extends Mapper<LongWritable, Text, Text, IntWritable> {
   
       private static final IntWritable ONE = new IntWritable(1);
-      private static final Text WORD = new Text();
+      private static final Text WORD_1 = new Text();
+      private static final Text WORD_2 = new Text();
        
       @Override
       public void map(LongWritable key, Text value, Context context)
@@ -90,9 +91,30 @@ public class PairsPMI extends Configured implements Tool {
         int listSize = tokens.size(); // get the size out and run loops with "clever indexing"?
         
         // God I really hope it really hurts like hell
+        // for each line emit one thing now
+        
+        String l1_temp = ""; // init this yourself 
+        String l2_temp = ""; // init this yourself 
 
         for (int i = 0; i < listSize; i++) {
-          System.out.println(tokens.get(i)); // direct list indexing this should work ok
+          
+          l1_temp = tokens.get(i); // do this get action a single time
+          WORD_1.set(l1_temp);
+
+          for (int j = 0; j < listSize; j++) {
+
+            if (i == j) {
+              continue; // same letter, not a pair
+            }
+
+            l2_temp = tokens.get(j);
+
+            if (!AlphaTrack.containsKey(l1_temp + l2_temp)) { // if exist in the hash map -> ignore it!
+              AlphaTrack.put(l1_temp + l2_temp); // add this and emit it
+              WORD_2.set(l2_temp);
+              context.write((WORD_1, WORD_2), ONE); // sending out a tuple instead
+            }
+          }
         }
 
         return;
