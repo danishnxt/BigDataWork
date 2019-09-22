@@ -49,13 +49,13 @@ public class PairsPMI extends Configured implements Tool {
   
       private static final IntWritable ONE = new IntWritable(1);
       private static final Text WORD = new Text();
-      
   
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
 
-        Map<String, Integer> AlphaTrack; // keep an eye on what's been emitted so far
+        HashMap<String, int> AlphaTrack = new HashMap<String, int>(); 
+
         for (String word : Tokenizer.tokenize(value.toString())) {
   
           if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
