@@ -49,7 +49,7 @@ public class PairsPMI extends Configured implements Tool {
   
       private static final IntWritable ONE = new IntWritable(1);
       private static final Text WORD = new Text();
-      HashMap<String, int> AlphaTrack = new HashMap<String, Integer>(); 
+      HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>(); 
 
   
       @Override
