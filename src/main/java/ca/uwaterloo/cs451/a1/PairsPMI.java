@@ -40,12 +40,12 @@ public class PairsPMI extends Configured implements Tool {
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
 
-        private Map<String, Integer> AlphaTrack; // keep an eye on what's been emitted so far
+        Map<String, Integer> AlphaTrack; // keep an eye on what's been emitted so far
         
         for (String word : Tokenizer.tokenize(value.toString())) {
 
           if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
-            AlphaTrack.put(word, 1) // add new word in with value 1  
+            AlphaTrack.put(word, 1); // add new word in with value 1  
             WORD.set(word);
             context.write(WORD, ONE); 
           }
@@ -151,7 +151,6 @@ public class PairsPMI extends Configured implements Tool {
         System.err.println(e.getMessage());
         parser.printUsage(System.err);
         return -1;
-      
 
   
       LOG.info("Tool: " + PairsPMI.class.getSimpleName());
@@ -160,7 +159,7 @@ public class PairsPMI extends Configured implements Tool {
       LOG.info(" - number of reducers: " + args.numReducers);
       LOG.info(" - use in-mapper combining: " + args.imc);
   
-      Configuration conf = g
+      Configuration conf = g;
   
       etConf();
       Job job = Job.getInstance
