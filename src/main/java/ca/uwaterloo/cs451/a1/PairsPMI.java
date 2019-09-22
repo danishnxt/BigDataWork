@@ -176,8 +176,6 @@ public class PairsPMI extends Configured implements Tool {
         String fw = full_value.split("\t", 2)[0];
         String sw = full_value.split("\t", 2)[1];
 
-        
-
         // now what -> so we compute all the things -> we know the total count
         // by this point we know the total per pair - we need the counts for each of them individually
         
@@ -283,7 +281,7 @@ public class PairsPMI extends Configured implements Tool {
 
       // C:\\Users\\pankaj\\Desktop\\test.txt
 
-      File file = new File(""); 
+      File file = new File("data/metaData.txt");
       BufferedReader br = new BufferedReader(new FileReader(file)); 
       
       String st; 
