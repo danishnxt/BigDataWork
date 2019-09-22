@@ -92,7 +92,7 @@ public class PairsPMI extends Configured implements Tool {
         // God I really hope it really hurts like hell
 
         for (int i = 0; i < listSize; i++) {
-          System.out.println(tokens[i]); // direct list indexing this should work ok
+          System.out.println(tokens.get(i)); // direct list indexing this should work ok
         }
 
         return;
