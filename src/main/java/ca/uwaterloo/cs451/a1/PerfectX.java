@@ -1,4 +1,20 @@
-package ca.uwaterloo.cs451.a1;
+/**
+ * Bespin: reference implementations of "big data" algorithms
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package ca.uwaterloo.cs451.a0;
 
 import io.bespin.java.util.Tokenizer;
 import org.apache.hadoop.conf.Configuration;
@@ -27,35 +43,31 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-// First Job // Create simple class 
-
-public class PairsPMI extends Configured implements Tool {
+public class PairsPMI extends Configured implements Tool { 
     private static final Logger LOG = Logger.getLogger(PairsPMI.class);
     public static final class MyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
   
       private static final IntWritable ONE = new IntWritable(1);
       private static final Text WORD = new Text();
+      
   
       @Override
       public void map(LongWritable key, Text value, Context context)
           throws IOException, InterruptedException {
 
         Map<String, Integer> AlphaTrack; // keep an eye on what's been emitted so far
-        
         for (String word : Tokenizer.tokenize(value.toString())) {
-
+  
           if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
             AlphaTrack.put(word, 1); // add new word in with value 1  
             WORD.set(word);
             context.write(WORD, ONE); 
           }
-  
+
         }
       }
     }
   
-    //////////////////////////////////////////////////////////////////////////////////////////////////// IGNORE 
-
     public static final class MyMapperIMC extends Mapper<LongWritable, Text, Text, IntWritable> {
       private Map<String, Integer> counts;
 
@@ -102,8 +114,6 @@ public class PairsPMI extends Configured implements Tool {
       }
     }
 
-    // IGNORE /////////////////////////////////////////////////////////////////////////////////////////////////
-
     public static final class MyReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
       private static final IntWritable SUM = new IntWritable();
   
@@ -117,13 +127,16 @@ public class PairsPMI extends Configured implements Tool {
         while (iter.hasNext()) {
           sum += iter.next().get();
         }
-
+        
         SUM.set(sum);
         context.write(key, SUM);
         
       }
     }
   
+    /**
+     * Creates an instance of this tool.
+     */
     private PairsPMI() {}
   
     private static final class Args {
@@ -140,6 +153,9 @@ public class PairsPMI extends Configured implements Tool {
       boolean imc = false;
     }
   
+    /**
+     * Runs this tool.
+     */
     @Override
     public int run(String[] argv) throws Exception {
       final Args args = new Args();
@@ -151,7 +167,7 @@ public class PairsPMI extends Configured implements Tool {
         System.err.println(e.getMessage());
         parser.printUsage(System.err);
         return -1;
-
+      }
   
       LOG.info("Tool: " + PairsPMI.class.getSimpleName());
       LOG.info(" - input path: " + args.input);
@@ -159,12 +175,8 @@ public class PairsPMI extends Configured implements Tool {
       LOG.info(" - number of reducers: " + args.numReducers);
       LOG.info(" - use in-mapper combining: " + args.imc);
   
-      Configuration conf = g;
-  
-      etConf();
-      Job job = Job.getInstance
-  
-      (conf);
+      Configuration conf = getConf();
+      Job job = Job.getInstance(conf);
       job.setJobName(PairsPMI.class.getSimpleName());
       job.setJarByClass(PairsPMI.class);
   
@@ -180,7 +192,7 @@ public class PairsPMI extends Configured implements Tool {
       job.setOutputFormatClass(TextOutputFormat.class);
   
       job.setMapperClass(args.imc ? MyMapperIMC.class : MyMapper.class);
-      // job.setCombinerClass(MyReducer.class); ->->->->-> ENABLE THIS FOR USING THE REDUCER AS A COMBINER <-<-<-<-
+     // job.setCombinerClass(MyReducer.class);
       job.setReducerClass(MyReducer.class);
   
       // Delete the output directory if it exists already.
@@ -193,5 +205,18 @@ public class PairsPMI extends Configured implements Tool {
   
       return 0;
     }
-  }
-}
+  
+    /**
+     * Dispatches command-line arguments to the tool via the {@code ToolRunner}.
+     *
+     * @param args command-line arguments
+     * @throws Exception if tool encounters an exception
+     */
+
+
+    public static void main(String[] args) throws Exception {
+      ToolRunner.run(new PairsPMI(), args);
+    }
+
+  } 
+  
