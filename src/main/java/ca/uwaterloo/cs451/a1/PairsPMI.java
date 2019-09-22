@@ -169,12 +169,12 @@ public class PairsPMI extends Configured implements Tool {
           sum += iter.next().get();
         }
 
-        String full_value = value.toString()
+        String full_value = key.toString();
 
           // possible optimization -> split the string just once and save it, accessing it directly later on
 
-        String fw = full_value.split("\t", 2)[0]
-        String sw = full_value.split("\t", 2)[1]
+        String fw = full_value.split("\t", 2)[0];
+        String sw = full_value.split("\t", 2)[1];
 
         
 
@@ -287,7 +287,7 @@ public class PairsPMI extends Configured implements Tool {
       BufferedReader br = new BufferedReader(new FileReader(file)); 
       
       String st; 
-      while ((st = br.readLine()) != null) 
+      while ((st = br.readLine()) != null) {
 
         // st contains the word and the thing
         AlphaCount.put(st.split("\t", 2)[0], Integer.parseInt(st.split("\t", 2)[1]));
