@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ca.uwaterloo.cs451.a0;
+package ca.uwaterloo.cs451.a1;
 
 import io.bespin.java.util.Tokenizer;
 import org.apache.hadoop.conf.Configuration;
