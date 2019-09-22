@@ -59,11 +59,11 @@ public class PairsPMI extends Configured implements Tool {
 
         for (String word : Tokenizer.tokenize(value.toString())) {
   
-          if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
+          // if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
             AlphaTrack.put(word, 1); // add new word in with value 1  
             WORD.set(word);
             context.write(WORD, ONE); 
-          }
+          // }
 
         }
       }
