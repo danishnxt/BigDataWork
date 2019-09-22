@@ -108,9 +108,9 @@ public class PairsPMI extends Configured implements Tool {
             l2_temp = tokens.get(j);
 
             if (!AlphaTrack.containsKey(l1_temp + l2_temp)) { // if exist in the hash map -> ignore it!
-              AlphaTrack.put(l1_temp + l2_temp); // add this and emit it
+              AlphaTrack.put(l1_temp + l2_temp, 1); // add this and emit it
               WORD_1.set(l1_temp + "\t" + l2_temp); // tab added to use tuple
-              context.write((WORD_1, ONE); // sending out a tuple instead
+              context.write(WORD_1, ONE); // sending out a tuple instead
             }
           }
         }
