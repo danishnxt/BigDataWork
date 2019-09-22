@@ -82,7 +82,20 @@ public class PairsPMI extends Configured implements Tool {
           throws IOException, InterruptedException {
 
         HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
+        // just concat the strings and that should be the same thing then
 
+        List<String> tokens // match the tokenizer return type and get the full list at once
+        tokens = Tokenizer.tokenize(value.toString()) // whole list with us now
+        int listSize = tokens.size() // get the size out and run loops with "clever indexing"?
+        
+        // God I really hope it really hurts like hell
+
+        for (int i = 0; i < listSize; i++) {
+          System.out.println(tokens[i]); // direct list indexing this should work ok
+        }
+
+        return;
+            
         for (String word : Tokenizer.tokenize(value.toString())) {
   
           // if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
@@ -159,7 +172,7 @@ public class PairsPMI extends Configured implements Tool {
      * Runs this tool.
      */
     @Override
-    public int run(String[] argv) throws Exception { // this is fired on file first run
+    public int run(String[] argv) throws Exception { // Fired first - SETUP function
 
       final Args args = new Args(); // create an object to hold God damn arguments
       CmdLineParser parser = new CmdLineParser(args, ParserProperties.defaults().withUsageWidth(100));
