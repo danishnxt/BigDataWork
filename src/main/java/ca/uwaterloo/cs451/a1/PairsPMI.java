@@ -63,16 +63,16 @@ public class PairsPMI extends Configured implements Tool {
 
       HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
 
-      // WORD.set("*"); // send this along as full count
-      // context.write(WORD, ONE); // emit this as a line count as well
+      WORD.set("*"); // send this along as full count
+      context.write(WORD, ONE); // emit this as a line count as well
 
       for (String word : Tokenizer.tokenize(value.toString())) {
 
-        //if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
+        if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
           AlphaTrack.put(word, 1); // add new word in with value 1  
           WORD.set(word);
           context.write(WORD, ONE);
-        //}
+        }
 
       }
     }
