@@ -167,7 +167,7 @@ public class PairsPMI extends Configured implements Tool {
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
-      private static HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
+     HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
 
       // will need to read more lines if there are more reducers // global variable?
 
