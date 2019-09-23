@@ -204,7 +204,7 @@ public class PairsPMI extends Configured implements Tool {
       System.out.print(total);
       System.out.print("\n");
 
-      double num = (sum/total);
+      double num = (sum * 1.0 /total * 1.0);
       
         System.out.print("num:  -> ");
         System.out.print(num);
