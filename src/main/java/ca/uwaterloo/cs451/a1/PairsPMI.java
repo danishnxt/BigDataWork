@@ -156,7 +156,7 @@ public class PairsPMI extends Configured implements Tool {
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
-    //  HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
+    HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
 
       // will need to read more lines if there are more reducers // global variable?
 
@@ -277,7 +277,7 @@ public class PairsPMI extends Configured implements Tool {
     job.setNumReduceTasks(args.numReducers);
 
     FileInputFormat.setInputPaths(job, new Path(args.input));
-    FileOutputFormat.setOutputPath(job, new Path(tempDir); // MANUAL TEMP FILE OVERRIDE
+    FileOutputFormat.setOutputPath(job, new Path(tempDir)); // MANUAL TEMP FILE OVERRIDE
     // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
 
     job.setMapOutputKeyClass(Text.class);
@@ -309,6 +309,8 @@ public class PairsPMI extends Configured implements Tool {
     job.setMapperClass(MyMapperB.class);
     // job.setCombinerClass(MyReducerB.class);
     job.setReducerClass(MyReducerB.class);
+
+   
 
     // Delete the output directory if it exists already.
     Path outputDir = new Path(args.output);
