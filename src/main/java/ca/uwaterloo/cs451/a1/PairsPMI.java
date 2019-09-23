@@ -49,6 +49,7 @@ import java.util.List;
 
 public class PairsPMI extends Configured implements Tool { 
 
+  private static int redSplit = 1; // how many files to read properly
   private static String tempDir = "TempFile"; // saving this here for global access -> POSSIBLE FLAG
   private static final Logger LOG = Logger.getLogger(PairsPMI.class);
 
@@ -163,17 +164,29 @@ public class PairsPMI extends Configured implements Tool {
 
       AlphaCount = new HashMap<String, Integer>();
 
-      File file = new File(tempDir + "/part-r-00000"); // hardcoded here, remove the hard coded value
-      BufferedReader br = new BufferedReader(new FileReader(file)); 
-      
-      String st; 
-      
-      while ((st = br.readLine()) != null) {
-        System.out.println(st.split("\t", 2)[0]);
-        int temp = Integer.parseInt(st.split("\t", 2)[1]);
-        AlphaCount.put(st.split("\t", 2)[0], temp);
+      String start = "/part-t-0000";
+
+      if (redSplit > 9) { // more reducers -> fix the file
+        start = "/part-t-000"; // will append double digits here
+      } else if (redSplit > 99) {
+        start = "/part-t-00";
       }
 
+      for (int i = 0; i < redSplit; i++) {
+
+        File file = new File(tempDir + start + Integer.toString(i)); // hardcoded here, remove the hard coded value
+        BufferedReader br = new BufferedReader(new FileReader(file)); 
+        
+        String st; 
+        
+        while ((st = br.readLine()) != null) {
+          int temp = Integer.parseInt(st.split("\t", 2)[1]);
+          AlphaCount.put(st.split("\t", 2)[0], temp);
+        }
+
+      }
+
+      
       // Alpha count is now populated // but is it accessible in the next one :) 
 
     }
@@ -189,7 +202,7 @@ public class PairsPMI extends Configured implements Tool {
         sum += iter.next().get();
       }
 
-      System.out.println(sum);
+      // System.out.println(sum);
       String full_value = key.toString();
 
       // possible optimization -> split the string just once and save it, accessing it directly later on
@@ -232,7 +245,6 @@ public class PairsPMI extends Configured implements Tool {
       System.out.print("Value:  -> ");
       System.out.print(final_result);
       System.out.print("\n");
-
 
       SUM.set(sum);
       dbl_result.set(to_log);
@@ -283,9 +295,13 @@ public class PairsPMI extends Configured implements Tool {
     LOG.info(" - output path: " + args.output);
     LOG.info(" - number of reducers: " + args.numReducers);
 
+    redSplit = args.numReducers; // we need to know how many files to read;
+
+    /// SET GLOBAL REDUCER COUNT /// 
+
     Configuration conf = getConf();
 
-    /////////////// JOB B META DATA ///////////////
+    /////////////// JOB A CONFIG ///////////////
 
     Job job = Job.getInstance(conf);
     job.setJobName(PairsPMI.class.getSimpleName());
@@ -306,25 +322,25 @@ public class PairsPMI extends Configured implements Tool {
     job.setCombinerClass(MyReducerA.class);
     job.setReducerClass(MyReducerA.class);
 
-    /////////////// JOB B META DATA ///////////////
+    /////////////// JOB B CONFIG ///////////////
 
-    Job job2 = Job.getInstance(conf);
-    job2.setJobName(PairsPMI.class.getSimpleName());
-    job2.setJarByClass(PairsPMI.class);
-    job2.setNumReduceTasks(args.numReducers);
+    // Job job2 = Job.getInstance(conf);
+    // job2.setJobName(PairsPMI.class.getSimpleName());
+    // job2.setJarByClass(PairsPMI.class);
+    // job2.setNumReduceTasks(args.numReducers);
 
-    FileInputFormat.setInputPaths(job2, new Path(args.input));
-    FileOutputFormat.setOutputPath(job2, new Path(args.output));
+    // FileInputFormat.setInputPaths(job2, new Path(args.input));
+    // FileOutputFormat.setOutputPath(job2, new Path(args.output));
 
-    job2.setMapOutputKeyClass(Text.class);
-    job2.setMapOutputValueClass(IntWritable.class);
-    job2.setOutputKeyClass(Text.class);
-    job2.setOutputValueClass(DoubleWritable.class);
-    job2.setOutputFormatClass(TextOutputFormat.class);
+    // job2.setMapOutputKeyClass(Text.class);
+    // job2.setMapOutputValueClass(IntWritable.class);
+    // job2.setOutputKeyClass(Text.class);
+    // job2.setOutputValueClass(DoubleWritable.class);
+    // job2.setOutputFormatClass(TextOutputFormat.class);
     
-    job2.setMapperClass(MyMapperB.class);
-    // job.setCombinerClass(MyReducerB.class);
-    job2.setReducerClass(MyReducerB.class);
+    // job2.setMapperClass(MyMapperB.class);
+    // // job.setCombinerClass(MyReducerB.class);
+    // job2.setReducerClass(MyReducerB.class);
 
     // Delete the output directory if it exists already.
     Path outputDir = new Path(args.output);
@@ -336,14 +352,13 @@ public class PairsPMI extends Configured implements Tool {
 
     // RUN JOB 2 
 
-    long startTime2 = System.currentTimeMillis();
-    job2.waitForCompletion(true); // blocking call -> so we can have the code written async
-    LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+    // long startTime2 = System.currentTimeMillis();
+    // job2.waitForCompletion(true); // blocking call -> so we can have the code written async
+    // LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
-    // Delete temp folder
-
-    Path tempDelete = new Path(tempDir);
-    FileSystem.get(conf).delete(tempDelete, true);
+    // Delete temp folder -> once we know how many files to mulch up
+    // Path tempDelete = new Path(tempDir);
+    // FileSystem.get(conf).delete(tempDelete, true);
 
     return 0;
   }
