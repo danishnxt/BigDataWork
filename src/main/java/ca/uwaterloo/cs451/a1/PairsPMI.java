@@ -188,6 +188,7 @@ public class PairsPMI extends Configured implements Tool {
         sum += iter.next().get();
       }
 
+      System.out.println(sum);
       String full_value = key.toString();
 
       // possible optimization -> split the string just once and save it, accessing it directly later on
@@ -199,6 +200,9 @@ public class PairsPMI extends Configured implements Tool {
       // by this point we know the total per pair - we need the counts for each of them individually
 
       int total = AlphaCount.get("*");
+      System.out.print("total:  -> ");
+      System.out.print(total);
+      System.out.print("\n");
 
       double num = (sum/total);
       
@@ -222,7 +226,7 @@ public class PairsPMI extends Configured implements Tool {
        SUM.set(sum);
 
       dbl_result.set(to_log);
-      context.write(key, SUM);
+      context.write(key, dbl_result);
       
     }
   }
