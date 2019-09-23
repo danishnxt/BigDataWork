@@ -63,8 +63,10 @@ public class PairsPMI extends Configured implements Tool {
 
       HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
 
-      WORD.set("*"); // send this along as full count
-      context.write(WORD, ONE); // emit this as a line count as well
+     if (((value.toString()).compareTo("")) != 0) {
+	WORD.set("*");
+	context.write(WORD, ONE);
+     }
 
       for (String word : Tokenizer.tokenize(value.toString())) {
 
