@@ -322,9 +322,9 @@ public class PairsPMI extends Configured implements Tool {
 
     // RUN JOB 2 
 
-    long startTime2 = System.currentTimeMillis();
-    job2.waitForCompletion(true); // blocking call -> so we can have the code written async
-    LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+    // long startTime2 = System.currentTimeMillis();
+    // job2.waitForCompletion(true); // blocking call -> so we can have the code written async
+    // LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
     return 0;
   }
