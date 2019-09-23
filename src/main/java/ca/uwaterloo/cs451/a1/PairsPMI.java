@@ -23,6 +23,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -151,6 +152,7 @@ public class PairsPMI extends Configured implements Tool {
 
   public static final class MyReducerB extends Reducer<Text, IntWritable, Text, IntWritable> {
     private static final IntWritable SUM = new IntWritable();
+    private static final DoubleWritable dbl_result = new DoubleWritable();
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
@@ -158,25 +160,18 @@ public class PairsPMI extends Configured implements Tool {
 
       // will need to read more lines if there are more reducers // global variable?
 
-      int totalLines = 0;
       File file = new File(tempDir + "/part-r-00000"); // hardcoded here, remove the hard coded value
       BufferedReader br = new BufferedReader(new FileReader(file)); 
       
       String st; 
       
       while ((st = br.readLine()) != null) {
-        
         System.out.println(st.split("\t", 2)[0]);
-
         int temp = Integer.parseInt(st.split("\t", 2)[1]);
         AlphaCount.put(st.split("\t", 2)[0], temp);
-
-        totalLines += temp;
-
-        System.out.println(temp);
-        System.out.println("**************************");
-
       }
+
+      // Alpha count is now populated // but is it accessible in the next one :) 
 
     }
 
@@ -193,16 +188,39 @@ public class PairsPMI extends Configured implements Tool {
 
       String full_value = key.toString();
 
-        // possible optimization -> split the string just once and save it, accessing it directly later on
+      // possible optimization -> split the string just once and save it, accessing it directly later on
 
       String fw = full_value.split("\t", 2)[0];
       String sw = full_value.split("\t", 2)[1];
 
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
+
+      int total = AlphaCount.get("*");
+
+      double num = (sum/total);
       
-      SUM.set(sum);
-      context.write(key, SUM);
+        System.out.print("num:  -> ");
+        System.out.print(num);
+        System.out.print("\n");
+
+      double denom = (AlphaCount.get(fw)/total) * (AlphaCount.get(sw)/total);
+
+        System.out.print("denom:  -> ");
+        System.out.print(denom);
+        System.out.print("\n");
+
+      double to_log = (num / denom);
+
+        System.out.print("frac:  -> ");
+        System.out.print(to_log);
+        System.out.print("\n");
+
+      // double final_result = 
+      // SUM.set(sum);
+
+      dbl_result.set(to_log);
+      context.write(key, dbl_result);
       
     }
   }
@@ -218,9 +236,6 @@ public class PairsPMI extends Configured implements Tool {
 
     @Option(name = "-reducers", metaVar = "[num]", usage = "number of reducers")
     int numReducers = 1;
-
-    // @Option(name = "-imc", usage = "use in-mapper combining")
-    // boolean imc = false;
   }
 
 
@@ -252,8 +267,6 @@ public class PairsPMI extends Configured implements Tool {
     LOG.info(" - output path: " + args.output);
     LOG.info(" - number of reducers: " + args.numReducers);
 
-    // LOG ABOVE IS FOR VERBOSE OUTPUT // 
-
     Configuration conf = getConf();
 
     /////////////// JOB B META DATA ///////////////
@@ -264,8 +277,8 @@ public class PairsPMI extends Configured implements Tool {
     job.setNumReduceTasks(args.numReducers);
 
     FileInputFormat.setInputPaths(job, new Path(args.input));
-    // FileOutputFormat.setOutputPath(job, new Path(tempDir); // MANUAL TEMP FILE OVERRIDE
-    FileOutputFormat.setOutputPath(job, new Path(args.output)); 
+    FileOutputFormat.setOutputPath(job, new Path(tempDir); // MANUAL TEMP FILE OVERRIDE
+    // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
 
     job.setMapOutputKeyClass(Text.class);
     job.setMapOutputValueClass(IntWritable.class);
@@ -274,7 +287,7 @@ public class PairsPMI extends Configured implements Tool {
     job.setOutputFormatClass(TextOutputFormat.class);
 
     job.setMapperClass(MyMapperA.class);
-    // job.setCombinerClass(MyReducerA.class);
+    job.setCombinerClass(MyReducerA.class);
     job.setReducerClass(MyReducerA.class);
 
     /////////////// JOB B META DATA ///////////////
@@ -305,7 +318,6 @@ public class PairsPMI extends Configured implements Tool {
     job.waitForCompletion(true); // blocking call -> so we can have the code written async
     LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
     
-
     // DELETE THE RANDOM TEMP FILE 
 
     // RUN JOB 2 
