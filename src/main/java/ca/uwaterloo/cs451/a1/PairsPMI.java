@@ -273,24 +273,24 @@ public class PairsPMI extends Configured implements Tool {
 
     /////////////// JOB B META DATA ///////////////
 
-    // Job job = Job.getInstance(conf);
-    // job.setJobName(PairsPMI.class.getSimpleName());
-    // job.setJarByClass(PairsPMI.class);
-    // job.setNumReduceTasks(args.numReducers);
+    Job job = Job.getInstance(conf);
+    job.setJobName(PairsPMI.class.getSimpleName());
+    job.setJarByClass(PairsPMI.class);
+    job.setNumReduceTasks(args.numReducers);
 
-    // FileInputFormat.setInputPaths(job, new Path(args.input));
-    // FileOutputFormat.setOutputPath(job, new Path(tempDir)); // MANUAL TEMP FILE OVERRIDE
-    // // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
+    FileInputFormat.setInputPaths(job, new Path(args.input));
+    FileOutputFormat.setOutputPath(job, new Path(tempDir)); // MANUAL TEMP FILE OVERRIDE
+    // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
 
-    // job.setMapOutputKeyClass(Text.class);
-    // job.setMapOutputValueClass(IntWritable.class);
-    // job.setOutputKeyClass(Text.class);
-    // job.setOutputValueClass(IntWritable.class);
-    // job.setOutputFormatClass(TextOutputFormat.class);
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    job.setOutputFormatClass(TextOutputFormat.class);
 
-    // job.setMapperClass(MyMapperA.class);
-    // job.setCombinerClass(MyReducerA.class);
-    // job.setReducerClass(MyReducerA.class);
+    job.setMapperClass(MyMapperA.class);
+    job.setCombinerClass(MyReducerA.class);
+    job.setReducerClass(MyReducerA.class);
 
     /////////////// JOB B META DATA ///////////////
 
@@ -308,17 +308,17 @@ public class PairsPMI extends Configured implements Tool {
     job2.setOutputValueClass(IntWritable.class);
     job2.setOutputFormatClass(TextOutputFormat.class);
     
-    job.setMapperClass(MyMapperB.class);
+    job2.setMapperClass(MyMapperB.class);
     // job.setCombinerClass(MyReducerB.class);
-    job.setReducerClass(MyReducerB.class);
+    job2.setReducerClass(MyReducerB.class);
 
     // Delete the output directory if it exists already.
     Path outputDir = new Path(args.output);
     FileSystem.get(conf).delete(outputDir, true);
 
-    // long startTime = System.currentTimeMillis();
-    // job.waitForCompletion(true); // blocking call -> so we can have the code written async
-    // LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+    long startTime = System.currentTimeMillis();
+    job.waitForCompletion(true); // blocking call -> so we can have the code written async
+    LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
     // DELETE THE RANDOM TEMP FILE 
 
