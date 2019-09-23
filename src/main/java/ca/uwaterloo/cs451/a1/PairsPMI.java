@@ -191,6 +191,8 @@ public class PairsPMI extends Configured implements Tool {
 
     }
 
+    wkjkwdwjdhwjdw
+
     @Override
     public void reduce(Text key, Iterable<IntWritable> values, Context context) // this is standard
         throws IOException, InterruptedException {
@@ -290,7 +292,7 @@ public class PairsPMI extends Configured implements Tool {
       return -1;
     }
 
-    LOG.info("Tool: " + PairsPMI.class.getSimpleName());
+    LOG.info(" Tool: " + PairsPMI.class.getSimpleName());
     LOG.info(" - input path: " + args.input);
     LOG.info(" - output path: " + args.output);
     LOG.info(" - number of reducers: " + args.numReducers);
