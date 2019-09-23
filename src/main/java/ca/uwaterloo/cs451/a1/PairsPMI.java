@@ -272,7 +272,7 @@ public class PairsPMI extends Configured implements Tool {
     job.setOutputFormatClass(TextOutputFormat.class);
 
     job.setMapperClass(MyMapperA.class);
-    job.setCombinerClass(MyReducerA.class);
+    // job.setCombinerClass(MyReducerA.class);
     job.setReducerClass(MyReducerA.class);
 
     /////////////// JOB B META DATA ///////////////
