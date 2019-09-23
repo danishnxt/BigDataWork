@@ -23,7 +23,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-// import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -152,7 +152,7 @@ public class PairsPMI extends Configured implements Tool {
 
   public static final class MyReducerB extends Reducer<Text, IntWritable, Text, IntWritable> {
     private static final IntWritable SUM = new IntWritable();
-    // private static final DoubleWritable dbl_result = new DoubleWritable();
+    private static final DoubleWritable dbl_result = new DoubleWritable();
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
@@ -196,31 +196,31 @@ public class PairsPMI extends Configured implements Tool {
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
 
-      // int total = AlphaCount.get("*");
+      int total = AlphaCount.get("*");
 
-      // double num = (sum/total);
+      double num = (sum/total);
       
-      //   System.out.print("num:  -> ");
-      //   System.out.print(num);
-      //   System.out.print("\n");
+        System.out.print("num:  -> ");
+        System.out.print(num);
+        System.out.print("\n");
 
-      // double denom = (AlphaCount.get(fw)/total) * (AlphaCount.get(sw)/total);
+      double denom = (AlphaCount.get(fw)/total) * (AlphaCount.get(sw)/total);
 
-      //   System.out.print("denom:  -> ");
-      //   System.out.print(denom);
-      //   System.out.print("\n");
+        System.out.print("denom:  -> ");
+        System.out.print(denom);
+        System.out.print("\n");
 
-      // double to_log = (num / denom);
+      double to_log = (num / denom);
 
-      //   System.out.print("frac:  -> ");
-      //   System.out.print(to_log);
-      //   System.out.print("\n");
+        System.out.print("frac:  -> ");
+        System.out.print(to_log);
+        System.out.print("\n");
 
-      // // double final_result = 
-      // // SUM.set(sum);
+      // double final_result = 
+      // SUM.set(sum);
 
-      // dbl_result.set(to_log);
-      // context.write(key, dbl_result);
+      dbl_result.set(to_log);
+      context.write(key, dbl_result);
       
     }
   }
@@ -309,8 +309,6 @@ public class PairsPMI extends Configured implements Tool {
     job.setMapperClass(MyMapperB.class);
     // job.setCombinerClass(MyReducerB.class);
     job.setReducerClass(MyReducerB.class);
-
-   
 
     // Delete the output directory if it exists already.
     Path outputDir = new Path(args.output);
