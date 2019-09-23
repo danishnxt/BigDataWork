@@ -226,7 +226,7 @@ public class PairsPMI extends Configured implements Tool {
        SUM.set(sum);
 
       dbl_result.set(to_log);
-      context.write(key, dbl_result);
+      context.write(key, sum);
       
     }
   }
