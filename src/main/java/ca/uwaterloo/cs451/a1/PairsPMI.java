@@ -156,7 +156,7 @@ public class PairsPMI extends Configured implements Tool {
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
-     HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
+    //  HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
 
       // will need to read more lines if there are more reducers // global variable?
 
@@ -196,31 +196,31 @@ public class PairsPMI extends Configured implements Tool {
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
 
-      int total = AlphaCount.get("*");
+      // int total = AlphaCount.get("*");
 
-      double num = (sum/total);
+      // double num = (sum/total);
       
-        System.out.print("num:  -> ");
-        System.out.print(num);
-        System.out.print("\n");
+      //   System.out.print("num:  -> ");
+      //   System.out.print(num);
+      //   System.out.print("\n");
 
-      double denom = (AlphaCount.get(fw)/total) * (AlphaCount.get(sw)/total);
+      // double denom = (AlphaCount.get(fw)/total) * (AlphaCount.get(sw)/total);
 
-        System.out.print("denom:  -> ");
-        System.out.print(denom);
-        System.out.print("\n");
+      //   System.out.print("denom:  -> ");
+      //   System.out.print(denom);
+      //   System.out.print("\n");
 
-      double to_log = (num / denom);
+      // double to_log = (num / denom);
 
-        System.out.print("frac:  -> ");
-        System.out.print(to_log);
-        System.out.print("\n");
+      //   System.out.print("frac:  -> ");
+      //   System.out.print(to_log);
+      //   System.out.print("\n");
 
-      // double final_result = 
-      // SUM.set(sum);
+      // // double final_result = 
+      // // SUM.set(sum);
 
-      dbl_result.set(to_log);
-      context.write(key, dbl_result);
+      // dbl_result.set(to_log);
+      // context.write(key, dbl_result);
       
     }
   }
