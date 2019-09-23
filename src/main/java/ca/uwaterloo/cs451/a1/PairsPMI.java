@@ -47,6 +47,7 @@ import java.util.List;
 
 public class PairsPMI extends Configured implements Tool { 
 
+    private static String tempDir = "TempFile"; // saving this here for global access -> POSSIBLE FLAG
     private static final Logger LOG = Logger.getLogger(PairsPMI.class);
 
     ///////////////// MAPPER 1 /////////////////
@@ -62,12 +63,17 @@ public class PairsPMI extends Configured implements Tool {
 
         HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
 
+        // the thing below will go for a per line basis we can test this pretty easily 
+
+        WORD.set("*"); // send this along as full count
+        context.write(WORD, ONE); // emit this as a line count as well
+
         for (String word : Tokenizer.tokenize(value.toString())) {
   
           // if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
             AlphaTrack.put(word, 1); // add new word in with value 1  
             WORD.set(word);
-            context.write(WORD, ONE); 
+            context.write(WORD, ONE);
           // }
 
         }
@@ -163,14 +169,16 @@ public class PairsPMI extends Configured implements Tool {
       public void setup(Context context) throws IOException, InterruptedException {
         private static HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
 
+        // will need to read more lines if there are more reducers // global variable?
+
         int totalLines = 0;
-        File file = new File("data/metaData.txt");
+        File file = new File(tempDir + "/part-r-00000"); // hardcoded here, remove the hard coded value
         BufferedReader br = new BufferedReader(new FileReader(file)); 
         
         String st; 
         
         while ((st = br.readLine()) != null) {
-          // st contains the word and the thing
+          // st contains the word and the count
           
           System.out.println(st.split("\t", 2)[0]);
 
@@ -205,8 +213,6 @@ public class PairsPMI extends Configured implements Tool {
 
         String fw = full_value.split("\t", 2)[0];
         String sw = full_value.split("\t", 2)[1];
-
-        
 
         // now what -> so we compute all the things -> we know the total count
         // by this point we know the total per pair - we need the counts for each of them individually
@@ -274,7 +280,8 @@ public class PairsPMI extends Configured implements Tool {
       job.setNumReduceTasks(args.numReducers);
   
       FileInputFormat.setInputPaths(job, new Path(args.input));
-      FileOutputFormat.setOutputPath(job, new Path(args.output)); // CHANGE THIS TO MANUAL TEMP FILE OVERRIDE
+      FileOutputFormat.setOutputPath(job, new Path(tempDir); // MANUAL TEMP FILE OVERRIDE
+      // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
   
       job.setMapOutputKeyClass(Text.class);
       job.setMapOutputValueClass(IntWritable.class);
@@ -303,7 +310,7 @@ public class PairsPMI extends Configured implements Tool {
       job2.setOutputFormatClass(TextOutputFormat.class);
       
       job.setMapperClass(MyMapperB.class);
-      job.setCombinerClass(MyReducerB.class);
+      // job.setCombinerClass(MyReducerB.class);
       job.setReducerClass(MyReducerB.class);
 
       // Delete the output directory if it exists already.
@@ -313,36 +320,20 @@ public class PairsPMI extends Configured implements Tool {
       long startTime = System.currentTimeMillis();
       job.waitForCompletion(true); // blocking call -> so we can have the code written async
       LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
-
-      // READ DATA AND POPULATE THE NEW WORD COUNT MAP
-
       
 
-      } 
-
-      
+      // DELETE THE RANDOM TEMP FILE 
 
       // RUN JOB 2 
-
-
 
       // REPORT ON JOB TIME AND EXIT
   
       return 0;
     }
-  
-    /**
-     * Dispatches command-line arguments to the tool via the {@code ToolRunner}.
-     *
-     * @param args command-line arguments
-     * @throws Exception if tool encounters an exception
-     */
-
 
     public static void main(String[] args) throws Exception {
       ToolRunner.run(new PairsPMI(), args); // tool runner class runs the 'run' function -> inside the class
     }
-
 
   } 
   
