@@ -219,10 +219,10 @@ public class PairsPMI extends Configured implements Tool {
         System.out.print("\n");
 
       // double final_result = 
-      // SUM.set(sum);
+       SUM.set(sum);
 
       dbl_result.set(to_log);
-      context.write(key, dbl_result);
+      context.write(key, SUM);
       
     }
   }
@@ -305,7 +305,7 @@ public class PairsPMI extends Configured implements Tool {
     job2.setMapOutputKeyClass(Text.class);
     job2.setMapOutputValueClass(IntWritable.class);
     job2.setOutputKeyClass(Text.class);
-    job2.setOutputValueClass(DoubleWritable.class);
+    job2.setOutputValueClass(IntWritable.class);
     job2.setOutputFormatClass(TextOutputFormat.class);
     
     job.setMapperClass(MyMapperB.class);
