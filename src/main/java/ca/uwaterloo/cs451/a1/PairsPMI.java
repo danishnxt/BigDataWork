@@ -39,7 +39,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ParserProperties;
 
-import java.lang.Math.log10;
+import java.lang.*;
 import java.io.IOException;
 import java.io.*;
 import java.util.HashMap;
