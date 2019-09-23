@@ -223,7 +223,7 @@ public class PairsPMI extends Configured implements Tool {
         System.out.print(to_log);
         System.out.print("\n");
 
-      double final_result = log10(to_log); // final result here
+      double final_result = Math.log10(to_log); // final result here
 
       System.out.print("key:  -> ");
       System.out.print(key.toString());
