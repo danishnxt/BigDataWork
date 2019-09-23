@@ -232,9 +232,9 @@ public class PairsPMI extends Configured implements Tool {
 
       double to_log = (num/denom); // should be ok
 
-        System.out.print("frac:  -> ");
-        System.out.print(to_log);
-        System.out.print("\n");
+        // System.out.print("frac:  -> ");
+        // System.out.print(to_log);
+        // System.out.print("\n");
 
       double final_result = Math.log10(to_log); // final result here
 
@@ -324,27 +324,29 @@ public class PairsPMI extends Configured implements Tool {
 
     /////////////// JOB B CONFIG ///////////////
 
-    // Job job2 = Job.getInstance(conf);
-    // job2.setJobName(PairsPMI.class.getSimpleName());
-    // job2.setJarByClass(PairsPMI.class);
-    // job2.setNumReduceTasks(args.numReducers);
+    Job job2 = Job.getInstance(conf);
+    job2.setJobName(PairsPMI.class.getSimpleName());
+    job2.setJarByClass(PairsPMI.class);
+    job2.setNumReduceTasks(args.numReducers);
 
-    // FileInputFormat.setInputPaths(job2, new Path(args.input));
-    // FileOutputFormat.setOutputPath(job2, new Path(args.output));
+    FileInputFormat.setInputPaths(job2, new Path(args.input));
+    FileOutputFormat.setOutputPath(job2, new Path(args.output));
 
-    // job2.setMapOutputKeyClass(Text.class);
-    // job2.setMapOutputValueClass(IntWritable.class);
-    // job2.setOutputKeyClass(Text.class);
-    // job2.setOutputValueClass(DoubleWritable.class);
-    // job2.setOutputFormatClass(TextOutputFormat.class);
+    job2.setMapOutputKeyClass(Text.class);
+    job2.setMapOutputValueClass(IntWritable.class);
+    job2.setOutputKeyClass(Text.class);
+    job2.setOutputValueClass(DoubleWritable.class);
+    job2.setOutputFormatClass(TextOutputFormat.class);
     
-    // job2.setMapperClass(MyMapperB.class);
-    // // job.setCombinerClass(MyReducerB.class);
-    // job2.setReducerClass(MyReducerB.class);
+    job2.setMapperClass(MyMapperB.class);
+    // job.setCombinerClass(MyReducerB.class);
+    job2.setReducerClass(MyReducerB.class);
 
     // Delete the output directory if it exists already.
     Path outputDir = new Path(args.output);
     FileSystem.get(conf).delete(outputDir, true);
+
+    // RUN JOB 1
 
     long startTime = System.currentTimeMillis();
     job.waitForCompletion(true); // blocking call -> so we can have the code written async
@@ -352,13 +354,13 @@ public class PairsPMI extends Configured implements Tool {
 
     // RUN JOB 2 
 
-    // long startTime2 = System.currentTimeMillis();
-    // job2.waitForCompletion(true); // blocking call -> so we can have the code written async
-    // LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+    long startTime2 = System.currentTimeMillis();
+    job2.waitForCompletion(true); // blocking call -> so we can have the code written async
+    LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
     // Delete temp folder -> once we know how many files to mulch up
-    // Path tempDelete = new Path(tempDir);
-    // FileSystem.get(conf).delete(tempDelete, true);
+    Path tempDelete = new Path(tempDir);
+    FileSystem.get(conf).delete(tempDelete, true);
 
     return 0;
   }
