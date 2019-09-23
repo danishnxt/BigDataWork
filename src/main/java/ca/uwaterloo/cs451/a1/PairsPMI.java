@@ -309,7 +309,7 @@ public class PairsPMI extends Configured implements Tool {
     job2.setMapOutputKeyClass(Text.class);
     job2.setMapOutputValueClass(IntWritable.class);
     job2.setOutputKeyClass(Text.class);
-    job2.setOutputValueClass(IntWritable.class);
+    job2.setOutputValueClass(DoubleWritable.class);
     job2.setOutputFormatClass(TextOutputFormat.class);
     
     job2.setMapperClass(MyMapperB.class);
