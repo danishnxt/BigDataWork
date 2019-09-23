@@ -334,6 +334,6 @@ public class PairsPMI extends Configured implements Tool {
     public static void main(String[] args) throws Exception {
       ToolRunner.run(new PairsPMI(), args); // tool runner class runs the 'run' function -> inside the class
     }
-
   } 
+}
   
