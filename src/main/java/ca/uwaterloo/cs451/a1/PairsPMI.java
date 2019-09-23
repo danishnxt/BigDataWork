@@ -334,13 +334,16 @@ public class PairsPMI extends Configured implements Tool {
     job.waitForCompletion(true); // blocking call -> so we can have the code written async
     LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
-    // DELETE THE RANDOM TEMP FILE 
-
     // RUN JOB 2 
 
     long startTime2 = System.currentTimeMillis();
     job2.waitForCompletion(true); // blocking call -> so we can have the code written async
     LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+
+    // Delete temp folder
+
+    Path tempDelete = new Path(tempDir);
+    FileSystem.get(conf).delete(tempDelete, true);
 
     return 0;
   }
