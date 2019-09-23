@@ -48,7 +48,8 @@ import java.util.List;
 public class PairsPMI extends Configured implements Tool { 
 
     private static final Logger LOG = Logger.getLogger(PairsPMI.class);
-    private static HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global status
+
+    ///////////////// MAPPER 1 /////////////////
 
     public static final class MyMapperA extends Mapper<LongWritable, Text, Text, IntWritable> {
   
@@ -158,6 +159,35 @@ public class PairsPMI extends Configured implements Tool {
     public static final class MyReducerB extends Reducer<Text, IntWritable, Text, IntWritable> {
       private static final IntWritable SUM = new IntWritable();
   
+      @Override // override the default implemetations
+      public void setup(Context context) throws IOException, InterruptedException {
+        private static HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
+
+        int totalLines = 0;
+        File file = new File("data/metaData.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file)); 
+        
+        String st; 
+        
+        while ((st = br.readLine()) != null) {
+          // st contains the word and the thing
+          
+          System.out.println(st.split("\t", 2)[0]);
+
+          int temp = Integer.parseInt(st.split("\t", 2)[1]);
+          AlphaCount.put(st.split("\t", 2)[0], temp));
+
+          totalLines += temp;
+
+
+
+          System.out.println(temp);
+          System.out.println("**************************");
+
+        }
+
+      }
+
       @Override
       public void reduce(Text key, Iterable<IntWritable> values, Context context) // this is standard
           throws IOException, InterruptedException {
@@ -175,6 +205,8 @@ public class PairsPMI extends Configured implements Tool {
 
         String fw = full_value.split("\t", 2)[0];
         String sw = full_value.split("\t", 2)[1];
+
+        
 
         // now what -> so we compute all the things -> we know the total count
         // by this point we know the total per pair - we need the counts for each of them individually
@@ -200,10 +232,15 @@ public class PairsPMI extends Configured implements Tool {
       // @Option(name = "-imc", usage = "use in-mapper combining")
       boolean imc = false;
     }
+
+
+    /////////////////  COMBINER CLASSES HERE  ///////////////// 
+
+    // NEED A DIFFERENT COMBINER SINCE THE WORK OVERALL IS DIFFERENT
+
   
-    /**
-     * Runs this tool.
-     */
+    /////////////////  MAIN JOB SETUP  ///////////////// 
+
     @Override
     public int run(String[] argv) throws Exception { // Fired first - SETUP function
 
@@ -251,23 +288,23 @@ public class PairsPMI extends Configured implements Tool {
 
       /////////////// JOB B META DATA ///////////////
 
-      // Job job2 = Job.getInstance(conf);
-      // job2.setJobName(PairsPMI.class.getSimpleName());
-      // job2.setJarByClass(PairsPMI.class);
-      // job2.setNumReduceTasks(args.numReducers);
+      Job job2 = Job.getInstance(conf);
+      job2.setJobName(PairsPMI.class.getSimpleName());
+      job2.setJarByClass(PairsPMI.class);
+      job2.setNumReduceTasks(args.numReducers);
 
-      // FileInputFormat.setInputPaths(job2, new Path(args.input));
-      // FileOutputFormat.setOutputPath(job2, new Path(args.output));
+      FileInputFormat.setInputPaths(job2, new Path(args.input));
+      FileOutputFormat.setOutputPath(job2, new Path(args.output));
 
-      // job2.setMapOutputKeyClass(Text.class);
-      // job2.setMapOutputValueClass(IntWritable.class);
-      // job2.setOutputKeyClass(Text.class);
-      // job2.setOutputValueClass(IntWritable.class);
-      // job2.setOutputFormatClass(TextOutputFormat.class);
+      job2.setMapOutputKeyClass(Text.class);
+      job2.setMapOutputValueClass(IntWritable.class);
+      job2.setOutputKeyClass(Text.class);
+      job2.setOutputValueClass(IntWritable.class);
+      job2.setOutputFormatClass(TextOutputFormat.class);
       
-      // job.setMapperClass(MyMapperB.class);
-      // job.setCombinerClass(MyReducerB.class);
-      // job.setReducerClass(MyReducerB.class);
+      job.setMapperClass(MyMapperB.class);
+      job.setCombinerClass(MyReducerB.class);
+      job.setReducerClass(MyReducerB.class);
 
       // Delete the output directory if it exists already.
       Path outputDir = new Path(args.output);
@@ -279,21 +316,11 @@ public class PairsPMI extends Configured implements Tool {
 
       // READ DATA AND POPULATE THE NEW WORD COUNT MAP
 
-      // C:\\Users\\pankaj\\Desktop\\test.txt
-
-      File file = new File("data/metaData.txt");
-      BufferedReader br = new BufferedReader(new FileReader(file)); 
       
-      String st; 
-      while ((st = br.readLine()) != null) {
-
-        // st contains the word and the thing
-        AlphaCount.put(st.split("\t", 2)[0], Integer.parseInt(st.split("\t", 2)[1]));
-        System.out.println(st.split("\t", 2)[0]);
-        System.out.println(Integer.parseInt(st.split("\t", 2)[1]));
-        System.out.println("**************************");
 
       } 
+
+      
 
       // RUN JOB 2 
 
