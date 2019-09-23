@@ -153,12 +153,14 @@ public class PairsPMI extends Configured implements Tool {
   public static final class MyReducerB extends Reducer<Text, IntWritable, Text, IntWritable> {
     private static final IntWritable SUM = new IntWritable();
     private static final DoubleWritable dbl_result = new DoubleWritable();
+    private HashMap<String, Integer> AlphaCount; // initialized here for global across all map jobs
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
-    HashMap<String, Integer> AlphaCount = new HashMap<String, Integer>(); // initialized here for global across all map jobs
-
+    
       // will need to read more lines if there are more reducers // global variable?
+
+      AlphaCount = new HashMap<String, Integer>();
 
       File file = new File(tempDir + "/part-r-00000"); // hardcoded here, remove the hard coded value
       BufferedReader br = new BufferedReader(new FileReader(file)); 
@@ -303,7 +305,7 @@ public class PairsPMI extends Configured implements Tool {
     job2.setMapOutputKeyClass(Text.class);
     job2.setMapOutputValueClass(IntWritable.class);
     job2.setOutputKeyClass(Text.class);
-    job2.setOutputValueClass(IntWritable.class);
+    job2.setOutputValueClass(DoubleWritable.class);
     job2.setOutputFormatClass(TextOutputFormat.class);
     
     job.setMapperClass(MyMapperB.class);
