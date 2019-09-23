@@ -47,7 +47,7 @@ import java.util.List;
 
 public class PairsPMI extends Configured implements Tool { 
 
-  // private static String tempDir = "TempFile"; // saving this here for global access -> POSSIBLE FLAG
+  private static String tempDir = "TempFile"; // saving this here for global access -> POSSIBLE FLAG
   private static final Logger LOG = Logger.getLogger(PairsPMI.class);
 
   ///////////////// MAPPER 1 /////////////////
@@ -63,18 +63,16 @@ public class PairsPMI extends Configured implements Tool {
 
       HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
 
-      // the thing below will go for a per line basis we can test this pretty easily 
-
-      // WORD.set("*"); // send this along as full count
-      // context.write(WORD, ONE); // emit this as a line count as well
+      WORD.set("*"); // send this along as full count
+      context.write(WORD, ONE); // emit this as a line count as well
 
       for (String word : Tokenizer.tokenize(value.toString())) {
 
-        // if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
+        if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
           AlphaTrack.put(word, 1); // add new word in with value 1  
           WORD.set(word);
           context.write(WORD, ONE);
-        // }
+        }
 
       }
     }
@@ -91,18 +89,14 @@ public class PairsPMI extends Configured implements Tool {
     public void map(LongWritable key, Text value, Context context)
         throws IOException, InterruptedException {
 
-      HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
-      // just concat the strings and that should be the same thing then
+      HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>(); // will concat strings with tab
 
       List<String> tokens; // match the tokenizer return type and get the full list at once
       tokens = Tokenizer.tokenize(value.toString()); // whole list with us now
       int listSize = tokens.size(); // get the size out and run loops with "clever indexing"?
       
-      // God I really hope it really hurts like hell
-      // for each line emit one thing now
-      
-      String l1_temp = ""; // init this yourself 
-      String l2_temp = ""; // init this yourself 
+      String l1_temp = "";
+      String l2_temp = "";
 
       for (int i = 0; i < listSize; i++) {
         
@@ -125,16 +119,7 @@ public class PairsPMI extends Configured implements Tool {
       }
 
       return;
-          
-      // for (String word : Tokenizer.tokenize(value.toString())) {
 
-      //   // if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
-      //     AlphaTrack.put(word, 1); // add new word in with value 1  
-      //     WORD.set(word);
-      //     context.write(WORD, ONE); 
-      //   // }
-
-      // }
     }
   }
 
@@ -171,26 +156,25 @@ public class PairsPMI extends Configured implements Tool {
 
       // will need to read more lines if there are more reducers // global variable?
 
-      // int totalLines = 0;
-      // File file = new File(tempDir + "/part-r-00000"); // hardcoded here, remove the hard coded value
-      // BufferedReader br = new BufferedReader(new FileReader(file)); 
+      int totalLines = 0;
+      File file = new File(tempDir + "/part-r-00000"); // hardcoded here, remove the hard coded value
+      BufferedReader br = new BufferedReader(new FileReader(file)); 
       
-      // String st; 
+      String st; 
       
-      // while ((st = br.readLine()) != null) {
-      //   // st contains the word and the count
+      while ((st = br.readLine()) != null) {
         
-      //   System.out.println(st.split("\t", 2)[0]);
+        System.out.println(st.split("\t", 2)[0]);
 
-      //   int temp = Integer.parseInt(st.split("\t", 2)[1]);
-      //   AlphaCount.put(st.split("\t", 2)[0], temp));
+        int temp = Integer.parseInt(st.split("\t", 2)[1]);
+        AlphaCount.put(st.split("\t", 2)[0], temp));
 
-      //   totalLines += temp;
+        totalLines += temp;
 
-      //   System.out.println(temp);
-      //   System.out.println("**************************");
+        System.out.println(temp);
+        System.out.println("**************************");
 
-      // }
+      }
 
     }
 
@@ -234,7 +218,7 @@ public class PairsPMI extends Configured implements Tool {
     int numReducers = 1;
 
     // @Option(name = "-imc", usage = "use in-mapper combining")
-    boolean imc = false;
+    // boolean imc = false;
   }
 
 
