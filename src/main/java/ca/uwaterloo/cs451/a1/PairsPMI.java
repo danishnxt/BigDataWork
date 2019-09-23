@@ -39,6 +39,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ParserProperties;
 
+import java.lang.Math.log10;
 import java.io.IOException;
 import java.io.*;
 import java.util.HashMap;
@@ -200,21 +201,21 @@ public class PairsPMI extends Configured implements Tool {
       // by this point we know the total per pair - we need the counts for each of them individually
 
       int total = AlphaCount.get("*");
-      System.out.print("total:  -> ");
-      System.out.print(total);
-      System.out.print("\n");
+      // System.out.print("total:  -> ");
+      // System.out.print(total);
+      // System.out.print("\n");
 
       double num = (sum * 1.0 / total * 1.0);
       
-        System.out.print("num:  -> ");
-        System.out.print(num);
-        System.out.print("\n");
+        // System.out.print("num:  -> ");
+        // System.out.print(num);
+        // System.out.print("\n");
 
       double denom = (AlphaCount.get(fw) * 1.0 / total * 1.0) * (AlphaCount.get(sw) * 1.0 / total * 1.0);
 
-        System.out.print("denom:  -> ");
-        System.out.print(denom);
-        System.out.print("\n");
+        // System.out.print("denom:  -> ");
+        // System.out.print(denom);
+        // System.out.print("\n");
 
       double to_log = (num/denom); // should be ok
 
@@ -222,9 +223,18 @@ public class PairsPMI extends Configured implements Tool {
         System.out.print(to_log);
         System.out.print("\n");
 
-      // double final_result = 
-       SUM.set(sum);
+      double final_result = log10(to_log); // final result here
 
+      System.out.print("key:  -> ");
+      System.out.print(key.toString());
+      System.out.print("\n");
+
+      System.out.print("Value:  -> ");
+      System.out.print(final_result);
+      System.out.print("\n");
+
+
+      SUM.set(sum);
       dbl_result.set(to_log);
       context.write(key, SUM);
       
