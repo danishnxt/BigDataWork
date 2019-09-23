@@ -167,7 +167,7 @@ public class PairsPMI extends Configured implements Tool {
         System.out.println(st.split("\t", 2)[0]);
 
         int temp = Integer.parseInt(st.split("\t", 2)[1]);
-        AlphaCount.put(st.split("\t", 2)[0], temp));
+        AlphaCount.put(st.split("\t", 2)[0], temp);
 
         totalLines += temp;
 
