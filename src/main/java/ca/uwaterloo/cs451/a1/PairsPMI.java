@@ -191,12 +191,12 @@ public class PairsPMI extends Configured implements Tool {
       System.out.println("SETUP FUNCTION CALLED HERE -> ");
     
       AlphaCount = new HashMap<String, Integer>();
-      String start = "/part-t-0000";
+      String start = "/part-r-0000";
 
       if (redSplit > 9) { // more reducers -> fix the file
-        start = "/part-t-000"; // will append double digits here
+        start = "/part-r-000"; // will append double digits here
       } else if (redSplit > 99) {
-        start = "/part-t-00";
+        start = "/part-r-00";
       }
 
       for (int i = 0; i < redSplit; i++) {
