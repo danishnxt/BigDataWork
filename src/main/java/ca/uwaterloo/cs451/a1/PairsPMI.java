@@ -156,7 +156,7 @@ public class PairsPMI extends Configured implements Tool {
 
   ///////////////// REDUCER A /////////////////
 
-  public static final class MyReducerA extends Reducer<Text, IntWritable, Text, FloIntWritableatWritable> {
+  public static final class MyReducerA extends Reducer<Text, IntWritable, Text, IntWritable> {
     private static final IntWritable SUM = new IntWritable();
 
     @Override
