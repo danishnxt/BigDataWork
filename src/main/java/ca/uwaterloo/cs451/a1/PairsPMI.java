@@ -228,12 +228,12 @@ public class PairsPMI extends Configured implements Tool {
         // System.out.print(total);
         // System.out.print("\n");
 
-      double num = (sum * 1.0 / total * 1.0);
+      double num = ((sum * 1.0) / (total * 1.0));
         // System.out.print("num:  -> ");
         // System.out.print(num);
         // System.out.print("\n");
 
-      double denom = (AlphaCount.get(fw) * 1.0 / total * 1.0) * (AlphaCount.get(sw) * 1.0 / total * 1.0);
+      double denom = (((AlphaCount.get(fw) * 1.0) / (total * 1.0)) * ((AlphaCount.get(sw) * 1.0) / (total * 1.0)));
         // System.out.print("denom:  -> ");
         // System.out.print(denom);
         // System.out.print("\n");
