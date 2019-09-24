@@ -156,6 +156,7 @@ public class ComputeBigramRelativeFrequencyPairs  extends Configured implements 
     job.setMapOutputValueClass(FloatWritable.class);
     job.setOutputKeyClass(PairOfStrings.class);
     job.setOutputValueClass(FloatWritable.class);
+    
     if (args.textOutput) {
       job.setOutputFormatClass(TextOutputFormat.class);
     } else {
