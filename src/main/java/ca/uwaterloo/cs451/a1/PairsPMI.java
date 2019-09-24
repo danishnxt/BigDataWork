@@ -74,7 +74,7 @@ public class PairsPMI extends Configured implements Tool {
     ///////////////// MAPPER 1 /////////////////
   public static final class MyMapperA extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-    private static final FloatWritable ONE = new IntWritable(1);
+    private static final IntWritable ONE = new IntWritable(1);
     private static final Text WORD = new Text();
       
     @Override
