@@ -326,24 +326,24 @@ public class PairsPMI extends Configured implements Tool {
 
     /////////////// JOB A CONFIG ///////////////
 
-    Job job = Job.getInstance(conf);
-    job.setJobName(PairsPMI.class.getSimpleName());
-    job.setJarByClass(PairsPMI.class);
-    job.setNumReduceTasks(args.numReducers);
+    // Job job = Job.getInstance(conf);
+    // job.setJobName(PairsPMI.class.getSimpleName());
+    // job.setJarByClass(PairsPMI.class);
+    // job.setNumReduceTasks(args.numReducers);
 
-    FileInputFormat.setInputPaths(job, new Path(args.input));
-    FileOutputFormat.setOutputPath(job, new Path(tempDir)); // MANUAL TEMP FILE OVERRIDE
-    // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
+    // FileInputFormat.setInputPaths(job, new Path(args.input));
+    // FileOutputFormat.setOutputPath(job, new Path(tempDir)); // MANUAL TEMP FILE OVERRIDE
+    // // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
 
-    job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(FloatWritable.class);
-    job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(FloatWritable.class);
-    job.setOutputFormatClass(TextOutputFormat.class);
+    // job.setMapOutputKeyClass(Text.class);
+    // job.setMapOutputValueClass(FloatWritable.class);
+    // job.setOutputKeyClass(Text.class);
+    // job.setOutputValueClass(FloatWritable.class);
+    // job.setOutputFormatClass(TextOutputFormat.class);
 
-    job.setMapperClass(MyMapperA.class);
-    job.setCombinerClass(MyReducerA.class);
-    job.setReducerClass(MyReducerA.class);
+    // job.setMapperClass(MyMapperA.class);
+    // job.setCombinerClass(MyReducerA.class);
+    // job.setReducerClass(MyReducerA.class);
 
     /////////////// JOB B CONFIG ///////////////
 
@@ -371,9 +371,9 @@ public class PairsPMI extends Configured implements Tool {
 
     // RUN JOB 1
 
-    long startTime = System.currentTimeMillis();
-    job.waitForCompletion(true); // blocking call -> so we can have the code written async
-    LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+    // long startTime = System.currentTimeMillis();
+    // job.waitForCompletion(true); // blocking call -> so we can have the code written async
+    // LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
     // RUN JOB 2 
 
