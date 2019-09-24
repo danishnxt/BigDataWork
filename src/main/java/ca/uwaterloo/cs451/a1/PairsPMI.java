@@ -162,10 +162,10 @@ public class PairsPMI extends Configured implements Tool {
 
   ///////////////// REDUCER B /////////////////
 
-  public static final class MyReducerB extends Reducer<Text, FloatWriteable, PairOfStrings, FloatWriteable> {
+  public static final class MyReducerB extends Reducer<Text, FloatWritable, PairOfStrings, FloatWritable> {
     
     private static final FloatWritable SUM = new FloatWritable();
-    private static final FloatWriteable flt_result = new FloatWriteable();
+    private static final FloatWritable flt_result = new FloatWritable();
 
     private HashMap<String, Integer> AlphaCount; // initialized here for global across all map jobs
 
