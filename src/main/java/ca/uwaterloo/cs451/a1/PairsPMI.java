@@ -51,11 +51,15 @@ import java.util.List;
 import tl.lin.data.pair.PairOfStrings;
 
 /*
-  NOTE TO INSTRUCTOR 
-  ------------------
+  INTERESTING NOTE 
+  ----------------
 
     I didn't check the Bespin file for BigramFrequency until the last night, so some intermediate tasks have been done
     in a different way, they all still work just fine. 
+
+    Update: The partioner expects a pair of strings as well. Looks like my emit(WORD /t WORD) solution is going to have to 
+    change now for consistency...
+
 */ 
 
 public class PairsPMI extends Configured implements Tool { 
@@ -96,10 +100,10 @@ public class PairsPMI extends Configured implements Tool {
   }
 
     ///////////////// MAPPER 2 /////////////////
-  public static final class MyMapperB extends Mapper<LongWritable, Text, Text, FloatWritable> {
+  public static final class MyMapperB extends Mapper<LongWritable, Text, PairOfStrings, FloatWritable> {
 
     private static final FloatWritable ONE = new FloatWritable(1);
-    private static final Text WORD_1 = new Text();
+    private static final PairOfStrings WORDS = new PairOfStrings();
       
     @Override
     public void map(LongWritable key, Text value, Context context)
@@ -128,8 +132,11 @@ public class PairsPMI extends Configured implements Tool {
 
           if (!AlphaTrack.containsKey(l1_temp + l2_temp)) { // if exist in the hash map -> ignore it!
             AlphaTrack.put(l1_temp + l2_temp, 1); // add this and emit it
-            WORD_1.set(l1_temp + "\t" + l2_temp); // tab added to use tuple
-            context.write(WORD_1, ONE); // sending out a tuple instead
+
+            // switching this out for a pair of Strings data type
+
+            WORDS.set(l1_temp, l2_temp); //
+            context.write(WORDS, ONE); // sending out a tuple instead
           }
         }
       }
@@ -163,7 +170,7 @@ public class PairsPMI extends Configured implements Tool {
 
   ///////////////// REDUCER B /////////////////
 
-  public static final class MyReducerB extends Reducer<Text, FloatWritable, PairOfStrings, FloatWritable> {
+  public static final class MyReducerB extends Reducer<PairOfStrings, FloatWritable, PairOfStrings, FloatWritable> {
     
     private static final FloatWritable SUM = new FloatWritable();
     private static final FloatWritable flt_result = new FloatWritable();
@@ -197,7 +204,7 @@ public class PairsPMI extends Configured implements Tool {
     }
 
     @Override
-    public void reduce(Text key, Iterable<FloatWritable> values, Context context)
+    public void reduce(PairOfStrings key, Iterable<FloatWritable> values, Context context)
         throws IOException, InterruptedException {
 
       Iterator<FloatWritable> iter = values.iterator();
@@ -207,13 +214,10 @@ public class PairsPMI extends Configured implements Tool {
         sum += iter.next().get();
       }
 
-      // System.out.println(sum);
-      String full_value = key.toString();
-
       // possible optimization -> split the string just once and save it, accessing it directly later on
 
-      String fw = full_value.split("\t", 2)[0];
-      String sw = full_value.split("\t", 2)[1];
+      String fw = key.getLeftElement(); // these should just work themselves
+      String sw = key.getRightElement();
 
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
@@ -238,7 +242,7 @@ public class PairsPMI extends Configured implements Tool {
         // System.out.print(to_log);
         // System.out.print("\n");
 
-      double final_result = Math.log10(to_log); // final result here
+      float final_result = Math.log10(to_log); // final result here
 
       System.out.print("key:  -> ");
       System.out.print(key.toString());
@@ -248,16 +252,16 @@ public class PairsPMI extends Configured implements Tool {
       System.out.print(final_result);
       System.out.print("\n");
 
-      SUM.set(sum);
-      dbl_result.set(to_log);
-      context.write(key, dbl_result); // try this out for size huh
+      SUM.set(sum); // will need the sum
+      flt_result.set(final_result);
+      context.write(key, flt_result); // try this out for size huh
       
     }
   }
 
-  private static final class MyPartitioner extends Partitioner<Text, FloatWritable> {
+  private static final class MyPartitioner extends Partitioner<PairOfStrings, FloatWritable> {
     @Override
-    public int getPartition(Text key, FloatWritable value, int numReduceTasks) {
+    public int getPartition(PairOfStrings key, FloatWritable value, int numReduceTasks) {
       return (key.getLeftElement().hashCode() & Integer.MAX_VALUE) % numReduceTasks;
     }
   }
