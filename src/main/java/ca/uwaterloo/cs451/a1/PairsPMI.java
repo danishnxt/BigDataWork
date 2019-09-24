@@ -244,13 +244,13 @@ public class PairsPMI extends Configured implements Tool {
 
       float final_result = Math.log10(to_log); // final result here
 
-      System.out.print("key:  -> ");
-      System.out.print(key.toString());
-      System.out.print("\n");
+      // System.out.print("key:  -> ");
+      // System.out.print(key.toString());
+      // System.out.print("\n");
 
-      System.out.print("Value:  -> ");
-      System.out.print(final_result);
-      System.out.print("\n");
+      // System.out.print("Value:  -> ");
+      // System.out.print(final_result);
+      // System.out.print("\n");
 
       SUM.set(sum); // will need the sum
       flt_result.set(final_result);
