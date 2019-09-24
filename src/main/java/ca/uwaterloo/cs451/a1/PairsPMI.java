@@ -110,8 +110,6 @@ public class PairsPMI extends Configured implements Tool {
     public void map(LongWritable key, Text value, Context context)
         throws IOException, InterruptedException {
 
-          System.out.println("POINT A - 1");
-
       HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>(); // will concat strings with tab
 
       List<String> tokens; // match the tokenizer return type and get the full list at once
@@ -120,8 +118,6 @@ public class PairsPMI extends Configured implements Tool {
       
       String l1_temp = "";
       String l2_temp = "";
-
-      System.out.println("POINT A");
 
       for (int i = 0; i < listSize; i++) {
         
@@ -144,9 +140,6 @@ public class PairsPMI extends Configured implements Tool {
             context.write(WORDS, ONE); // sending out a tuple instead
           }
         }
-
-        System.out.println("POINT C");
-
       }
 
       return;
@@ -187,8 +180,6 @@ public class PairsPMI extends Configured implements Tool {
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
-
-      System.out.println("SETUP FUNCTION CALLED HERE -> ");
     
       AlphaCount = new HashMap<String, Integer>();
       String start = "/part-r-0000";
@@ -211,9 +202,6 @@ public class PairsPMI extends Configured implements Tool {
           AlphaCount.put(st.split("\t", 2)[0], temp);
         }
       }
-
-      System.out.println("SETUP function file streaming complete -> ");
-
     }
 
     @Override
@@ -231,9 +219,6 @@ public class PairsPMI extends Configured implements Tool {
 
       String fw = key.getLeftElement(); // these should just work themselves
       String sw = key.getRightElement();
-
-      System.out.println("REDUCE FUNCTION CALLED HERE -> ");
-
 
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
@@ -260,15 +245,13 @@ public class PairsPMI extends Configured implements Tool {
 
       float final_result = (float)Math.log10(to_log); // final result here
 
-      System.out.println("REDUCE FUNCTION COMPLETE -> ");
+      // System.out.print("key:  -> ");
+      // System.out.print(key.toString());
+      // System.out.print("\n");
 
-      System.out.print("key:  -> ");
-      System.out.print(key.toString());
-      System.out.print("\n");
-
-      System.out.print("Value:  -> ");
-      System.out.print(final_result);
-      System.out.print("\n");
+      // System.out.print("Value:  -> ");
+      // System.out.print(final_result);
+      // System.out.print("\n");
 
       SUM.set(sum); // will need the sum
       flt_result.set(final_result);
@@ -408,5 +391,4 @@ public class PairsPMI extends Configured implements Tool {
   public static void main(String[] args) throws Exception {
     ToolRunner.run(new PairsPMI(), args); // tool runner class runs the 'run' function -> inside the class
   }
-
 }
