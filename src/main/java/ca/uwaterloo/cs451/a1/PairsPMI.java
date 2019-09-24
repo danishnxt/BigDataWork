@@ -102,12 +102,14 @@ public class PairsPMI extends Configured implements Tool {
     ///////////////// MAPPER 2 /////////////////
   public static final class MyMapperB extends Mapper<LongWritable, Text, PairOfStrings, FloatWritable> {
 
-    private static final FloatWritable ONE = new FloatWritable(1);
+    private static final FloatWritable ONE = new FloatWritable(1.0);
     private static final PairOfStrings WORDS = new PairOfStrings();
       
     @Override
     public void map(LongWritable key, Text value, Context context)
         throws IOException, InterruptedException {
+
+          System.out.println("POINT A - 1");
 
       HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>(); // will concat strings with tab
 
@@ -117,6 +119,8 @@ public class PairsPMI extends Configured implements Tool {
       
       String l1_temp = "";
       String l2_temp = "";
+
+      System.out.println("POINT A");
 
       for (int i = 0; i < listSize; i++) {
         
@@ -139,6 +143,9 @@ public class PairsPMI extends Configured implements Tool {
             context.write(WORDS, ONE); // sending out a tuple instead
           }
         }
+
+        System.out.println("POINT C");
+
       }
 
       return;
