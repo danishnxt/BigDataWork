@@ -180,6 +180,8 @@ public class PairsPMI extends Configured implements Tool {
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
 
+      System.out.println("SETUP FUNCTION CALLED HERE -> ");
+    
       AlphaCount = new HashMap<String, Integer>();
       String start = "/part-t-0000";
 
@@ -201,6 +203,9 @@ public class PairsPMI extends Configured implements Tool {
           AlphaCount.put(st.split("\t", 2)[0], temp);
         }
       }
+
+      System.out.println("SETUP function file streaming complete -> ");
+
     }
 
     @Override
@@ -218,6 +223,9 @@ public class PairsPMI extends Configured implements Tool {
 
       String fw = key.getLeftElement(); // these should just work themselves
       String sw = key.getRightElement();
+
+      System.out.println("REDUCE FUNCTION CALLED HERE -> ");
+
 
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
@@ -243,6 +251,8 @@ public class PairsPMI extends Configured implements Tool {
         // System.out.print("\n");
 
       float final_result = (float)Math.log10(to_log); // final result here
+
+      System.out.println("REDUCE FUNCTION COMPLETE -> ");
 
       System.out.print("key:  -> ");
       System.out.print(key.toString());
