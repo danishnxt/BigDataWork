@@ -23,7 +23,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -47,15 +47,26 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 
+import tl.lin.data.pair.PairOfStrings;
+
+/*
+  NOTE TO INSTRUCTOR 
+  ------------------
+
+    I didn't check the Bespin file for BigramFrequency until the last night, so some intermediate tasks have been done
+    in a different way, they all still work just fine. 
+*/ 
+
 public class PairsPMI extends Configured implements Tool { 
 
-  private static int redSplit = 1; // how many files to read properly
-  private static String tempDir = "TempFile"; // saving this here for global access -> POSSIBLE FLAG
+  private static int redSplit = 1; // global var for how many reducers engaged
+  private static String tempDir = "TempFile"; // global var to hold location for temp - meta data directory - 
+  private static PairOfStrings myGram = new PairOfStrings(); // all your bigrams are belong to me
+
   private static final Logger LOG = Logger.getLogger(PairsPMI.class);
 
-  ///////////////// MAPPER 1 /////////////////
-
-  public static final class MyMapperA extends Mapper<LongWritable, Text, Text, IntWritable> {
+    ///////////////// MAPPER 1 /////////////////
+  public static final class MyMapperA extends Mapper<LongWritable, Text, Text, FloatWritable> {
 
     private static final IntWritable ONE = new IntWritable(1);
     private static final Text WORD = new Text();
@@ -83,11 +94,10 @@ public class PairsPMI extends Configured implements Tool {
     }
   }
 
-  ///////////////// MAPPER 2 /////////////////
+    ///////////////// MAPPER 2 /////////////////
+  public static final class MyMapperB extends Mapper<LongWritable, Text, Text, FloatWritable> {
 
-  public static final class MyMapperB extends Mapper<LongWritable, Text, Text, IntWritable> {
-
-    private static final IntWritable ONE = new IntWritable(1);
+    private static final FloatWritable ONE = new FloatWritable(1);
     private static final Text WORD_1 = new Text();
       
     @Override
@@ -130,14 +140,14 @@ public class PairsPMI extends Configured implements Tool {
 
   ///////////////// REDUCER A /////////////////
 
-  public static final class MyReducerA extends Reducer<Text, IntWritable, Text, IntWritable> {
-    private static final IntWritable SUM = new IntWritable();
+  public static final class MyReducerA extends Reducer<Text, FloatWritable, Text, FloatWritable> {
+    private static final FloatWritable SUM = new FloatWritable();
 
     @Override
-    public void reduce(Text key, Iterable<IntWritable> values, Context context)
+    public void reduce(Text key, Iterable<FloatWritable> values, Context context)
         throws IOException, InterruptedException {
 
-      Iterator<IntWritable> iter = values.iterator();
+      Iterator<FloatWritable> iter = values.iterator();
       int sum = 0;
       
       while (iter.hasNext()) {
@@ -152,18 +162,17 @@ public class PairsPMI extends Configured implements Tool {
 
   ///////////////// REDUCER B /////////////////
 
-  public static final class MyReducerB extends Reducer<Text, IntWritable, Text, IntWritable> {
-    private static final IntWritable SUM = new IntWritable();
-    private static final DoubleWritable dbl_result = new DoubleWritable();
+  public static final class MyReducerB extends Reducer<Text, FloatWriteable, PairOfStrings, FloatWriteable> {
+    
+    private static final FloatWritable SUM = new FloatWritable();
+    private static final FloatWriteable flt_result = new FloatWriteable();
+
     private HashMap<String, Integer> AlphaCount; // initialized here for global across all map jobs
 
     @Override // override the default implemetations
     public void setup(Context context) throws IOException, InterruptedException {
-    
-      // will need to read more lines if there are more reducers // global variable?
 
       AlphaCount = new HashMap<String, Integer>();
-
       String start = "/part-t-0000";
 
       if (redSplit > 9) { // more reducers -> fix the file
@@ -174,7 +183,7 @@ public class PairsPMI extends Configured implements Tool {
 
       for (int i = 0; i < redSplit; i++) {
 
-        File file = new File(tempDir + start + Integer.toString(i)); // hardcoded here, remove the hard coded value
+        File file = new File(tempDir + start + Integer.toString(i));
         BufferedReader br = new BufferedReader(new FileReader(file)); 
         
         String st; 
@@ -183,19 +192,14 @@ public class PairsPMI extends Configured implements Tool {
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
           AlphaCount.put(st.split("\t", 2)[0], temp);
         }
-
       }
-
-      
-      // Alpha count is now populated // but is it accessible in the next one :) 
-
     }
 
     @Override
-    public void reduce(Text key, Iterable<IntWritable> values, Context context) // this is standard
+    public void reduce(Text key, Iterable<FloatWritable> values, Context context)
         throws IOException, InterruptedException {
 
-      Iterator<IntWritable> iter = values.iterator();
+      Iterator<FloatWritable> iter = values.iterator();
       int sum = 0;
       
       while (iter.hasNext()) {
@@ -214,24 +218,21 @@ public class PairsPMI extends Configured implements Tool {
       // by this point we know the total per pair - we need the counts for each of them individually
 
       int total = AlphaCount.get("*");
-      // System.out.print("total:  -> ");
-      // System.out.print(total);
-      // System.out.print("\n");
+        // System.out.print("total:  -> ");
+        // System.out.print(total);
+        // System.out.print("\n");
 
       double num = (sum * 1.0 / total * 1.0);
-      
         // System.out.print("num:  -> ");
         // System.out.print(num);
         // System.out.print("\n");
 
       double denom = (AlphaCount.get(fw) * 1.0 / total * 1.0) * (AlphaCount.get(sw) * 1.0 / total * 1.0);
-
         // System.out.print("denom:  -> ");
         // System.out.print(denom);
         // System.out.print("\n");
 
       double to_log = (num/denom); // should be ok
-
         // System.out.print("frac:  -> ");
         // System.out.print(to_log);
         // System.out.print("\n");
@@ -248,8 +249,15 @@ public class PairsPMI extends Configured implements Tool {
 
       SUM.set(sum);
       dbl_result.set(to_log);
-      context.write(key, SUM);
+      context.write(key, dbl_result); // try this out for size huh
       
+    }
+  }
+
+  private static final class MyPartitioner extends Partitioner<Text, FloatWritable> {
+    @Override
+    public int getPartition(Text key, FloatWritable value, int numReduceTasks) {
+      return (key.getLeftElement().hashCode() & Integer.MAX_VALUE) % numReduceTasks;
     }
   }
 
@@ -313,9 +321,9 @@ public class PairsPMI extends Configured implements Tool {
     // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
 
     job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(IntWritable.class);
+    job.setMapOutputValueClass(FloatWritable.class);
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(IntWritable.class);
+    job.setOutputValueClass(FloatWritable.class);
     job.setOutputFormatClass(TextOutputFormat.class);
 
     job.setMapperClass(MyMapperA.class);
@@ -333,9 +341,9 @@ public class PairsPMI extends Configured implements Tool {
     FileOutputFormat.setOutputPath(job2, new Path(args.output));
 
     job2.setMapOutputKeyClass(Text.class);
-    job2.setMapOutputValueClass(IntWritable.class);
+    job2.setMapOutputValueClass(FloatWritable.class);
     job2.setOutputKeyClass(Text.class);
-    job2.setOutputValueClass(DoubleWritable.class);
+    job2.setOutputValueClass(FloatWritable.class);
     job2.setOutputFormatClass(TextOutputFormat.class);
     
     job2.setMapperClass(MyMapperB.class);
