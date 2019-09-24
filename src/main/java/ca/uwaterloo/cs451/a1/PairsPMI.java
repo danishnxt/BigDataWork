@@ -227,17 +227,17 @@ public class PairsPMI extends Configured implements Tool {
         // System.out.print(total);
         // System.out.print("\n");
 
-      double num = (sum * 1.0 / total * 1.0);
+      float num = (sum * 1.0 / total * 1.0);
         // System.out.print("num:  -> ");
         // System.out.print(num);
         // System.out.print("\n");
 
-      double denom = (AlphaCount.get(fw) * 1.0 / total * 1.0) * (AlphaCount.get(sw) * 1.0 / total * 1.0);
+      float denom = (AlphaCount.get(fw) * 1.0 / total * 1.0) * (AlphaCount.get(sw) * 1.0 / total * 1.0);
         // System.out.print("denom:  -> ");
         // System.out.print(denom);
         // System.out.print("\n");
 
-      double to_log = (num/denom); // should be ok
+      float to_log = (num/denom); // should be ok
         // System.out.print("frac:  -> ");
         // System.out.print(to_log);
         // System.out.print("\n");
