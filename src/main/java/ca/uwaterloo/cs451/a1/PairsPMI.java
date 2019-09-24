@@ -294,6 +294,9 @@ public class PairsPMI extends Configured implements Tool {
 
     @Option(name = "-reducers", metaVar = "[num]", usage = "number of reducers")
     int numReducers = 1;
+
+    @Option(name = "-textOutput", usage = "use TextOutputFormat (otherwise, SequenceFileOutputFormat)")
+    boolean textOutput = false;
   }
 
 
@@ -320,10 +323,11 @@ public class PairsPMI extends Configured implements Tool {
       return -1;
     }
 
-    LOG.info(" Tool: " + PairsPMI.class.getSimpleName());
+    LOG.info("Tool name: " + PairsPMI.class.getSimpleName());
     LOG.info(" - input path: " + args.input);
     LOG.info(" - output path: " + args.output);
-    LOG.info(" - number of reducers: " + args.numReducers);
+    LOG.info(" - num reducers: " + args.numReducers);
+    LOG.info(" - text output: " + args.textOutput);
 
     redSplit = args.numReducers; // we need to know how many files to read;
 
@@ -362,11 +366,16 @@ public class PairsPMI extends Configured implements Tool {
     FileInputFormat.setInputPaths(job2, new Path(args.input));
     FileOutputFormat.setOutputPath(job2, new Path(args.output));
 
-    job2.setMapOutputKeyClass(Text.class);
+    job2.setMapOutputKeyClass(PairOfStrings.class);
     job2.setMapOutputValueClass(FloatWritable.class);
-    job2.setOutputKeyClass(Text.class);
+    job2.setOutputKeyClass(PairOfStrings.class);
     job2.setOutputValueClass(FloatWritable.class);
-    job2.setOutputFormatClass(TextOutputFormat.class);
+
+    if (args.textOutput) {
+      job2.setOutputFormatClass(TextOutputFormat.class);
+    } else {
+      job2.setOutputFormatClass(SequenceFileOutputFormat.class);
+    }
     
     job2.setMapperClass(MyMapperB.class);
     // job.setCombinerClass(MyReducerB.class);
