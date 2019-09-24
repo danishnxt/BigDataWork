@@ -191,8 +191,6 @@ public class PairsPMI extends Configured implements Tool {
 
     }
 
-    wkjkwdwjdhwjdw
-
     @Override
     public void reduce(Text key, Iterable<IntWritable> values, Context context) // this is standard
         throws IOException, InterruptedException {
