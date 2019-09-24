@@ -27,6 +27,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -68,7 +69,7 @@ public class PairsPMI extends Configured implements Tool {
     ///////////////// MAPPER 1 /////////////////
   public static final class MyMapperA extends Mapper<LongWritable, Text, Text, FloatWritable> {
 
-    private static final IntWritable ONE = new IntWritable(1);
+    private static final FloatWritable ONE = new FloatWritable(1);
     private static final Text WORD = new Text();
       
     @Override
