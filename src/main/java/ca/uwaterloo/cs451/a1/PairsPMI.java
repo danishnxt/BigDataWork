@@ -72,9 +72,9 @@ public class PairsPMI extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(PairsPMI.class);
 
     ///////////////// MAPPER 1 /////////////////
-  public static final class MyMapperA extends Mapper<LongWritable, Text, Text, FloatWritable> {
+  public static final class MyMapperA extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-    private static final FloatWritable ONE = new FloatWritable(1);
+    private static final FloatWritable ONE = new IntWritable(1);
     private static final Text WORD = new Text();
       
     @Override
@@ -156,14 +156,14 @@ public class PairsPMI extends Configured implements Tool {
 
   ///////////////// REDUCER A /////////////////
 
-  public static final class MyReducerA extends Reducer<Text, FloatWritable, Text, FloatWritable> {
-    private static final FloatWritable SUM = new FloatWritable();
+  public static final class MyReducerA extends Reducer<Text, IntWritable, Text, FloIntWritableatWritable> {
+    private static final IntWritable SUM = new IntWritable();
 
     @Override
-    public void reduce(Text key, Iterable<FloatWritable> values, Context context)
+    public void reduce(Text key, Iterable<IntWritable> values, Context context)
         throws IOException, InterruptedException {
 
-      Iterator<FloatWritable> iter = values.iterator();
+      Iterator<IntWritable> iter = values.iterator();
       int sum = 0;
       
       while (iter.hasNext()) {
@@ -338,24 +338,24 @@ public class PairsPMI extends Configured implements Tool {
 
     /////////////// JOB A CONFIG ///////////////
 
-    // Job job = Job.getInstance(conf);
-    // job.setJobName(PairsPMI.class.getSimpleName());
-    // job.setJarByClass(PairsPMI.class);
-    // job.setNumReduceTasks(args.numReducers);
+    Job job = Job.getInstance(conf);
+    job.setJobName(PairsPMI.class.getSimpleName());
+    job.setJarByClass(PairsPMI.class);
+    job.setNumReduceTasks(args.numReducers);
 
-    // FileInputFormat.setInputPaths(job, new Path(args.input));
-    // FileOutputFormat.setOutputPath(job, new Path(tempDir)); // MANUAL TEMP FILE OVERRIDE
-    // // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
+    FileInputFormat.setInputPaths(job, new Path(args.input));
+    FileOutputFormat.setOutputPath(job, new Path(tempDir)); // MANUAL TEMP FILE OVERRIDE
+    // FileOutputFormat.setOutputPath(job, new Path(args.output)); 
 
-    // job.setMapOutputKeyClass(Text.class);
-    // job.setMapOutputValueClass(FloatWritable.class);
-    // job.setOutputKeyClass(Text.class);
-    // job.setOutputValueClass(FloatWritable.class);
-    // job.setOutputFormatClass(TextOutputFormat.class);
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    job.setOutputFormatClass(TextOutputFormat.class);
 
-    // job.setMapperClass(MyMapperA.class);
-    // job.setCombinerClass(MyReducerA.class);
-    // job.setReducerClass(MyReducerA.class);
+    job.setMapperClass(MyMapperA.class);
+    job.setCombinerClass(MyReducerA.class);
+    job.setReducerClass(MyReducerA.class);
 
     /////////////// JOB B CONFIG ///////////////
 
@@ -388,9 +388,9 @@ public class PairsPMI extends Configured implements Tool {
 
     // RUN JOB 1
 
-    // long startTime = System.currentTimeMillis();
-    // job.waitForCompletion(true); // blocking call -> so we can have the code written async
-    // LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+    long startTime = System.currentTimeMillis();
+    job.waitForCompletion(true); // blocking call -> so we can have the code written async
+    LOG.info("Job 1 Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
     // RUN JOB 2 
 
