@@ -258,9 +258,8 @@ public class PairsPMI extends Configured implements Tool {
       System.out.print("\n");
 
       SUM.set(sum); // will need the sum
-      flt_result.set(final_result);
 
-      finalPush.set(flt_result, sum);
+      finalPush.set(final_result, sum);
       context.write(key, finalPush); // try this out for size huh
       
     }
