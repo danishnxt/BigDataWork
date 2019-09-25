@@ -229,8 +229,7 @@ public class PairsPMI extends Configured implements Tool {
           }
         }
       }
-    }
-
+    
     @Override
     public void reduce(PairOfStrings key, Iterable<FloatWritable> values, Context context)
         throws IOException, InterruptedException {
