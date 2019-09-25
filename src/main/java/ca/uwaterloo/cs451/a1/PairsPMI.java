@@ -224,6 +224,8 @@ public class PairsPMI extends Configured implements Tool {
         while ((reader.readLine(init_str)) != 0) {
           System.out.println("PRINTING OUT LINE -> "); 
           System.out.println(lineCnt);
+          System.out.println(init_str.toString());
+          lineCnt = lineCnt + 1;
           st = init_str.toString(); // something we can handle below using string manip
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
           AlphaCount.put(st.split("\t", 2)[0], temp);
