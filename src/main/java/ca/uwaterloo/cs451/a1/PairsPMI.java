@@ -221,7 +221,7 @@ public class PairsPMI extends Configured implements Tool {
         String st; 
         int i = 0;
 
-        while ((reader.readLine(init_str)) {
+        while ((reader.readLine(init_str))) {
           System.out.println("PRINTING OUT LINE -> " + i.toString()); 
           st = init_str.toString(); // something we can handle below using string manip
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
