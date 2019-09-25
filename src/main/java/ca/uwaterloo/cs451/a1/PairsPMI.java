@@ -326,11 +326,11 @@ public class PairsPMI extends Configured implements Tool {
     LOG.info(" - input path: " + args.input);
     LOG.info(" - output path: " + args.output);
     LOG.info(" - num reducers: " + args.numReducers);
-    LOG.info(" - PAIR Threshold: " + args.PairThreshold);
+    LOG.info(" - PAIR Threshold: " + args.pairThreshold);
     LOG.info(" - text output: " + args.textOutput);
 
     redSplit = args.numReducers; // we need to know how many files to read;
-    pairThreshold = pairThreshold_def;
+    pairThreshold = args.pairThreshold_def;
 
     /// SET GLOBAL REDUCER COUNT /// 
 
