@@ -12,6 +12,10 @@
         * JOB 2 Reads counts and int data, and computes pair counts -> by exporting pair of strings by running a second loop and creating pair.
         * Each reducer reads the int data from an int file including the total count
 
+        - Job 1 exports strings and ints into an int file
+        - Job 2 reads these and stores pairs in a pairOfStrings and WriteableFloat format
+        - Job 2 then exports pairOfStrings and PairOfFloats
+
 ### Question 2
 
     Time: ~25 seconds without combiners (only the map reduce job running)
