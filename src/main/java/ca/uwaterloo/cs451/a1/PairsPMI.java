@@ -98,9 +98,9 @@ public class PairsPMI extends Configured implements Tool {
 
         sum = sum + 1; // only go up to 40
         
-        if (sum > 40) {
-          break; // I WANT TO BREAK FREE....FROM RAM CONSTRAINTS
-        }
+        // if (sum > 40) {
+        //   break; // I WANT TO BREAK FREE....FROM RAM CONSTRAINTS
+        // }
 
         if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
           AlphaTrack.put(word, 1); // add new word in with value 1  
@@ -132,9 +132,9 @@ public class PairsPMI extends Configured implements Tool {
 
       for (int i = 0; i < listSize; i++) {
         
-        if (i > 39) {
-          break;
-        }
+        // if (i > 39) {
+        //   break;
+        // }
 
         l1_temp = tokens.get(i); // do this get action a single time
 
