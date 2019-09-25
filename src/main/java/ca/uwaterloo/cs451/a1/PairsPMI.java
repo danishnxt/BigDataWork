@@ -221,7 +221,7 @@ public class PairsPMI extends Configured implements Tool {
         String st; 
         int i = 0;
 
-        while ((reader.readLine(init_str)) {
+        while ((reader.readLine(init_str))) {
           System.out.println("PRINTING OUT LINE -> " + i.toString()); 
           st = init_str.toString(); // something we can handle below using string manip
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
@@ -250,7 +250,7 @@ public class PairsPMI extends Configured implements Tool {
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
 
-      System.out.print("***************************************************************");
+      // System.out.print("***************************************************************");
       
       if (sum < pairThreshold) {
         return; // go back, go away, we don't need this!
@@ -281,9 +281,9 @@ public class PairsPMI extends Configured implements Tool {
       // System.out.print(key.toString());
       // System.out.print("\n");
 
-      System.out.print("Value:  -> ");
-      System.out.print(final_result);
-      System.out.print("\n");
+      // System.out.print("Value:  -> ");
+      // System.out.print(final_result);
+      // System.out.print("\n");
 
       SUM.set(sum); // will need the sum
 
