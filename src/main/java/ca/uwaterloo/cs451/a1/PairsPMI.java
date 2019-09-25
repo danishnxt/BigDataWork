@@ -212,14 +212,14 @@ public class PairsPMI extends Configured implements Tool {
 
       for (int i = 0; i < redSplit; i++) {
         
-        LineReader reader = new LineReader(fs.open(new Path(tempDir + start + Integer.toString(i))));
+        BufferedReader br = new BufferedReader(new FileReader(fs.open(new Path(tempDir + start + Integer.toString(i)))));
 
         // File file = new File(tempDir + start + Integer.toString(i));
         // BufferedReader br = new BufferedReader(new FileReader(file)); 
 
         String st; 
         
-        while ((st = reader.readLine()) != null) {
+        while ((st = br.readLine()) != null) {
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
           AlphaCount.put(st.split("\t", 2)[0], temp);
         }
