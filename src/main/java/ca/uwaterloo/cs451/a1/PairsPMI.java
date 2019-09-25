@@ -301,6 +301,25 @@ public class PairsPMI extends Configured implements Tool {
 
   /////////////////  COMBINER CLASSES HERE  ///////////////// 
 
+  public static final class MyReducer_comb extends Reducer<PairOfStrings, FloatWritable, PairOfStrings, FloatWritable> {
+    private static final FloatWritable SUM = new FloatWritable(); // get this as a regular old sum
+
+    @Override
+    public void reduce(PairOfStrings key, Iterable<FloatWritable> values, Context context)
+        throws IOException, InterruptedException {
+
+      Iterator<FloatWritable> iter = values.iterator();
+      float sum = 0;
+      
+      while (iter.hasNext()) {
+        sum += iter.next().get();
+      }
+      
+      SUM.set(sum);
+      context.write(key, SUM);
+    }
+  }
+
   // NEED A DIFFERENT COMBINER SINCE THE WORK OVERALL IS DIFFERENT
 
 
@@ -380,7 +399,7 @@ public class PairsPMI extends Configured implements Tool {
     }
     
     job2.setMapperClass(MyMapperB.class);
-    // job.setCombinerClass(MyReducerB.class); // need to make dis
+    job2.setCombinerClass(MyReducer_comb.class); // made sep, does simple aggregation
     job2.setReducerClass(MyReducerB.class);
     job2.setPartitionerClass(MyPartitioner.class);
 
