@@ -1,19 +1,3 @@
-/**
- * Bespin: reference implementations of "big data" algorithms
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package ca.uwaterloo.cs451.a1;
 
 import io.bespin.java.util.Tokenizer;
@@ -53,18 +37,6 @@ import java.util.List;
 import tl.lin.data.pair.PairOfStrings;
 import tl.lin.data.pair.PairOfFloats;
 
-/*
-  INTERESTING NOTE 
-  ----------------
-
-    I didn't check the Bespin file for BigramFrequency until the last night, so some intermediate tasks have been done
-    in a different way, they all still work just fine. 
-
-    Update: The partioner expects a pair of strings as well. Looks like my emit(WORD /t WORD) solution is going to have to 
-    change now for consistency...
-
-*/ 
-
 public class PairsPMI extends Configured implements Tool { 
 
   private static int pairThreshold; // def value given below
@@ -87,10 +59,10 @@ public class PairsPMI extends Configured implements Tool {
 
       HashMap<String, Integer> AlphaTrack = new HashMap<String, Integer>();
 
-      if (((value.toString()).compareTo("")) != 0) {
-          WORD.set("*");
-          context.write(WORD, ONE);
-      }
+      // if (((value.toString()).compareTo("")) != 0) {
+      WORD.set("*");
+      context.write(WORD, ONE);
+      // }
 
       int sum = 0;
 
@@ -98,9 +70,9 @@ public class PairsPMI extends Configured implements Tool {
 
         sum = sum + 1; // only go up to 40
         
-        // if (sum > 40) {
-        //   break; // I WANT TO BREAK FREE....FROM RAM CONSTRAINTS
-        // }
+        if (sum > 39) {
+          break; // I WANT TO BREAK FREE....FROM RAM CONSTRAINTS
+        }
 
         if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
           AlphaTrack.put(word, 1); // add new word in with value 1  
@@ -132,9 +104,9 @@ public class PairsPMI extends Configured implements Tool {
 
       for (int i = 0; i < listSize; i++) {
         
-        // if (i > 39) {
-        //   break;
-        // }
+        if (i > 39) {
+          break;
+        }
 
         l1_temp = tokens.get(i); // do this get action a single time
 
