@@ -250,7 +250,7 @@ public class PairsPMI extends Configured implements Tool {
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
 
-      System.out.print("***************************************************************");
+      // System.out.print("***************************************************************");
       
       if (sum < pairThreshold) {
         return; // go back, go away, we don't need this!
@@ -281,9 +281,9 @@ public class PairsPMI extends Configured implements Tool {
       // System.out.print(key.toString());
       // System.out.print("\n");
 
-      System.out.print("Value:  -> ");
-      System.out.print(final_result);
-      System.out.print("\n");
+      // System.out.print("Value:  -> ");
+      // System.out.print(final_result);
+      // System.out.print("\n");
 
       SUM.set(sum); // will need the sum
 
