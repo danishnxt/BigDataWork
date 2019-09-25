@@ -66,7 +66,9 @@ import tl.lin.data.pair.PairOfFloats;
 
 public class PairsPMI extends Configured implements Tool { 
 
+  private static int pairThreshold; // def value given below
   private static int redSplit = 1; // global var for how many reducers engaged
+
   private static String tempDir = "TempFile"; // global var to hold location for temp - meta data directory - 
   private static PairOfStrings myGram = new PairOfStrings(); // all your bigrams are belong to me
 
@@ -228,26 +230,29 @@ public class PairsPMI extends Configured implements Tool {
 
       System.out.print("***************************************************************");
       
+      if (sum < pairThreshold) {
+        return; // go back, go away, we don't need this!
+      }
 
       int total = AlphaCount.get("*");
-        System.out.print("total:  -> ");
-        System.out.print(total);
-        System.out.print("\n");
+        // System.out.print("total:  -> ");
+        // System.out.print(total);
+        // System.out.print("\n");
 
       double num = ((sum * 1.0) / (total * 1.0));
-        System.out.print("num:  -> ");
-        System.out.print(num);
-        System.out.print("\n");
+        // System.out.print("num:  -> ");
+        // System.out.print(num);
+        // System.out.print("\n");
 
       double denom = (((AlphaCount.get(fw) * 1.0) / (total * 1.0)) * ((AlphaCount.get(sw) * 1.0) / (total * 1.0)));
-        System.out.print("denom:  -> ");
-        System.out.print(denom);
-        System.out.print("\n");
+        // System.out.print("denom:  -> ");
+        // System.out.print(denom);
+        // System.out.print("\n");
 
       double to_log = (num/denom); // should be ok
-        System.out.print("frac:  -> ");
-        System.out.print(to_log);
-        System.out.print("\n");
+        // System.out.print("frac:  -> ");
+        // System.out.print(to_log);
+        // System.out.print("\n");
 
       float final_result = (float)Math.log10(to_log); // final result here
       // System.out.print("key:  -> ");
@@ -285,8 +290,12 @@ public class PairsPMI extends Configured implements Tool {
     @Option(name = "-reducers", metaVar = "[num]", usage = "number of reducers")
     int numReducers = 1;
 
+    @Option(name = "-threshold", usage = "set PairThreshold count")
+    int pairThreshold_def = 1;
+
     @Option(name = "-textOutput", usage = "use TextOutputFormat (otherwise, SequenceFileOutputFormat)")
     boolean textOutput = false;
+
   }
 
 
@@ -317,9 +326,11 @@ public class PairsPMI extends Configured implements Tool {
     LOG.info(" - input path: " + args.input);
     LOG.info(" - output path: " + args.output);
     LOG.info(" - num reducers: " + args.numReducers);
+    LOG.info(" - PAIR Threshold: " + args.PairThreshold);
     LOG.info(" - text output: " + args.textOutput);
 
     redSplit = args.numReducers; // we need to know how many files to read;
+    pairThreshold = pairThreshold_def;
 
     /// SET GLOBAL REDUCER COUNT /// 
 
