@@ -91,14 +91,21 @@ public class PairsPMI extends Configured implements Tool {
           context.write(WORD, ONE);
       }
 
+      int sum = 0;
+
       for (String word : Tokenizer.tokenize(value.toString())) {
+
+        sum = sum + 1; // only go up to 40
+        
+        if (sum > 40) {
+          break; // I WANT TO BREAK FREE....FROM RAM CONSTRAINTS
+        }
 
         if (!AlphaTrack.containsKey(word)) { // if already been emitted for this line ignore it
           AlphaTrack.put(word, 1); // add new word in with value 1  
           WORD.set(word);
           context.write(WORD, ONE);
         }
-
       }
     }
   }
@@ -124,12 +131,21 @@ public class PairsPMI extends Configured implements Tool {
 
       for (int i = 0; i < listSize; i++) {
         
+        if (i > 39) {
+          break;
+        }
+
         l1_temp = tokens.get(i); // do this get action a single time
 
         for (int j = 0; j < listSize; j++) {
 
-          l2_temp = tokens.get(j); // 
+          if (j > 39) {
+            break;
+          }
 
+          // else we're in the 40 word limit, the own word counts as a word so we don't bypass around that
+
+          l2_temp = tokens.get(j);
 
           if ((i == j) || (l1_temp.compareTo(l2_temp) == 0)) {
             continue; // same position / letter, not a pair -> we don't want 'a' and 'a' to appear do we?
@@ -137,9 +153,6 @@ public class PairsPMI extends Configured implements Tool {
 
           if (!AlphaTrack.containsKey(l1_temp + l2_temp)) { // if exist in the hash map -> ignore it!
             AlphaTrack.put(l1_temp + l2_temp, 1); // add this and emit it
-
-            // switching this out for a pair of Strings data type
-
             WORDS.set(l1_temp, l2_temp); //
             context.write(WORDS, ONE); // sending out a tuple instead
           }
@@ -195,14 +208,18 @@ public class PairsPMI extends Configured implements Tool {
         start = "/part-r-00";
       }
 
-      for (int i = 0; i < redSplit; i++) {
+      FileSystem fs = FileSystem.get(context.getConfiguration()); // set config once
 
-        File file = new File(tempDir + start + Integer.toString(i));
-        BufferedReader br = new BufferedReader(new FileReader(file)); 
+      for (int i = 0; i < redSplit; i++) {
         
+        LineReader reader = new LineReader(fs.open(new Path(tempDir + start + Integer.toString(i))));
+
+        // File file = new File(tempDir + start + Integer.toString(i));
+        // BufferedReader br = new BufferedReader(new FileReader(file)); 
+
         String st; 
         
-        while ((st = br.readLine()) != null) {
+        while ((st = reader.readLine()) != null) {
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
           AlphaCount.put(st.split("\t", 2)[0], temp);
         }
