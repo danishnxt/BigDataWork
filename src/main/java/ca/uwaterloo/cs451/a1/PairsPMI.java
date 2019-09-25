@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.List;
 
 import tl.lin.data.pair.PairOfStrings;
+import tl.lin.data.pair.PairOfFloats;
 
 /*
   INTERESTING NOTE 
@@ -171,10 +172,11 @@ public class PairsPMI extends Configured implements Tool {
 
   ///////////////// REDUCER B /////////////////
 
-  public static final class MyReducerB extends Reducer<PairOfStrings, FloatWritable, PairOfStrings, FloatWritable> {
+  public static final class MyReducerB extends Reducer<PairOfStrings, FloatWritable, PairOfStrings, PairOfFloats> {
     
     private static final FloatWritable SUM = new FloatWritable();
     private static final FloatWritable flt_result = new FloatWritable();
+    private static final PairOfFloats finalPush = new PairOfFloats(); 
 
     private HashMap<String, Integer> AlphaCount; // initialized here for global across all map jobs
 
@@ -257,7 +259,9 @@ public class PairsPMI extends Configured implements Tool {
 
       SUM.set(sum); // will need the sum
       flt_result.set(final_result);
-      context.write(key, flt_result); // try this out for size huh
+
+      finalPush.set(flt_result, sum);
+      context.write(key, finalPush); // try this out for size huh
       
     }
   }
@@ -355,7 +359,7 @@ public class PairsPMI extends Configured implements Tool {
     job2.setMapOutputKeyClass(PairOfStrings.class);
     job2.setMapOutputValueClass(FloatWritable.class);
     job2.setOutputKeyClass(PairOfStrings.class);
-    job2.setOutputValueClass(FloatWritable.class);
+    job2.setOutputValueClass(PairOfFloats.class);
 
     if (args.textOutput) {
       job2.setOutputFormatClass(TextOutputFormat.class);
