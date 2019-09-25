@@ -326,7 +326,7 @@ public class PairsPMI extends Configured implements Tool {
     LOG.info(" - input path: " + args.input);
     LOG.info(" - output path: " + args.output);
     LOG.info(" - num reducers: " + args.numReducers);
-    LOG.info(" - PAIR Threshold: " + args.pairThreshold);
+    LOG.info(" - PAIR Threshold: " + args.pairThreshold_def);
     LOG.info(" - text output: " + args.textOutput);
 
     redSplit = args.numReducers; // we need to know how many files to read;
