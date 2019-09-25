@@ -126,11 +126,12 @@ public class PairsPMI extends Configured implements Tool {
 
         for (int j = 0; j < listSize; j++) {
 
-          if (i == j) {
-            continue; // same letter, not a pair
-          }
+          l2_temp = tokens.get(j); // 
 
-          l2_temp = tokens.get(j);
+
+          if ((i == j) or (l1_temp.compareTo(l2_temp) == 0)) {
+            continue; // same position / letter, not a pair -> we don't want 'a' and 'a' to appear do we?
+          }
 
           if (!AlphaTrack.containsKey(l1_temp + l2_temp)) { // if exist in the hash map -> ignore it!
             AlphaTrack.put(l1_temp + l2_temp, 1); // add this and emit it
