@@ -217,7 +217,7 @@ public class PairsPMI extends Configured implements Tool {
 
         LineReader reader = new LineReader(fs.open(new Path(tempDir + start + Integer.toString(i))));
 
-        Text init_str; 
+        Text init_str = new Text(); 
         String st; 
         int lineCnt = 0;
 
