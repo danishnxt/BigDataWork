@@ -223,35 +223,37 @@ public class PairsPMI extends Configured implements Tool {
       // now what -> so we compute all the things -> we know the total count
       // by this point we know the total per pair - we need the counts for each of them individually
 
+      System.out.print("***************************************************************");
+      
+
       int total = AlphaCount.get("*");
-        // System.out.print("total:  -> ");
-        // System.out.print(total);
-        // System.out.print("\n");
+        System.out.print("total:  -> ");
+        System.out.print(total);
+        System.out.print("\n");
 
       double num = ((sum * 1.0) / (total * 1.0));
-        // System.out.print("num:  -> ");
-        // System.out.print(num);
-        // System.out.print("\n");
+        System.out.print("num:  -> ");
+        System.out.print(num);
+        System.out.print("\n");
 
       double denom = (((AlphaCount.get(fw) * 1.0) / (total * 1.0)) * ((AlphaCount.get(sw) * 1.0) / (total * 1.0)));
-        // System.out.print("denom:  -> ");
-        // System.out.print(denom);
-        // System.out.print("\n");
+        System.out.print("denom:  -> ");
+        System.out.print(denom);
+        System.out.print("\n");
 
       double to_log = (num/denom); // should be ok
-        // System.out.print("frac:  -> ");
-        // System.out.print(to_log);
-        // System.out.print("\n");
+        System.out.print("frac:  -> ");
+        System.out.print(to_log);
+        System.out.print("\n");
 
       float final_result = (float)Math.log10(to_log); // final result here
-
       // System.out.print("key:  -> ");
       // System.out.print(key.toString());
       // System.out.print("\n");
 
-      // System.out.print("Value:  -> ");
-      // System.out.print(final_result);
-      // System.out.print("\n");
+      System.out.print("Value:  -> ");
+      System.out.print(final_result);
+      System.out.print("\n");
 
       SUM.set(sum); // will need the sum
       flt_result.set(final_result);
