@@ -129,7 +129,7 @@ public class PairsPMI extends Configured implements Tool {
           l2_temp = tokens.get(j); // 
 
 
-          if ((i == j) or (l1_temp.compareTo(l2_temp) == 0)) {
+          if ((i == j) || (l1_temp.compareTo(l2_temp) == 0)) {
             continue; // same position / letter, not a pair -> we don't want 'a' and 'a' to appear do we?
           }
 
