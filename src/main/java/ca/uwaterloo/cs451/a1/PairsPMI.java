@@ -34,6 +34,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.LineReader;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
@@ -211,17 +212,21 @@ public class PairsPMI extends Configured implements Tool {
       FileSystem fs = FileSystem.get(context.getConfiguration()); // set config once
 
       for (int i = 0; i < redSplit; i++) {
-        
-        BufferedReader br = new BufferedReader(new FileReader(fs.open(new Path(tempDir + start + Integer.toString(i)))));
-
         // File file = new File(tempDir + start + Integer.toString(i));
         // BufferedReader br = new BufferedReader(new FileReader(file)); 
 
+        LineReader reader = new LineReader(fs.open(new Path(tempDir + start + Integer.toString(i))));
+
+        Text init_str; 
         String st; 
-        
-        while ((st = br.readLine()) != null) {
+        int i = 0;
+
+        while ((reader.readLine(init_str)) {
+          System.out.println("PRINTING OUT LINE -> " + i.toString()); 
+          st = init_str.toString(); // something we can handle below using string manip
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
           AlphaCount.put(st.split("\t", 2)[0], temp);
+          }
         }
       }
     }
