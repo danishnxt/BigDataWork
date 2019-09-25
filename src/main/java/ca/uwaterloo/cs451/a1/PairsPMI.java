@@ -415,9 +415,9 @@ public class PairsPMI extends Configured implements Tool {
     job2.waitForCompletion(true); // blocking call -> so we can have the code written async
     LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime2) / 1000.0 + " seconds");
 
-    // Delete temp folder -> once we know how many files to mulch up
-    // Path tempDelete = new Path(tempDir);
-    // FileSystem.get(conf).delete(tempDelete, true);
+    Delete temp folder -> once we know how many files to mulch up
+    Path tempDelete = new Path(tempDir);
+    FileSystem.get(conf).delete(tempDelete, true);
 
     return 0;
   }
