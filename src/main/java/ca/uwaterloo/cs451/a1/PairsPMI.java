@@ -194,9 +194,9 @@ public class PairsPMI extends Configured implements Tool {
         int lineCnt = 0;
 
         while ((reader.readLine(init_str)) != 0) {
-          System.out.println("PRINTING OUT LINE -> "); 
-          System.out.println(lineCnt);
-          System.out.println(init_str.toString());
+          // System.out.println("PRINTING OUT LINE -> "); 
+          // System.out.println(lineCnt);
+          // System.out.println(init_str.toString());
           lineCnt = lineCnt + 1;
           st = init_str.toString(); // something we can handle below using string manip
           int temp = Integer.parseInt(st.split("\t", 2)[1]);
@@ -399,6 +399,20 @@ public class PairsPMI extends Configured implements Tool {
     job2.setReducerClass(MyReducerB.class);
     job2.setPartitionerClass(MyPartitioner.class);
 
+    ////////////// JOB CONFIG //////////////
+
+    job.getConfiguration().setInt("mapred.max.split.size", 1024 * 1024 * 32);
+    job.getConfiguration().set("mapreduce.map.memory.mb", "3072");
+    job.getConfiguration().set("mapreduce.map.java.opts", "-Xmx3072m");
+    job.getConfiguration().set("mapreduce.reduce.memory.mb", "3072");
+    job.getConfiguration().set("mapreduce.reduce.java.opts", "-Xmx3072m");
+
+    job2.getConfiguration().setInt("mapred.max.split.size", 1024 * 1024 * 32);
+    job2.getConfiguration().set("mapreduce.map.memory.mb", "3072");
+    job2.getConfiguration().set("mapreduce.map.java.opts", "-Xmx3072m");
+    job2.getConfiguration().set("mapreduce.reduce.memory.mb", "3072");
+    job2.getConfiguration().set("mapreduce.reduce.java.opts", "-Xmx3072m");
+
     // Delete the output directory if it exists already.
     Path outputDir = new Path(args.output);
     FileSystem.get(conf).delete(outputDir, true);
@@ -415,9 +429,9 @@ public class PairsPMI extends Configured implements Tool {
     job2.waitForCompletion(true); // blocking call -> so we can have the code written async
     LOG.info("Job 2 Finished in " + (System.currentTimeMillis() - startTime2) / 1000.0 + " seconds");
 
-    // Delete temp folder -> once we know how many files to mulch up
-    // Path tempDelete = new Path(tempDir);
-    // FileSystem.get(conf).delete(tempDelete, true);
+    Delete temp folder -> once we know how many files to mulch up
+    Path tempDelete = new Path(tempDir);
+    FileSystem.get(conf).delete(tempDelete, true);
 
     return 0;
   }
