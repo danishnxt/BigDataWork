@@ -85,7 +85,7 @@ object BigramCount extends Tokenizer {
 
     map.put("ThisA", 1.0)
 
-    println("this is a freaking stuck up little pieve of code and it doesn't pretttinnnttttt", map.get("ThisA").get)
+    println("this is a freaking stuck up little pieve of code and it doesn't pretttinnnttttt", map.get("year").get)
     beta4.saveAsTextFile(args.output())
     // println(myDict("*")) // hello there
 
