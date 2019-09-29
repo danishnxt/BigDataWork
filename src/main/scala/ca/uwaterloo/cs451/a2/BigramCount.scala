@@ -74,9 +74,11 @@ object BigramCount extends Tokenizer {
     val myDict = Map[String, Int]()
 
     // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
-    
-    beta4.foreach((a:String, b:Int) => {
-      myDict(a) = b
+
+    beta4.foreach({
+      case (a:String, b:Int) => {
+        myDict(a) = b
+      }
     })
 
     println(myDict) // hello there
