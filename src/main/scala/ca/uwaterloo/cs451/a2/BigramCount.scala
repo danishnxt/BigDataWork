@@ -66,6 +66,14 @@ object BigramCount extends Tokenizer {
     print ("88888888888888888888888888888888888888")
     alpha1.foreach(println)
 
+    val alpha2 = alpha1.map(line => {
+      line.map(a => {
+        line.map(b => {
+          (a,b)
+        })
+      })
+    })
+
 
     // val counts = textFile
     //   .flatMap(line => {
