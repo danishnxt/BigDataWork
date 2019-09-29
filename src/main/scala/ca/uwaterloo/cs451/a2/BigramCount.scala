@@ -80,7 +80,7 @@ object BigramCount extends Tokenizer {
     beta4.foreach({
       case (a:String, b:Int) => {
         myDict(a) = b
-        println("WE DID SOMETHING PLEASE LOOK HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+        println("WE DID SOMETHING PLEASE LOOK HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", a, b)
       }
     })
 
