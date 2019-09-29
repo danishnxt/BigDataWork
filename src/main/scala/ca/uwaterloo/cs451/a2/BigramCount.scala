@@ -55,7 +55,7 @@ object BigramCount extends Tokenizer {
     val textFile = sc.textFile(args.input())
 
     val alpha1 = textFile.flatMap(line => {
-      tokenize(line).tolist
+      tokenize(line)
     })
 
     alpha1.foreach(println)
