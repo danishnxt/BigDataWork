@@ -67,7 +67,7 @@ object BigramCount extends Tokenizer {
     print ("88888888888888888888888888888888888888")
     beta2.foreach(println)
 
-    val beta3 = beta2.map(line => line :: "*") // count these up too pls
+    val beta3 = beta2.map(line => "*" :: line) // count these up too pls
 
     beta3.foreach(println)
 
