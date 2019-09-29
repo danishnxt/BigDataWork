@@ -58,8 +58,19 @@ object BigramCount extends Tokenizer {
       tokenize(line)
     })
 
-    alpha1.foreach(println)
+    val alpha2 = alpha1.foreach(line => {
+      line.map(a => {
+        line.map(b => (a, b))
+      })
+    })
 
+    val alpha3 = alpha2.filter((a,b) => a != b) // should not be repeats!
+
+    alpha3.foreach(println)
+
+    
+    
+    
     // val counts = textFile
     //   .flatMap(line => {
     //     val tokens = tokenize(line)
@@ -68,5 +79,7 @@ object BigramCount extends Tokenizer {
     //   .map(bigram => (bigram, 1))
     //   .reduceByKey(_ + _)
     // counts.saveAsTextFile(args.output())
+
+
   }
 }
