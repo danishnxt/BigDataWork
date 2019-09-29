@@ -79,7 +79,7 @@ object BigramCount extends Tokenizer {
 
     beta4.foreach({
       case (a:String, b:Int) => {
-        myDict.put(a) = b
+        myDict.put(a,b)
         println("WE DID SOMETHING PLEASE LOOK HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", a, b)
       }
     })
