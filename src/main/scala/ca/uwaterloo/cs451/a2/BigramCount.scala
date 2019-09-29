@@ -59,7 +59,7 @@ object BigramCount extends Tokenizer {
 
     // print(lineCnt)
 
-    val counts = textFile.map(line => {
+    val counts = textFile.flatMap(line => {
         val tokens = tokenize(line)
         if (tokens.length > 1) tokens.map(a => ({
           tokens.map(b => {
