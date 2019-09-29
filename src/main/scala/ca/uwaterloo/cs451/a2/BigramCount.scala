@@ -28,6 +28,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.rogach.scallop._
 import scala.collection.mutable.Map
+import scala.collection.mutable.HashMap
 
 class Conf(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
@@ -68,19 +69,17 @@ object BigramCount extends Tokenizer {
     val beta3 = beta2.map(line => "*" :: line) // count these up too pls
     val beta4 = beta3.map(line => line.distinct).flatMap(line => {
       line
-    }).map(bigram => (bigram, 1))
+    }).map(bigram => (bigram, 1.0))
     .reduceByKey(_+_)
 
-    val myDict = scala.collection.mutable.Map[String, Int]("meow" -> 12)
+    // val myDict = scala.collection.mutable.Map[String, Int]("meow" -> 12)
+    val map: HashMap[String, Float] = HashMap()
 
     // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
-
-    println("WE DID SOMETHING PLEASE LOOK HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 
     beta4.foreach({
       case (a:String, b:Int) => {
         myDict.put(a,b)
-        println("WE DID SOMETHING PLEASE LOOK HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", a, b)
       }
     })
 
