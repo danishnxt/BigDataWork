@@ -79,11 +79,11 @@ object BigramCount extends Tokenizer {
 
     beta4.foreach({
       case (a:String, b:Int) => {
-        myDict.put(a,b)
+        map.put(a,b)
       }
     })
 
-    println(myDict)
+    println(map)
     // println(myDict("*")) // hello there
     // beta4.saveAsTextFile(args.output())
     
