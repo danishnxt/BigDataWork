@@ -74,8 +74,7 @@ object BigramCount extends Tokenizer {
       })
     })
 
-    val alpha3 = alpha2.foreach(flatMap(identity _)) // try flattering on a per line scale
-
+    val alpha3 = alpha2.map(group => group.flatten) // try flattering on a per line scale
     alpha3.foreach(println)
 
     // val counts = textFile
