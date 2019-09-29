@@ -69,7 +69,7 @@ object BigramCount extends Tokenizer {
       line
     }).map(bigram => (bigram, 1))
     .reduceByKey(_+_)
-    .counts.saveAsTextFile(args.output())
+    .saveAsTextFile(args.output())
     
 
     
