@@ -73,12 +73,12 @@ object BigramCount extends Tokenizer {
     .reduceByKey(_+_)
 
     // val myDict = scala.collection.mutable.Map[String, Int]("meow" -> 12)
-    val map: HashMap[String, Float] = HashMap()
+    val map: HashMap[String, Double] = HashMap()
 
     // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
 
     beta4.foreach({
-      case (a:String, b:Int) => {
+      case (a:String, b:Double) => {
         map.put(a,b)
       }
     })
