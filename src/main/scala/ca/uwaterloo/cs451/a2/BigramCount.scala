@@ -81,7 +81,7 @@ object BigramCount extends Tokenizer {
       }
     })
 
-    println(myDict) // hello there
+    println(myDict("*")) // hello there
     // beta4.saveAsTextFile(args.output())
     
 
