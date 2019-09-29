@@ -27,6 +27,7 @@ import org.apache.hadoop.fs._
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.rogach.scallop._
+import scala.collection.mutable.Maps
 
 class Conf(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
@@ -72,7 +73,7 @@ object BigramCount extends Tokenizer {
 
     val myDict = Map[String, Int]()
 
-    beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
+    // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
     beta4.map((a:String, b:Int) => myDict(a) = b) // update the map please let this work :)
     println(myDict) // hello there
     // beta4.saveAsTextFile(args.output())
