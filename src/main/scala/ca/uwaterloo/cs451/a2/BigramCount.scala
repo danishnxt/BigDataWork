@@ -75,11 +75,10 @@ object BigramCount extends Tokenizer {
 
     // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
     
-    
-    beta4.flatMap((a:String, b:Int) => {
+    beta4.foreach((a:String, b:Int) => {
       myDict(a) = b
-    }) // update the map please let this work :)
-    
+    })
+
     println(myDict) // hello there
     // beta4.saveAsTextFile(args.output())
     
