@@ -66,7 +66,7 @@ object BigramCount extends Tokenizer {
 
     // val alpha3 = alpha2.filter((a,b) => a != b) // should not be repeats!
 
-    alpha2.foreach(println)
+    print(alpha2)
 
     
     
