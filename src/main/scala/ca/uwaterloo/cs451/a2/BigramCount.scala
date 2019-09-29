@@ -59,28 +59,36 @@ object BigramCount extends Tokenizer {
 
     // print(lineCnt)
 
-    val counts = textFile.flatMap(line => {
-        val tokens = tokenize(line)
-        if (tokens.length > 1) tokens.map(a => ({
-          tokens.map(b => {
-            (a,b)
-          })
-        })) else List() // directly just list it up, wonder if that works!
-      })
-      
+    val alpha1 = textFile.map(line => {
+      tokenize(line)
+    })
 
-      counts.foreach(println)
+    print ("88888888888888888888888888888888888888")
+    alpha1.foreach(println)
 
-      val countsB = counts.flatMap(identity)
 
-      countsB.foreach(println)
+    // val counts = textFile
+    //   .flatMap(line => {
+    //     val tokens = tokenize(line)
+    //     if (tokens.length > 1) tokens.map(a => ({
+    //       tokens.map(b => {
+    //         (a,b)
+    //       })
+    //     })) else List() // directly just list it up, wonder if that works!
+    //   })
 
-      // val countsC = countsB.filter({
-      //   case (a:String,b:String) => a != b
-      // })
-      .map(bigram => (bigram, 1))
-      .reduceByKey(_ + _)
-    counts.saveAsTextFile(args.output())
+    //  counts.foreach(println)
+
+    //   val countsB = counts.flatMap(identity)
+
+    //   countsB.foreach(println)
+
+    //   // val countsC = countsB.filter({
+    //   //   case (a:String,b:String) => a != b
+    //   // })
+    //   CountsB.map(bigram => (bigram, 1))
+    //   .reduceByKey(_ + _)
+    // counts.saveAsTextFile(args.output())
 
     // next one should just start here
 
