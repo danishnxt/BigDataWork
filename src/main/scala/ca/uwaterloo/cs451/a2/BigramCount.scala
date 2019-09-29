@@ -77,9 +77,9 @@ object BigramCount extends Tokenizer {
 
     for ((a:String,b: Double) <- beta4) {
       if (map.contains(a))
-        map.put(a, map.get(a).get + b)
+        map.update(a, map.get(a).get + b)
       else 
-        map.put(a, b)
+        map.update(a, b)
       println(a)
     }
 
