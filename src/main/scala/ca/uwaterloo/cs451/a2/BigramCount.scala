@@ -82,6 +82,7 @@ object BigramCount extends Tokenizer {
         map.put(a, map.get(a).get + b)
       else 
         map.put(a, b)
+      map.put("ThisA", 1.0)
     }
 
     println(map)
