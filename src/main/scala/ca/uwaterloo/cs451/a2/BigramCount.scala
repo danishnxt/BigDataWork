@@ -74,6 +74,7 @@ object BigramCount extends Tokenizer {
       })
     })
 
+    alpha2.foreach(println)
 
     // val counts = textFile
     //   .flatMap(line => {
