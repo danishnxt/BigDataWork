@@ -75,9 +75,9 @@ object BigramCount extends Tokenizer {
 
       countsB.foreach(println)
 
-      val countsC = countsB.filter({
-        case (a:String,b:String) => a != b
-      })
+      // val countsC = countsB.filter({
+      //   case (a:String,b:String) => a != b
+      // })
       .map(bigram => (bigram, 1))
       .reduceByKey(_ + _)
     counts.saveAsTextFile(args.output())
