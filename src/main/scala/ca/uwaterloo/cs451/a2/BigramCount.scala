@@ -75,19 +75,19 @@ object BigramCount extends Tokenizer {
     // val myDict = scala.collection.mutable.Map[String, Int]("meow" -> 12)
     val map: HashMap[String, Double] = HashMap()
 
-    // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
-
     for ((a,b) <- beta4) {
       if (map.contains(a))
         map.put(a, map.get(a).get + b)
       else 
         map.put(a, b)
+      println("hello", a, b)
       map.put("ThisA", 1.0)
     }
 
     println(map)
+    beta4.saveAsTextFile(args.output())
     // println(myDict("*")) // hello there
-    // beta4.saveAsTextFile(args.output())
+    
     
 
     
