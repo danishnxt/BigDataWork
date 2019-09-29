@@ -76,17 +76,30 @@ object BigramCount extends Tokenizer {
     val map: HashMap[String, Double] = HashMap()
 
     for ((a:String,b: Double) <- beta4) {
-      if (map.contains(a))
-        map.update(a, map.get(a).get + b)
-      else 
-        map.update(a, b)
+      map.update(a, b)
       println(a)
     }
 
-    map.put("ThisA", 1.0)
+  val data = List(("a", 1),
+                  ("b", 2),
+                  ("c", 3),
+                  ("a", 0))
 
-    println("this is a freaking stuck up little pieve of code and it doesn't pretttinnnttttt", map.get("year").get)
-    beta4.saveAsTextFile(args.output())
+  val mutableMap = new scala.collection.mutable.HashMap[String, Int]
+
+  data foreach {tup =>
+    mutableMap.update(tup._1, tup._2)  
+  }
+
+  println(mutableMap)
+
+
+
+    // println("this is a freaking stuck up little pieve of code and it doesn't pretttinnnttttt", map.get("year").get)
+    // beta4.saveAsTextFile(args.output())
+
+
+
     // println(myDict("*")) // hello there
 
     // val alpha1 = textFile.map(line => {
