@@ -58,7 +58,7 @@ object BigramCount extends Tokenizer {
       tokenize(line)
     })
 
-    val alpha2 = alpha1.foreach(line => {
+    val alpha2 = alpha1.flatMap(line => {
       line.map(a => {
         line.map(b => (a, b))
       })
