@@ -54,31 +54,33 @@ object BigramCount extends Tokenizer {
 
     val textFile = sc.textFile(args.input())
 
-    val alpha1 = textFile.map(line => {
-      tokenize(line)
-    })
+    // val alpha1 = textFile.map(line => {
+    //   tokenize(line)
+    // })
 
-    val alpha2 = alpha1.flatMap(line => {
-      line.map(a => {
-        line.map(b => (a, b))
-      })
-    })
-
-    // val alpha3 = alpha2.filter((a,b) => a != b) // should not be repeats!
-
-    print(alpha2)
-
-    
-    
-    
-    // val counts = textFile
-    //   .flatMap(line => {
-    //     val tokens = tokenize(line)
-    //     if (tokens.length > 1) tokens.sliding(2).map(p => p.mkString(" ")).toList else List()
+    // val alpha2 = alpha1.flatMap(line => {
+    //   line.map(a => {
+    //     line.map(b => (a, b))
     //   })
-    //   .map(bigram => (bigram, 1))
-    //   .reduceByKey(_ + _)
-    // counts.saveAsTextFile(args.output())
+    // })
+
+    // // val alpha3 = alpha2.filter((a,b) => a != b) // should not be repeats!
+
+    // print(alpha2)
+
+    val counts = textFile
+      .flatMap(line => {
+        val tokens = tokenize(line)
+        tokens.map(a => ({
+          tokens.map(b => {
+            (a,b)
+          })
+        }))
+        // if (tokens.length > 1) tokens.sliding(2).map(p => p.mkString(" ")).toList else List()
+      })
+      .map(bigram => (bigram, 1))
+      .reduceByKey(_ + _)
+    counts.saveAsTextFile(args.output())
 
 
   }
