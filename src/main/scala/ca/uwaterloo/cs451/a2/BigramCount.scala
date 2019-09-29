@@ -84,14 +84,9 @@ object BigramCount extends Tokenizer {
       map.put("ThisA", 1.0)
     }
 
-    println(map.get("*").get)
+    println("this is a freaking stuck up little pieve of code and it doesn't pretttinnnttttt", map.get("*").get)
     beta4.saveAsTextFile(args.output())
     // println(myDict("*")) // hello there
-    
-    
-
-    
-
 
     // val alpha1 = textFile.map(line => {
     //   tokenize(line)
