@@ -54,35 +54,46 @@ object BigramCount extends Tokenizer {
 
     val textFile = sc.textFile(args.input())
 
-    // print(alpha2)
-    // val lineCnt = textFile.length
+    // TASK 1 // DO WORD COUNTS AND SAVE THEM SOMEHWERE // 
 
-    // print(lineCnt)
-
-    val alpha1 = textFile.map(line => {
-      tokenize(line)
+    val beta1 = textFile.map(line => {
+      tokenize(line) // every line is now a list of tokens
     })
 
-    print ("88888888888888888888888888888888888888")
-    alpha1.foreach(println)
+    val beta2 = beta1.filter(line => (line.length > 1)) // keep only the multiline words that have bigrams to give
 
-    val alpha2 = alpha1.map(line => {
-      line.map(a => {
-        line.map(b => {
-          (a,b)
-        })
-      })
-    })
-
-    val alpha3 = alpha2.map(group => group.flatten) // try flattering on a per line scale
-    alpha3.foreach(println)
+    // TASK 2 // DO BIGRAM COUNTS AND SAVE THEM SOMEWHERE 
 
     print ("88888888888888888888888888888888888888")
-    print ("88888888888888888888888888888888888888")
-    print ("88888888888888888888888888888888888888")
-    print ("88888888888888888888888888888888888888")
+    beta2.foreach(println)
 
-    print(alpha3)
+    val beta3 = beta2.map(line => line + "*") // count these up too pls
+
+    beta3.foreach(println)
+
+    // val alpha1 = textFile.map(line => {
+    //   tokenize(line)
+    // })
+
+    
+
+    // val alpha2 = alpha1.map(line => {
+    //   line.map(a => {
+    //     line.map(b => {
+    //       (a,b)
+    //     })
+    //   })
+    // })
+
+    // val alpha3 = alpha2.map(group => group.flatten) // try flattering on a per line scale
+    // alpha3.foreach(println)
+
+    // print ("88888888888888888888888888888888888888")
+    // print ("88888888888888888888888888888888888888")
+    // print ("88888888888888888888888888888888888888")
+    // print ("88888888888888888888888888888888888888")
+
+    // alpha 3 is a list that contains lists (one for each sentence) that conatains the group pairs
     // print(alpha3.length)
 
     // val counts = textFile
