@@ -78,7 +78,7 @@ object BigramCount extends Tokenizer {
         }))
         // if (tokens.length > 1) tokens.sliding(2).map(p => p.mkString(" ")).toList else List()
       })
-      .flatMap()
+      .flatMap(identity)
       .filter((a,b) => (a != b))
       .map(bigram => (bigram, 1))
       .reduceByKey(_ + _)
