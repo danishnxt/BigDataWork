@@ -14,9 +14,13 @@
   * limitations under the License.
   */
 
-package io.bespin.scala.spark.bigram
+// Scala compiles to run within JVM - so we can use Mvn directly
 
-import io.bespin.scala.util.Tokenizer
+// package io.bespin.scala.spark.bigram
+package ca.uwaterloo.cs451.a2
+
+// import io.bespin.scala.util.Tokenizer
+import ca.uwaterloo.cs451.a2.Tokenizer // trying to import from the same folder
 
 import org.apache.log4j._
 import org.apache.hadoop.fs._
