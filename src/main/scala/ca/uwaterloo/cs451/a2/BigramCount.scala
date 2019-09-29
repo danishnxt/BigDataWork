@@ -71,7 +71,7 @@ object BigramCount extends Tokenizer {
     }).map(bigram => (bigram, 1))
     .reduceByKey(_+_)
 
-    val myDict = scala.collection.mutable.Map[String, Int]("--" -> 12)
+    val myDict = scala.collection.mutable.Map[String, Int](beta4)
 
     // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
 
