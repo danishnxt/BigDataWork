@@ -70,8 +70,11 @@ object BigramCount extends Tokenizer {
     }).map(bigram => (bigram, 1))
     .reduceByKey(_+_)
 
-    beta4.foreach(println)
-    beta4.saveAsTextFile(args.output())
+    val myDict = Map()
+
+    beta4.map((a,b) => myDict(a) = b) // update the map please let this work :)
+    println(myDict) // hello there
+    // beta4.saveAsTextFile(args.output())
     
 
     
