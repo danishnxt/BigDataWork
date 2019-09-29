@@ -54,18 +54,6 @@ object BigramCount extends Tokenizer {
 
     val textFile = sc.textFile(args.input())
 
-    // val alpha1 = textFile.map(line => {
-    //   tokenize(line)
-    // })
-
-    // val alpha2 = alpha1.flatMap(line => {
-    //   line.map(a => {
-    //     line.map(b => (a, b))
-    //   })
-    // })
-
-    // // val alpha3 = alpha2.filter((a,b) => a != b) // should not be repeats!
-
     // print(alpha2)
     val lineCnt = textFile.length
 
@@ -74,19 +62,27 @@ object BigramCount extends Tokenizer {
     val counts = textFile
       .flatMap(line => {
         val tokens = tokenize(line)
-        tokens.map(a => ({
+        if (tokens.length > 1) tokens.map(a => ({
           tokens.map(b => {
             (a,b)
           })
-        }))
-        // one word line needs some loving too // although the two maps will eliminate the need for that except we do need total lines
+        })) else List() // directly just list it up, wonder if that works!
       })
-      .flatMap(identity)
-      .filter({
+
+      counts.foreach(println)
+
+      val countsB = counts.flatMap(identity)
+
+      countsB.foreach(println)
+
+      val countsC = countsB.filter({
         case (a:String,b:String) => a != b
       })
       .map(bigram => (bigram, 1))
       .reduceByKey(_ + _)
     counts.saveAsTextFile(args.output())
+
+    // next one should just start here
+
   }
 }
