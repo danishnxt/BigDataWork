@@ -64,12 +64,10 @@ object BigramCount extends Tokenizer {
 
     // TASK 2 // DO BIGRAM COUNTS AND SAVE THEM SOMEWHERE 
 
-    print ("88888888888888888888888888888888888888")
-    beta2.foreach(println)
-
     val beta3 = beta2.map(line => "*" :: line) // count these up too pls
+    val beta4 = beta3.map(line => line.distinct) // take all duplicates out bro
 
-    beta3.foreach(println)
+    beta4.foreach(println)
 
     // val alpha1 = textFile.map(line => {
     //   tokenize(line)
