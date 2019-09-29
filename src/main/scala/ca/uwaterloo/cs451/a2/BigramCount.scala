@@ -65,10 +65,14 @@ object BigramCount extends Tokenizer {
     // TASK 2 // DO BIGRAM COUNTS AND SAVE THEM SOMEWHERE 
 
     val beta3 = beta2.map(line => "*" :: line) // count these up too pls
-    val beta4 = beta3.map(line => line.distinct) // take all duplicates out bro
-    // val beta5 = beta4.flatten
+    val beta4 = beta3.map(line => line.distinct).flatMap(line => {
+      line
+    }).map(bigram => (bigram, 1))
+    .reduceByKey(_+_)
+    .counts.saveAsTextFile(args.output())
+    
 
-    println ("This is what we're doing: " +  beta4)
+    
 
 
     // val alpha1 = textFile.map(line => {
