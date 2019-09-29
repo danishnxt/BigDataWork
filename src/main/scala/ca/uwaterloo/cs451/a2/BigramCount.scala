@@ -77,11 +77,12 @@ object BigramCount extends Tokenizer {
 
     // beta4.map((a, b) => myDict(a) = b) // update the map please let this work :)
 
-    beta4.foreach({
-      case (a:String, b:Double) => {
-        map.put(a,b)
-      }
-    })
+    for ((a,b) <- beta4) {
+      if (map.conatains(a))
+        map.put(a, map.get(a) + b)
+      else 
+        map.put(a, b)
+    }
 
     println(map)
     // println(myDict("*")) // hello there
