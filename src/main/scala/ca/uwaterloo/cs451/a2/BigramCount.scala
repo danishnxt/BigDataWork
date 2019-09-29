@@ -53,13 +53,20 @@ object BigramCount extends Tokenizer {
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
     val textFile = sc.textFile(args.input())
-    val counts = textFile
-      .flatMap(line => {
-        val tokens = tokenize(line)
-        if (tokens.length > 1) tokens.sliding(2).map(p => p.mkString(" ")).toList else List()
-      })
-      .map(bigram => (bigram, 1))
-      .reduceByKey(_ + _)
-    counts.saveAsTextFile(args.output())
+
+    val alpha1 = textFile.flatMap(line => {
+      val tokens = tokenize(line)
+    })
+
+    alpha1.foreach(println)
+
+    // val counts = textFile
+    //   .flatMap(line => {
+    //     val tokens = tokenize(line)
+    //     if (tokens.length > 1) tokens.sliding(2).map(p => p.mkString(" ")).toList else List()
+    //   })
+    //   .map(bigram => (bigram, 1))
+    //   .reduceByKey(_ + _)
+    // counts.saveAsTextFile(args.output())
   }
 }
