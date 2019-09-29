@@ -55,9 +55,9 @@ object BigramCount extends Tokenizer {
     val textFile = sc.textFile(args.input())
 
     // print(alpha2)
-    val lineCnt = textFile.length
+    // val lineCnt = textFile.length
 
-    print(lineCnt)
+    // print(lineCnt)
 
     val counts = textFile
       .map(line => {
