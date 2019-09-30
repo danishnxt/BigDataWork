@@ -95,7 +95,7 @@ object BigramCount extends Tokenizer {
     // .map(bigram => (bigram, 1.0))
     // .reduceByKey(_+_)
 
-    bigramCount foreach {biG
+    bigramCount foreach {biG =>
       println(biG)
     }
 
