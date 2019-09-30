@@ -57,7 +57,7 @@ object BigramCount extends Tokenizer {
 
     val textFile = sc.textFile(args.input())
     
-    // JOB 1 
+    // JOB 1 //
 
     // val unigramCount = textFile.map(line => {
     //   tokenize(line) // every line is now a list of tokens
@@ -75,7 +75,7 @@ object BigramCount extends Tokenizer {
     //   mutableMap.update(tup._1, tup._2)  
     // }
 
-  // JOB ONE COMPLETE -> PUSHED DIRECTLY INTO A MAP 
+    // JOB 2 //
 
     val bigramCount = textFile.map(line => {
       tokenize(line)
@@ -85,10 +85,9 @@ object BigramCount extends Tokenizer {
         line.map(w2 => {
           (w1, w2) // create pairs
           })
-        })
+        }).distinct
       })
     .flatMap(line => line) // flatten everything and export
-    .map(line => line.distinct) // get only unique pairs out
     .flatMap(line => line) // once again since we have 2 layers of these
     .filter({
       case (a:String, b:String) => {
