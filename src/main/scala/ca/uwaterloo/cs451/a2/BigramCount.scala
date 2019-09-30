@@ -106,8 +106,8 @@ object BigramCount extends Tokenizer {
       case ((a:String, b:String), c:Double) =>
         ((a,b),c, log10((((c)/(totalVal)) / ((mutableMap.get(a).get/totalVal) * (mutableMap.get(b).get/totalVal)))))
     })
-
-    finalCount.foreach(println) 
-
+    .reduceByKey(((a,b),_,_)))
+  
+    finalCount.saveAsTextFile(args.output())
   }
 }
