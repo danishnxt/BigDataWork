@@ -77,15 +77,13 @@ object BigramCount extends Tokenizer {
 
   val mutableMap = new scala.collection.mutable.HashMap[String, Double]
 
-  beta4 foreach { x =>
+  (beta4.collect().toList) foreach { x =>
     println(x)
   } 
 
-  beta4 foreach {tup =>
+  (beta4.collect().toList) foreach {tup =>
     mutableMap.update(tup._1, tup._2)  
   }
-
-  print(mutableMap.get("in").get)
 
 
 
