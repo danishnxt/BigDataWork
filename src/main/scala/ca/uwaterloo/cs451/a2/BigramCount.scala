@@ -39,6 +39,7 @@ class Conf(args: Seq[String]) extends ScallopConf(args) {
 }
 
 object BigramCount extends Tokenizer {
+  
   val log = Logger.getLogger(getClass().getName())
 
   def main(argv: Array[String]) {
@@ -55,95 +56,49 @@ object BigramCount extends Tokenizer {
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
     val textFile = sc.textFile(args.input())
-
-    // TASK 1 // DO WORD COUNTS AND SAVE THEM SOMEHWERE // 
-
-    val beta1 = textFile.map(line => {
-      tokenize(line) // every line is now a list of tokens
-    })
-
-    val beta2 = beta1.filter(line => (line.length > 1)) // keep only the multiline words that have bigrams to give
-
-    // TASK 2 // DO BIGRAM COUNTS AND SAVE THEM SOMEWHERE 
-
-    val beta3 = beta2.map(line => "*" :: line) // count these up too pls
-    val beta4 = beta3.map(line => line.distinct).flatMap(line => {
-      line
-    }).map(bigram => (bigram, 1.0))
-    .reduceByKey(_+_)
-
-    // val myDict = scala.collection.mutable.Map[String, Int]("meow" -> 12)
-    val map: HashMap[String, Double] = HashMap()
-
-  val mutableMap = new scala.collection.mutable.HashMap[String, Double]
-
-  (beta4.collect().toList) foreach { x =>
-    println(x)
-  } 
-
-  (beta4.collect().toList) foreach {tup =>
-    mutableMap.update(tup._1, tup._2)  
-  }
-
-  println(mutableMap)
-  println(mutableMap.get("in").get)
-
-    // println("this is a freaking stuck up little pieve of code and it doesn't pretttinnnttttt", map.get("year").get)
-    // beta4.saveAsTextFile(args.output())
-
-
-
-    // println(myDict("*")) // hello there
-
-    // val alpha1 = textFile.map(line => {
-    //   tokenize(line)
-    // })
-
     
+    // JOB 1 
 
-    // val alpha2 = alpha1.map(line => {
-    //   line.map(a => {
-    //     line.map(b => {
-    //       (a,b)
-    //     })
-    //   })
+    // val unigramCount = textFile.map(line => {
+    //   tokenize(line) // every line is now a list of tokens
     // })
+    // .filter(line => (line.length > 1))
+    // .map(line => "*" :: line)
+    // .map(line => line.distinct).flatMap(line => {
+    //   line
+    // }).map(bigram => (bigram, 1.0))
+    // .reduceByKey(_+_)
 
-    // val alpha3 = alpha2.map(group => group.flatten) // try flattering on a per line scale
-    // alpha3.foreach(println)
+    // val mutableMap = new scala.collection.mutable.HashMap[String, Double]
 
-    // print ("88888888888888888888888888888888888888")
-    // print ("88888888888888888888888888888888888888")
-    // print ("88888888888888888888888888888888888888")
-    // print ("88888888888888888888888888888888888888")
+    // (unigramCount.collect().toList) foreach {tup =>
+    //   mutableMap.update(tup._1, tup._2)  
+    // }
 
-    // alpha 3 is a list that contains lists (one for each sentence) that conatains the group pairs
-    // print(alpha3.length)
+  // JOB ONE COMPLETE -> PUSHED DIRECTLY INTO A MAP 
 
-    // val counts = textFile
-    //   .flatMap(line => {
-    //     val tokens = tokenize(line)
-    //     if (tokens.length > 1) tokens.map(a => ({
-    //       tokens.map(b => {
-    //         (a,b)
-    //       })
-    //     })) else List() // directly just list it up, wonder if that works!
-    //   })
+    val bigramCount = textFile.map(line => {
+      tokenize(line)
+    }).filter(line => (line.length > 1))
+    .map(line => {
+      line.map(w1 => {
+        line.map(w2 => {
+          (w1, w2) // create pairs
+          }
+        })
+      })
+    })
+    .flatMap(line => line) // flatten everything and export
+    // .map(line => line.distinct) // get only unique pairs out
+    // .filter((a, b) => {
+    //   (a != b) // must be different
+    // })
+    // .map(bigram => (bigram, 1.0))
+    // .reduceByKey(_+_)
 
-    //  counts.foreach(println)
-
-    //   val countsB = counts.flatMap(identity)
-
-    //   countsB.foreach(println)
-
-    //   // val countsC = countsB.filter({
-    //   //   case (a:String,b:String) => a != b
-    //   // })
-    //   CountsB.map(bigram => (bigram, 1))
-    //   .reduceByKey(_ + _)
-    // counts.saveAsTextFile(args.output())
-
-    // next one should just start here
+    bigramCount foreach {biG
+      println(biG)
+    }
 
   }
 }
