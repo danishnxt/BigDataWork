@@ -85,7 +85,8 @@ object BigramCount extends Tokenizer {
     mutableMap.update(tup._1, tup._2)  
   }
 
-
+  println(mutableMap)
+  println(mutableMap.get("in").get)
 
     // println("this is a freaking stuck up little pieve of code and it doesn't pretttinnnttttt", map.get("year").get)
     // beta4.saveAsTextFile(args.output())
