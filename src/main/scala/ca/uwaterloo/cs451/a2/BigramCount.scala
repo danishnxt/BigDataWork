@@ -90,7 +90,7 @@ object BigramCount extends Tokenizer {
     .flatMap(line => line) // flatten everything and export
     .map(line => line.distinct) // get only unique pairs out
     .map(line => {
-      line.filter((a, b) => {
+      line.filter((a:String, b:String) => {
         (a != b) // must be different
       })
     }).map(bigram => (bigram, 1.0))
