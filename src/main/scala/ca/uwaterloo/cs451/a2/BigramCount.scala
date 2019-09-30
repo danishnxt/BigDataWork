@@ -29,6 +29,7 @@ import org.apache.spark.SparkConf
 import org.rogach.scallop._
 import scala.collection.mutable.Map
 import scala.collection.mutable.HashMap
+import scala.math.log10
 
 class Conf(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
@@ -99,10 +100,16 @@ object BigramCount extends Tokenizer {
 
     // PMI => 
 
-    bigramCount foreach { 
+    val totalVal = mutableMap.get("*").get
+
+    bigramCount.map({ 
       case ((a:String, b:String), c:Double) =>
-        println(a,b,c)
-    }
+        // now we good :) 
+        val PMI:Double = log10((((c)/(totalVal)) / ((mutableMap.get(a).get/totalVal) * (mutableMap.get(b).get/totalVal))))
+        println(a,b,c,PMI)
+
+
+    })
 
   }
 }
