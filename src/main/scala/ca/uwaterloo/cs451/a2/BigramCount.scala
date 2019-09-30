@@ -95,8 +95,13 @@ object BigramCount extends Tokenizer {
     }).map(bigram => (bigram, 1.0))
     .reduceByKey(_+_)
 
-    bigramCount foreach {biG =>
-      println(biG)
+    // JOB 2 AGGREGATION COMPLETE TIME TO FIND THE PMI 
+
+    // PMI => 
+
+    bigramCount foreach { gram =>
+      ((a:String,b:String),c:Double) =>
+      println(a,b,c)
     }
 
   }
