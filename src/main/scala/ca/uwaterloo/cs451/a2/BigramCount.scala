@@ -88,12 +88,13 @@ object BigramCount extends Tokenizer {
         })
       })
     .flatMap(line => line) // flatten everything and export
-    // .map(line => line.distinct) // get only unique pairs out
-    // .filter((a, b) => {
-    //   (a != b) // must be different
-    // })
-    // .map(bigram => (bigram, 1.0))
-    // .reduceByKey(_+_)
+    .map(line => line.distinct) // get only unique pairs out
+    .map(line => {
+      line.filter((a, b) => {
+        (a != b) // must be different
+      })
+    }).map(bigram => (bigram, 1.0))
+    .reduceByKey(_+_)
 
     bigramCount foreach {biG =>
       println(biG)
