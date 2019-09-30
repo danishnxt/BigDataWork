@@ -104,9 +104,9 @@ object BigramCount extends Tokenizer {
 
     val finalCount = bigramCount.map({ 
       case ((a:String, b:String), c:Double) =>
-        ((a,b),c, log10((((c)/(totalVal)) / ((mutableMap.get(a).get/totalVal) * (mutableMap.get(b).get/totalVal)))))
+        ((a,b),(c, log10((((c)/(totalVal)) / ((mutableMap.get(a).get/totalVal) * (mutableMap.get(b).get/totalVal))))))
     })
-    .reduceByKey((((a,b),_,_)))
+    .reduceByKey(_+_)
   
     finalCount.saveAsTextFile(args.output())
   }
