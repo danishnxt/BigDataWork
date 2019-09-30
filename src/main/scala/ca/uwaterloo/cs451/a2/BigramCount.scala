@@ -60,21 +60,21 @@ object BigramCount extends Tokenizer {
     
     // JOB 1 //
 
-    // val unigramCount = textFile.map(line => {
-    //   tokenize(line) // every line is now a list of tokens
-    // })
-    // .filter(line => (line.length > 1))
-    // .map(line => "*" :: line)
-    // .map(line => line.distinct).flatMap(line => {
-    //   line
-    // }).map(bigram => (bigram, 1.0))
-    // .reduceByKey(_+_)
+    val unigramCount = textFile.map(line => {
+      tokenize(line) // every line is now a list of tokens
+    })
+    .filter(line => (line.length > 1))
+    .map(line => "*" :: line)
+    .map(line => line.distinct).flatMap(line => {
+      line
+    }).map(bigram => (bigram, 1.0))
+    .reduceByKey(_+_)
 
-    // val mutableMap = new scala.collection.mutable.HashMap[String, Double]
+    val mutableMap = new scala.collection.mutable.HashMap[String, Double]
 
-    // (unigramCount.collect().toList) foreach {tup =>
-    //   mutableMap.update(tup._1, tup._2)  
-    // }
+    (unigramCount.collect().toList) foreach {tup =>
+      mutableMap.update(tup._1, tup._2)  
+    }
 
     // JOB 2 //
 
@@ -102,14 +102,12 @@ object BigramCount extends Tokenizer {
 
     val totalVal = mutableMap.get("*").get
 
-    bigramCount.map({ 
+    val finalCount = bigramCount.map({ 
       case ((a:String, b:String), c:Double) =>
-        // now we good :) 
-        val PMI:Double = log10((((c)/(totalVal)) / ((mutableMap.get(a).get/totalVal) * (mutableMap.get(b).get/totalVal))))
-        println(a,b,c,PMI)
-
-
+        ((a,b),c, log10((((c)/(totalVal)) / ((mutableMap.get(a).get/totalVal) * (mutableMap.get(b).get/totalVal)))))
     })
+
+    finalCount.foreach(println) 
 
   }
 }
