@@ -85,10 +85,9 @@ object BigramCount extends Tokenizer {
         line.map(w2 => {
           (w1, w2) // create pairs
           })
-        }).distinct
+        }).flatten.distinct
       })
     .flatMap(line => line) // flatten everything and export
-    .flatMap(line => line) // once again since we have 2 layers of these
     .filter({
       case (a:String, b:String) => {
         (a != b) // must be different
