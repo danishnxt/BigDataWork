@@ -100,7 +100,7 @@ object BigramCount extends Tokenizer {
     // PMI => 
 
     bigramCount foreach { gram => {
-      case ((a:String,b:String),c:Double) =>
+      case ((a:String, b:String), c:Double) =>
         println(a,b,c)
       }
     }
