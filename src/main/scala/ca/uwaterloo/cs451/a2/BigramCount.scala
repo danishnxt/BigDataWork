@@ -88,21 +88,20 @@ object BigramCount extends Tokenizer {
         }).flatten.distinct
       })
     .flatMap(line => line) // flatten everything and export
-    .filter({
-      case (a:String, b:String) => {
-        (a != b) // must be different
+    .filter({{
+        case (a:String, b:String) => {
+          (a != b) // must be different
+        }
       }
     }).map(bigram => (bigram, 1.0))
     .reduceByKey(_+_)
 
     // JOB 2 AGGREGATION COMPLETE TIME TO FIND THE PMI 
-
-    // PMI => 
+    // PMI => //
 
     bigramCount foreach { gram =>
-      ((a:String,b:String),c:Double) =>
+      case ((a:String, b:String), c:Double) =>
       println(a,b,c)
     }
-
   }
 }
