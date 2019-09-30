@@ -84,10 +84,9 @@ object BigramCount extends Tokenizer {
       line.map(w1 => {
         line.map(w2 => {
           (w1, w2) // create pairs
-          }
+          })
         })
       })
-    })
     .flatMap(line => line) // flatten everything and export
     // .map(line => line.distinct) // get only unique pairs out
     // .filter((a, b) => {
