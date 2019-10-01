@@ -64,8 +64,8 @@ object BigramCount extends Tokenizer {
     .map(line => line.sliding(2).toList
     .map(pair => (pair(0), pair(1)))
     )
-    .map(bigram => (bigram, 1))
-    .reduceByKey(_ + _)
+    // .map(bigram => (bigram, 1))
+    // .reduceByKey(_ + _)
 
     bigramList.foreach(println) // print this garbage out :) 
 
