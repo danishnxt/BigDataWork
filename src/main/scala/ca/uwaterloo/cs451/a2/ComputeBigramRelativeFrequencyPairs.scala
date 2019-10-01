@@ -65,12 +65,12 @@ object BigramCount extends Tokenizer {
     .map(pair => (pair(0), pair(1)))
     ).collect().flatten
 
-    val bigramCounts = bigramList.map(bigram => (bigram, 1))
-    .reduceByKey(_ + _)
+    // val bigramCounts = bigramList.map(bigram => (bigram, 1))
+    // .reduceByKey(_+_)
 
     bigramList.foreach(println) // print this garbage out :) 
 
-    val bigramACount = bigramList.map((a:String,b:String) => (a, "*")) // export a first one
+    val bigramACount = bigramList.map((a:String,b:String) => (a, b)) // export a first one
     // .map(bigram => (bigram, 1.0))
     // .reduceByKey(_+_)
 
