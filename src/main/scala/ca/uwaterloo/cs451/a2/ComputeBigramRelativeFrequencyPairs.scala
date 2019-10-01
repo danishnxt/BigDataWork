@@ -70,7 +70,7 @@ object BigramCount extends Tokenizer {
 
     bigramList.foreach(println) // print this garbage out :) 
 
-    val bigramACount = bigramList.map((a:String,b:String) => {(a, b)}) // export a first one
+    val bigramACount = bigramList.map(((a:String,b:String)) => {(a, b)}) // export a first one
     // .map(bigram => (bigram, 1.0))
     // .reduceByKey(_+_)
 
