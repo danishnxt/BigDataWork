@@ -57,11 +57,10 @@ object BigramCount extends Tokenizer {
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
     val textFile = sc.textFile(args.input())
-    val textFileBC = sc.broadcast(textFile.collect) // make sure all drivers can use this 
     
     // JOB 1 //
 
-    val unigramCount = textFileBC.value.map(line => {
+    val unigramCount = textFile.map(line => {
       tokenize(line) // every line is now a list of tokens
     }) // alpha
     // .filter(line => (line.length > 1))
@@ -83,7 +82,7 @@ object BigramCount extends Tokenizer {
 
     // JOB 2 //
 
-    val bigramCount = textFileBC.value.map(line => {
+    val bigramCount = textFile.map(line => {
       tokenize(line)
     })//.filter(line => (line.length > 1))
     .map(line => {
