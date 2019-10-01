@@ -64,7 +64,8 @@ object BigramCount extends Tokenizer {
     .map(line => line.sliding(2).toList
     .map(pair => (pair(0), pair(1)))
     ).collect().flatten
-    val reducedA = (sc.parallelize(bigramList.map(bigram => (bigram, 1))).reduceByKey(_+_)
+    val reducedA = (sc.parallelize(bigramList.map(bigram => (bigram, 1)))).reduceByKey(_+_)
+    reducedA.foreach(println)
 
     val bigramACount = bigramList.map({
         case ((a:String,b:String)) => (a, "*")
@@ -72,6 +73,7 @@ object BigramCount extends Tokenizer {
     .map(bigram => (bigram, 1.0))
 
     val reducedB = sc.parallelize(bigramACount).reduceByKey(_+_)
+    reducedB.foreach(println)
 
   }
 }
