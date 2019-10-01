@@ -37,7 +37,7 @@ class ConfB(args: Seq[String]) extends ScallopConf(args) {
   verify()
 }
 
-object BigramCountAlpha extends Tokenizer {
+object ComputeBigramRelativeFrequencyStripes extends Tokenizer {
   
   val log = Logger.getLogger(getClass().getName())
 
@@ -48,7 +48,7 @@ object BigramCountAlpha extends Tokenizer {
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
-    val confB = new SparkConf().setAppName("BigramCount")
+    val confB = new SparkConf().setAppName("ComputeBigramRelativeFrequencyPairs")
     val sc = new SparkContext(confB)
 
     val outputDir = new Path(args.output())

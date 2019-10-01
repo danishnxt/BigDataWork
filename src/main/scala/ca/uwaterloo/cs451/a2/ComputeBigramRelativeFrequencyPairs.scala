@@ -37,7 +37,7 @@ class Conf(args: Seq[String]) extends ScallopConf(args) {
   verify()
 }
 
-object BigramCount extends Tokenizer {
+object ComputeBigramRelativeFrequencyPairs extends Tokenizer {
   
   val log = Logger.getLogger(getClass().getName())
 
@@ -48,51 +48,28 @@ object BigramCount extends Tokenizer {
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
-    val conf = new SparkConf().setAppName("BigramCount")
+    val conf = new SparkConf().setAppName("ComputeBigramRelativeFrequencyPairs")
     val sc = new SparkContext(conf)
 
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
     val textFile = sc.textFile(args.input())
-    
-    // JOB 1 //
 
-    val bigramList = textFile.map(line => {
+    val bigramCount = textFile.flatMap(line => {
       tokenize(line) // every line is now a list of tokens
-    }) // alpha
-    .filter(line => (line.length > 1)) // no bigrams here -> LIST OF LINES
-    .map(line => line.sliding(2).toList
-    .map(pair => (pair(0), pair(1)))
-    ).collect().flatten
-    val reducedA = (sc.parallelize(bigramList.map(bigram => (bigram, 1.0)))).reduceByKey(_+_)
-
-    val bigramACount = bigramList.map({
-        case ((a:String,b:String)) => (a, "*")
-      }) // export a first one
-    .map(bigram => (bigram, 1.0))
-    val reducedB = sc.parallelize(bigramACount).reduceByKey(_+_)
-
-    val mutableMap = new scala.collection.mutable.HashMap[String, Double]
-
-    reducedB.collect().toList foreach {
-      case (((a:String, b:String),c:Double)) => {
-        mutableMap.update(a,c)
-      }
-    }
-
-    val reducedC = reducedA.collect() ++ reducedB.collect() // do this once
-    val redC = sc.broadcast(reducedC)
-
-    val map = sc.broadcast(mutableMap)
-
-    val reducedFinal = redC.value.map({
-      case ((a:String, b:String),c:Double) => {
-        if (b == "*") ((a,b),c) else ((a,b),(c/map.value.get(a).get))
-      }
     })
+    .filter(line => (line.length > 1))
+	.map(line => {
+		val valActual = line.sliding2().map(p => (p(0),p(1)))
+		val valFirst = line.sliding(2).map(p => (p(0), "*"))
+		valActual ++ valFirst // MERGE THE TWO TOGETHER
+	}).map(val => (val, 1))	
+	.sortByKey()
+	.reduce.Key(_+_) // counts are now available
 
-    // loop over this and export values
+
+	
     
 
 

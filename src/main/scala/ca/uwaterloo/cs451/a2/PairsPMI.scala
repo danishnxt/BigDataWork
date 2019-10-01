@@ -31,11 +31,12 @@ import scala.collection.mutable.Map
 import scala.collection.mutable.HashMap
 import scala.math.log10
 
-class ConfA(args: Seq[String]) extends ScallopConf(args) {
+class ConfC(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
   val input = opt[String](descr = "input path", required = true)
   val output = opt[String](descr = "output path", required = true)
   val reducers = opt[Int](descr = "number of reducers", required = false, default = Some(1))
+  val threshold = opt[Int](descr = "Threshold to report pairs with", required = false, default = Some(1))
   verify()
 }
 
@@ -50,13 +51,13 @@ object PairsPMI extends Tokenizer {
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
-    val confA = new SparkConf().setAppName("PairsPMI")
-    val sc = new SparkContext(confA)
+    val confC = new SparkConf().setAppName("PairsPMI")
+    val sc = new SparkContext(confC)
 
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
-    val textFile = sc.textFile(args.input())
+    val textFile = sc.textFile(args.input(), args.reducers()) // read divided
     
     // JOB 1 //
 
@@ -83,8 +84,8 @@ object PairsPMI extends Tokenizer {
 
     val bigramCount = textFile.map(line => {
       tokenize(line)
-    })//.filter(line => (line.length > 1))
-    .map(line => {
+    }).filter(line => (line.length > 1)) // only filtering here since no pairs if life of length 1 -> still have to be counted as previous
+    .map(line.take(40) => { // implmenting the bsic
       line.map(w1 => {
         line.map(w2 => {
           (w1, w2) // create pairs
@@ -99,7 +100,7 @@ object PairsPMI extends Tokenizer {
     }).map(bigram => (bigram, 1.0))
     .reduceByKey(_+_)
 
-    // JOB 2 AGGREGATION COMPLETE TIME TO FIND THE PMI 
+    // JOB 2 - AGGREGATION COMPLETE // TIME TO FIND THE PMI 
 
     // PMI => 
 
@@ -107,7 +108,7 @@ object PairsPMI extends Tokenizer {
 
     val finalCount = bigramCount.map({ 
       case ((a:String, b:String), c:Double) =>
-        ((a,b),(log10((((c)/(totalVal)) / ((mutableMapBC.value.get(a).get/totalVal) * (mutableMapBC.value.get(b).get/totalVal)))), c))
+        if (c > args.threshold) ((a,b),(log10((((c)/(totalVal)) / ((mutableMapBC.value.get(a).get/totalVal) * (mutableMapBC.value.get(b).get/totalVal)))), c))
     }) // This might not parallelize properly hmm
   
     finalCount.saveAsTextFile(args.output())
