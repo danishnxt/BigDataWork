@@ -77,7 +77,7 @@ object BigramCount extends Tokenizer {
       mutableMap.update(tup._1, tup._2)  
     }
 
-    mutableMapBC = sc.broadcast(mutableMap) // we good?
+    val mutableMapBC = sc.broadcast(mutableMap) // we good?
 
     // end of JOB 1 -> Push map to a broadcast var
 
