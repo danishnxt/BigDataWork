@@ -85,7 +85,8 @@ object PairsPMI extends Tokenizer {
     val bigramCount = textFile.map(line => {
       tokenize(line)
     }).filter(line => (line.length > 1)) // only filtering here since no pairs if life of length 1 -> still have to be counted as previous
-    .map(line.take(40) => { // implmenting the bsic
+	.map(line => line.take(40)) // taking first 40 only
+    .map(line => {
       line.map(w1 => {
         line.map(w2 => {
           (w1, w2) // create pairs

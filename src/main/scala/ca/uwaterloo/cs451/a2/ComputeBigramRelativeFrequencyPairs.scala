@@ -64,14 +64,10 @@ object ComputeBigramRelativeFrequencyPairs extends Tokenizer {
 		val valActual = line.sliding2().map(p => (p(0),p(1)))
 		val valFirst = line.sliding(2).map(p => (p(0), "*"))
 		valActual ++ valFirst // MERGE THE TWO TOGETHER
-	}).map(val => (val, 1))	
+	}).map(val => (val, 1))
 	.sortByKey()
 	.reduce.Key(_+_) // counts are now available
 
-
-	
-    
-
-
+	bigramCount.foreach(println)
   }
 }
