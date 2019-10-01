@@ -85,7 +85,7 @@ object BigramCount extends Tokenizer {
 
     val reducedFinal = reducedC.map({
       case ((a:String, "*"), c:Double) => {
-        ((a,b),c)
+        ((a,"*"),c)
       }
 
       case ((a:String, b:String),c:Double) => {
