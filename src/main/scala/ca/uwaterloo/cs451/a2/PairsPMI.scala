@@ -63,7 +63,7 @@ object BigramCount extends Tokenizer {
 
     val unigramCount = textFileBC.map(line => {
       tokenize(line) // every line is now a list of tokens
-    })
+    }) // alpha
     // .filter(line => (line.length > 1))
     .map(line => "*" :: line)
     .map(line => line.distinct).flatMap(line => {
