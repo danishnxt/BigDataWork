@@ -57,7 +57,7 @@ object BigramCount extends Tokenizer {
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
     val textFile = sc.textFile(args.input())
-    val textFileBC = sc.broadcast(textFile) // make sure all drivers can use this 
+    val textFileBC = sc.broadcast(textFile.collect) // make sure all drivers can use this 
     
     // JOB 1 //
 
