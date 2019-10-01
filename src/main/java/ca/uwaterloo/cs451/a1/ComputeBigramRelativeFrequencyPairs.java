@@ -56,13 +56,15 @@ public class ComputeBigramRelativeFrequencyPairs  extends Configured implements 
         throws IOException, InterruptedException {
       List<String> tokens = Tokenizer.tokenize(value.toString());
 
-      if (tokens.size() < 2) return;
+      if (tokens.size() < 2) return; // if line length is less than 2 don't even think about it
       for (int i = 1; i < tokens.size(); i++) {
-        BIGRAM.set(tokens.get(i - 1), tokens.get(i));
-        context.write(BIGRAM, ONE);
 
-        BIGRAM.set(tokens.get(i - 1), "*");
-        context.write(BIGRAM, ONE);
+        BIGRAM.set(tokens.get(i - 1), tokens.get(i)); // one after the next
+        context.write(BIGRAM, ONE); // set these as one
+
+        BIGRAM.set(tokens.get(i - 1), "*"); // for every word -> export a word plus ("*") for count too
+        context.write(BIGRAM, ONE); // export that
+
       }
     }
   }
@@ -92,8 +94,10 @@ public class ComputeBigramRelativeFrequencyPairs  extends Configured implements 
     @Override
     public void reduce(PairOfStrings key, Iterable<FloatWritable> values, Context context)
         throws IOException, InterruptedException {
+
       float sum = 0.0f;
       Iterator<FloatWritable> iter = values.iterator();
+
       while (iter.hasNext()) {
         sum += iter.next().get();
       }
@@ -101,7 +105,7 @@ public class ComputeBigramRelativeFrequencyPairs  extends Configured implements 
       if (key.getRightElement().equals("*")) {
         VALUE.set(sum);
         context.write(key, VALUE);
-        marginal = sum;
+        marginal = sum; // get the total of the left ones and how many of this are ohhhhh ok
       } else {
         VALUE.set(sum / marginal);
         context.write(key, VALUE);
