@@ -109,7 +109,7 @@ object BigramCount extends Tokenizer {
 
     val finalCount = bigramCount.map({ 
       case ((a:String, b:String), c:Double) =>
-        ((a,b),(c, log10((((c)/(totalVal)) / ((mutableMapBC.get(a).get/totalVal) * (mutableMapBC.get(b).get/totalVal))))))
+        ((a,b),(c, log10((((c)/(totalVal)) / ((mutableMapBC.value.get(a).get/totalVal) * (mutableMapBC.value.get(b).get/totalVal))))))
     }) // This might not parallelize properly hmm
   
     finalCount.saveAsTextFile(args.output())
