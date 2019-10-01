@@ -50,13 +50,14 @@ object BigramCount extends Tokenizer {
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
-    val conf = new SparkConf().setAppName("Bigram Count")
+    val conf = new SparkConf().setAppName("PMI-Pairs")
     val sc = new SparkContext(conf)
 
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
     val textFile = sc.textFile(args.input())
+    val textFileBC = sc.broadcast(textFile) // make sure all drivers can use this 
     
     // JOB 1 //
 
@@ -75,6 +76,10 @@ object BigramCount extends Tokenizer {
     (unigramCount.collect().toList) foreach {tup =>
       mutableMap.update(tup._1, tup._2)  
     }
+
+    mutableMapBC = sc.broadcast(mutableMap) // we good?
+
+    // end of JOB 1 -> Push map to a broadcast var
 
     // JOB 2 //
 
@@ -100,12 +105,12 @@ object BigramCount extends Tokenizer {
 
     // PMI => 
 
-    val totalVal = mutableMap.get("*").get
+    val totalVal = mutableMapBC.get("*").get
 
     val finalCount = bigramCount.map({ 
       case ((a:String, b:String), c:Double) =>
-        ((a,b),(c, log10((((c)/(totalVal)) / ((mutableMap.get(a).get/totalVal) * (mutableMap.get(b).get/totalVal))))))
-    })
+        ((a,b),(c, log10((((c)/(totalVal)) / ((mutableMapBC.get(a).get/totalVal) * (mutableMapBC.get(b).get/totalVal))))))
+    }) // This might not parallelize properly hmm
   
     finalCount.saveAsTextFile(args.output())
   }
