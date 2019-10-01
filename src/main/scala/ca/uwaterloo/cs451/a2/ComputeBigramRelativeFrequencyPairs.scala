@@ -75,7 +75,7 @@ object BigramCount extends Tokenizer {
     val reducedB = sc.parallelize(bigramACount).reduceByKey(_+_)
     // reducedB.foreach(println)
 
-    val reducedC = reducedA.collect() ::: reducedB.collect()
+    val reducedC = reducedA.collect() ++ reducedB.collect()
     reducedC.foreach(println)
 
 
