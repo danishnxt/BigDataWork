@@ -74,9 +74,10 @@ object BigramCount extends Tokenizer {
         case ((a:String,b:String)) => (a, "*")
       }) // export a first one
     .map(bigram => (bigram, 1.0))
-    .reduceByKey(_+_)
 
-    bigramACount.foreach(println) // print this garbage out :) 
+    val reduced = sc.parallelize(bigramACount).reduceByKey(_+_)
+
+    reduced.foreach(println) // print this garbage out :) 
 
   }
 }
