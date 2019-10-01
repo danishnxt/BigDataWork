@@ -62,7 +62,7 @@ object BigramCountAlpha extends Tokenizer {
 	  .sliding(2).map(pair_list => (pair_list(0), pair_list(1))) // 
     })
 	
-	val bigramValue = bigramList.groupByKey(arg.reducers())
+	val bigramValue = bigramList.groupByKey(args.reducers())
 	.mapValues(point => point.groupBy(identity).mapValues(_.size.toDouble/arr.size))
 	
 	bigramValue.saveAsTextFile(args.output()) // saving to file normally
