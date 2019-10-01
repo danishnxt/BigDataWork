@@ -61,7 +61,7 @@ object ComputeBigramRelativeFrequencyPairs extends Tokenizer {
     })
     .filter(line => (line.length > 1))
 	.map(line => {
-		val valActual = line.sliding2().map(p => (p(0), p(1).toString))
+		val valActual = line.sliding(2).map(p => (p(0), p(1).toString))
 		val valFirst = line.sliding(2).map(p => (p(0), "*".toString))
 		valActual ++ valFirst // MERGE THE TWO TOGETHER
 	})//.map(val => (val, 1))

@@ -42,7 +42,7 @@ object ComputeBigramRelativeFrequencyStripes extends Tokenizer {
   val log = Logger.getLogger(getClass().getName())
 
   def main(argv: Array[String]) {
-    val args = new Conf(argv)
+    val args = new ConfB(argv)
 
     log.info("Input: " + args.input())
     log.info("Output: " + args.output())

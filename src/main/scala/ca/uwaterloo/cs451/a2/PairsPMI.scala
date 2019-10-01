@@ -45,7 +45,7 @@ object PairsPMI extends Tokenizer {
   val log = Logger.getLogger(getClass().getName())
 
   def main(argv: Array[String]) {
-    val args = new Conf(argv)
+    val args = new ConfC(argv)
 
     log.info("Input: " + args.input())
     log.info("Output: " + args.output())

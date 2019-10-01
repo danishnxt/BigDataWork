@@ -45,14 +45,14 @@ object StripesPMI extends Tokenizer {
   val log = Logger.getLogger(getClass().getName())
 
   def main(argv: Array[String]) {
-    val args = new Conf(argv)
+    val args = new ConfD(argv)
 
     log.info("Input: " + args.input())
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
     val confD = new SparkConf().setAppName("StripesPMI")
-    val sc = new SparkContext(confC)
+    val sc = new SparkContext(confD)
 
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
@@ -90,9 +90,10 @@ object StripesPMI extends Tokenizer {
       .map(tkn => (tkn, tkn.take(40).distinct.filterNot(_.equals(tkn)))) else List()  // mix with other tokens upto limit of 40 -> optimized possible thru sep variable for this
     }).flatMapValues(alpha => alpha)
 	
-	val stripesB = stripesA.groupByKey().mapValues(valu => valu.groupBy(_.toString).mapValues(_.size.toDouble).filter(_._2 >= args.threshold)) // passing thru an arg filter
+	val stripesB = stripesA.groupByKey()
+  .mapValues(valu => valu.groupBy(_.toString).mapValues(_.size.toDouble).filter(_._2 >= args.threshold)) // passing thru an arg filter
 
-  val stripesC = stripesB({
+  val stripesC = stripesB.map({
     case (a,b) => 
       val map = new scala.collection.mutable.HashMap[String, (Double, Double)]()
       for((a1,b1) <- a) {
@@ -106,6 +107,6 @@ object StripesPMI extends Tokenizer {
       }
   })
 
-    finalCount.saveAsTextFile(args.output())
+    stripesC.saveAsTextFile(args.output())
   }
 }
