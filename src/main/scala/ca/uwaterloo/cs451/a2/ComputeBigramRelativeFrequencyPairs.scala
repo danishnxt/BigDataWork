@@ -65,15 +65,17 @@ object BigramCount extends Tokenizer {
       line.sliding(2).map(p => p.mkString(" ")).toList
     }) //list of lists containing bigrams
 
-    val bigramACount = bigramList.map(line => {
-      line.map({
-        case ((a:String, b:String)) => (a, "*") // export a first one
-      })
-    }).flatten
-    .map(bigram => (bigram, 1.0))
-    .reduceByKey(_+_)
+    bigramList.foreach(println) // print this garbage out :) 
 
-    bigramACount.foreach(println) // print this garbage out :) 
+    // val bigramACount = bigramList.map(line => {
+    //   line.map({
+    //     case ((a:String, b:String)) => (a, "*") // export a first one
+    //   })
+    // }).flatten
+    // .map(bigram => (bigram, 1.0))
+    // .reduceByKey(_+_)
+
+    // bigramACount.foreach(println) // print this garbage out :) 
 
   }
 }
