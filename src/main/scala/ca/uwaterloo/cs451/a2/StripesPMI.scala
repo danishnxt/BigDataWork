@@ -98,7 +98,7 @@ object StripesPMI extends Tokenizer {
     val stripesC = stripesB.map({
       case (a,b) => 
         val map = new scala.collection.mutable.HashMap[String, (Double, Double)]()
-        for((a1,b1) <- a) {
+        for((a1,b1) <- b) {
           if (b1 > args.threshold) {
             val fnl = log10(((b1 * totalVal) / mutableMapBC.value.get(a1).get * mutableMapBC.value.get(a).get ))
             map += (a1 -> (fnl, b1))
