@@ -61,7 +61,9 @@ object BigramCount extends Tokenizer {
       tokenize(line) // every line is now a list of tokens
     }) // alpha
     .filter(line => (line.length > 1)) // no bigrams here -> LIST OF LINES
-    .map(line => line.sliding(2).toList)
+    .map(line => line.sliding(2).toList
+    .map(pair => (pair(0), pair(1)))
+    )
     .map(bigram => (bigram, 1))
     .reduceByKey(_ + _)
 
