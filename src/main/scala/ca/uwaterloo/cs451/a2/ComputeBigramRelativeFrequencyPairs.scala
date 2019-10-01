@@ -89,7 +89,7 @@ object BigramCount extends Tokenizer {
       }
     })
 
-    reducedFinal.foreach(println)
+    // reducedFinal.foreach(println)
 
     // loop over this and export values
     
