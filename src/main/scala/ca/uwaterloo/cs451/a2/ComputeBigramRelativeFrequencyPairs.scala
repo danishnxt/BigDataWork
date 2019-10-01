@@ -27,6 +27,7 @@ import org.apache.hadoop.fs._
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.rogach.scallop._
+import scala.collection.mutable.HashMap
 
 class Conf(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
@@ -65,18 +66,27 @@ object BigramCount extends Tokenizer {
     .map(pair => (pair(0), pair(1)))
     ).collect().flatten
     val reducedA = (sc.parallelize(bigramList.map(bigram => (bigram, 1)))).reduceByKey(_+_)
-    // reducedA.foreach(println)
 
     val bigramACount = bigramList.map({
         case ((a:String,b:String)) => (a, "*")
       }) // export a first one
     .map(bigram => (bigram, 1.0))
-
     val reducedB = sc.parallelize(bigramACount).reduceByKey(_+_)
-    // reducedB.foreach(println)
+
+    val mutableMap = new scala.collection.mutable.HashMap[String, Double]
+
+    reducedB.collect().toList foreach {
+      case (((a:String, b:String),c:Double)) => {
+        mutableMap.update(a,c)
+      }
+    }
+
+    println(mutableMap)
 
     val reducedC = reducedA.collect() ++ reducedB.collect()
-    reducedC.foreach(println)
+
+    // loop over this and export values
+    
 
 
   }
