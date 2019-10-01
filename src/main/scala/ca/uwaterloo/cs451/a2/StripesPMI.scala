@@ -27,17 +27,20 @@ import org.apache.hadoop.fs._
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.rogach.scallop._
+import scala.collection.mutable.Map
 import scala.collection.mutable.HashMap
+import scala.math.log10
 
-class Conf(args: Seq[String]) extends ScallopConf(args) {
+class ConfD(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
   val input = opt[String](descr = "input path", required = true)
   val output = opt[String](descr = "output path", required = true)
   val reducers = opt[Int](descr = "number of reducers", required = false, default = Some(1))
+  val threshold = opt[Int](descr = "Threshold to report pairs with", required = false, default = Some(1))
   verify()
 }
 
-object ComputeBigramRelativeFrequencyPairs extends Tokenizer {
+object StripesPMI extends Tokenizer {
   
   val log = Logger.getLogger(getClass().getName())
 
@@ -48,26 +51,49 @@ object ComputeBigramRelativeFrequencyPairs extends Tokenizer {
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
-    val conf = new SparkConf().setAppName("ComputeBigramRelativeFrequencyPairs")
-    val sc = new SparkContext(conf)
+    val confD = new SparkConf().setAppName("StripesPMI")
+    val sc = new SparkContext(confC)
 
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
-    val textFile = sc.textFile(args.input())
+    val textFile = sc.textFile(args.input(), args.reducers()) // read divided
+    
+    // JOB 1 //
 
-    val bigramCount = textFile.flatMap(line => {
+    val unigramCount = textFile.map(line => {
       tokenize(line) // every line is now a list of tokens
-    })
-    .filter(line => (line.length > 1))
-	.map(line => {
-		val valActual = line.sliding2().map(p => (p(0), p(1).toString))
-		val valFirst = line.sliding(2).map(p => (p(0), "*".toString))
-		valActual ++ valFirst // MERGE THE TWO TOGETHER
-	})//.map(val => (val, 1))
-	//.sortByKey()
-	//.reduce.Key(_+_) // counts are now available
+    }) // alpha
+    // .filter(line => (line.length > 1))
+    .map(line => "*" :: line)
+    .map(line => line.distinct).flatMap(line => {
+      line
+    }).map(bigram => (bigram, 1.0))
+    .reduceByKey(_+_)
 
-	bigramCount.foreach(println)
+    val mutableMap = new scala.collection.mutable.HashMap[String, Double]
+
+    (unigramCount.collect().toList) foreach {tup =>
+      mutableMap.update(tup._1, tup._2)  
+    }
+
+    val mutableMapBC = sc.broadcast(mutableMap)
+    // end of JOB 1 -> Pushing map to a broadcast var
+
+    // JOB 2 //
+
+    val stripesA = textFile.flatMap(line => {
+      val tks = tokenize(line)
+	  if (tks.length > 1)
+	  tks.take(40) // inital token 40 
+	  .distinct
+	  .map(tkn => (tkn, tkn.take(40).distinct.filterNot(_.equals(tkn)))) else List()  // mix with other tokens upto limit of 40 -> optimized possible thru sep variable for this
+    }).flatMapValues(alpha => alpha)
+	
+	val stripesB = stripesA.groupByKey().mapValues(val => val.groupBy(_.toString)).mapValues(_.size)
+	
+	
+  
+    finalCount.saveAsTextFile(args.output())
   }
 }
