@@ -74,7 +74,7 @@ object BigramCount extends Tokenizer {
         case ((a:String,b:String)) => (a, "*")
       }) // export a first one
     .map(bigram => (bigram, 1.0))
-    // .reduceByKey(_+_)
+    .reduceByKey(_+_)
 
     bigramACount.foreach(println) // print this garbage out :) 
 
