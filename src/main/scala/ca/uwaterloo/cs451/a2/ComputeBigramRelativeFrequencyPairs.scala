@@ -57,7 +57,7 @@ object BigramCount extends Tokenizer {
     
     // JOB 1 //
 
-    val bigramList = textFile.flatMap(line => {
+    val bigramList = textFile.map(line => {
       tokenize(line) // every line is now a list of tokens
     }) // alpha
     .filter(line => (line.length > 1)) // no bigrams here -> LIST OF LINES
