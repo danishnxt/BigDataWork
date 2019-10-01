@@ -90,12 +90,14 @@ object StripesPMI extends Tokenizer {
       .map(tkn => (tkn, tkn.take(40).distinct.filterNot(_.equals(tkn)))) else List()  // mix with other tokens upto limit of 40 -> optimized possible thru sep variable for this
     }).flatMapValues(alpha => alpha)
 
-   val totalVal = mutableMapBC.value.get("*").get 
-	
-    val stripesB = stripesA.groupByKey()
-    .mapValues(valu => valu.groupBy(_.toString).mapValues(_.size.toDouble).filter(_._2 >= args.threshold)) // passing thru an arg filter
+    stripesA.foreach(println)
 
-    stripesB.foreach(println)
+  //  val totalVal = mutableMapBC.value.get("*").get 
+	
+    // val stripesB = stripesA.groupByKey()
+    // .mapValues(valu => valu.groupBy(_.toString).mapValues(_.size.toDouble).filter(_._2 >= args.threshold)) // passing thru an arg filter
+
+    // stripesB.foreach(println)
 
     // val stripesC = stripesB.map({
     //   case (a,b) => 
@@ -111,6 +113,6 @@ object StripesPMI extends Tokenizer {
     //     }
     // })
 
-      stripesC.saveAsTextFile(args.output())
+      // stripesC.saveAsTextFile(args.output())
     }
   }
