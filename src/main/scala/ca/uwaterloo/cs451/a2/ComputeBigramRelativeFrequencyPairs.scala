@@ -67,7 +67,7 @@ object BigramCount extends Tokenizer {
 
     val bigramACount = bigramList.map(line => {
       line.map({
-        case (a:String, b:String) => (a, "*") // export a first one
+        case ((a:String, b:String)) => (a, "*") // export a first one
       })
     }).flatten
     .map(bigram => (bigram, 1.0))
