@@ -84,16 +84,28 @@ object StripesPMI extends Tokenizer {
 
     val stripesA = textFile.flatMap(line => {
       val tks = tokenize(line)
-	  if (tks.length > 1)
-	  tks.take(40) // inital token 40 
-	  .distinct
-	  .map(tkn => (tkn, tkn.take(40).distinct.filterNot(_.equals(tkn)))) else List()  // mix with other tokens upto limit of 40 -> optimized possible thru sep variable for this
+      if (tks.length > 1)
+      tks.take(40) // inital token 40 
+      .distinct
+      .map(tkn => (tkn, tkn.take(40).distinct.filterNot(_.equals(tkn)))) else List()  // mix with other tokens upto limit of 40 -> optimized possible thru sep variable for this
     }).flatMapValues(alpha => alpha)
 	
-	val stripesB = stripesA.groupByKey().mapValues(val => val.groupBy(_.toString)).mapValues(_.size)
-	
-	
-  
+	val stripesB = stripesA.groupByKey().mapValues(valu => valu.groupBy(_.toString).mapValues(_.size.toDouble).filter(_._2 >= args.threshold)) // passing thru an arg filter
+
+  val stripesC = stripesB({
+    case (a,b) => 
+      val map = new scala.collection.mutable.HashMap[String, (Double, Double)]()
+      for((a1,b1) <- a) {
+        if (b1 > args.threshold) {
+          val fnl = log10()
+          map += (a1 -> (fnl, b1))
+        }
+      }
+      if (!map.isEmpty) {
+        (a, map) // initilize value first time
+      }
+  })
+
     finalCount.saveAsTextFile(args.output())
   }
 }
