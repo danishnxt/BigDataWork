@@ -95,19 +95,21 @@ object StripesPMI extends Tokenizer {
     val stripesB = stripesA.groupByKey()
     .mapValues(valu => valu.groupBy(_.toString).mapValues(_.size.toDouble).filter(_._2 >= args.threshold)) // passing thru an arg filter
 
-    val stripesC = stripesB.map({
-      case (a,b) => 
-        val map = new scala.collection.mutable.HashMap[String, (Double, Double)]()
-        for((a1,b1) <- b) {
-          if (b1 > args.threshold) {
-            val fnl = log10(((b1 * totalVal) / mutableMapBC.value.get(a1).get * mutableMapBC.value.get(a).get ))
-            map += (a1 -> (fnl, b1))
-          }
-        }
-        if (!map.isEmpty) {
-          (a, map) // initilize value first time
-        }
-    })
+    stripesB.foreach(println)
+
+    // val stripesC = stripesB.map({
+    //   case (a,b) => 
+    //     val map = new scala.collection.mutable.HashMap[String, (Double, Double)]()
+    //     for((a1:String,b1:Double) <- b) {
+    //       if (b1 > args.threshold) {
+    //         val fnl = log10(((b1 * totalVal) / mutableMapBC.value.get(a1).get * mutableMapBC.value.get(a).get ))
+    //         map += (a1 -> (fnl, b1))
+    //       }
+    //     }
+    //     if (!map.isEmpty) {
+    //       (a, map) // initilize value first time
+    //     }
+    // })
 
       stripesC.saveAsTextFile(args.output())
     }
