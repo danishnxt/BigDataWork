@@ -59,7 +59,7 @@ object BigramCount extends Tokenizer {
     val bigramList = textFile.flatMap(line => {
       tokenize(line)
 	  .filter(line => (line.length > 1))
-	  .sliding(2).map(pair_list => (pair_list(0), pair_list(1))) else List() // 
+	  .sliding(2).map(pair_list => (pair_list(0), pair_list(1))) // 
     })
 	
 	val bigramValue = bigramList.groupByKey(arg.reducers())
