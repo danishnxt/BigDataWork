@@ -61,7 +61,7 @@ object BigramCount extends Tokenizer {
     
     // JOB 1 //
 
-    val unigramCount = textFileBC.map(line => {
+    val unigramCount = textFileBC.value.map(line => {
       tokenize(line) // every line is now a list of tokens
     }) // alpha
     // .filter(line => (line.length > 1))
@@ -83,7 +83,7 @@ object BigramCount extends Tokenizer {
 
     // JOB 2 //
 
-    val bigramCount = textFileBC.map(line => {
+    val bigramCount = textFileBC.value.map(line => {
       tokenize(line)
     })//.filter(line => (line.length > 1))
     .map(line => {
@@ -105,7 +105,7 @@ object BigramCount extends Tokenizer {
 
     // PMI => 
 
-    val totalVal = mutableMapBC.get("*").get
+    val totalVal = mutableMapBC.value.get("*").get
 
     val finalCount = bigramCount.map({ 
       case ((a:String, b:String), c:Double) =>
