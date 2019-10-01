@@ -31,7 +31,7 @@ import scala.collection.mutable.Map
 import scala.collection.mutable.HashMap
 import scala.math.log10
 
-class Conf(args: Seq[String]) extends ScallopConf(args) {
+class ConfA(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
   val input = opt[String](descr = "input path", required = true)
   val output = opt[String](descr = "output path", required = true)
@@ -50,8 +50,8 @@ object PairsPMI extends Tokenizer {
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
-    val conf = new SparkConf().setAppName("PairsPMI")
-    val sc = new SparkContext(conf)
+    val confA = new SparkConf().setAppName("PairsPMI")
+    val sc = new SparkContext(confA)
 
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
