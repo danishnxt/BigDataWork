@@ -81,15 +81,16 @@ object BigramCount extends Tokenizer {
       }
     }
 
-    val reducedC = reducedA.collect() ++ reducedB.collect()
+    val reducedC = reducedA.collect() ++ reducedB.collect() // do this once
+    val redC = sc.broadcast(reducedC)
 
-    val reducedFinal = reducedC.map({
+    val map = sc.broadcast(mutableMap)
+
+    val reducedFinal = redC.value.map({
       case ((a:String, b:String),c:Double) => {
-        if (b == "*") ((a,b),c) else ((a,b),(c/mutableMap.get(a).get))
+        if (b == "*") ((a,b),c) else ((a,b),(c/map.value.get(a).get))
       }
     })
-
-    // reducedFinal.foreach(println)
 
     // loop over this and export values
     
