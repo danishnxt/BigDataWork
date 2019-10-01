@@ -27,9 +27,6 @@ import org.apache.hadoop.fs._
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.rogach.scallop._
-import scala.collection.mutable.Map
-import scala.collection.mutable.HashMap
-import scala.math.log10
 
 class Conf(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output, reducers)
@@ -63,53 +60,13 @@ object BigramCount extends Tokenizer {
     val unigramCount = textFile.map(line => {
       tokenize(line) // every line is now a list of tokens
     }) // alpha
-    // .filter(line => (line.length > 1))
+    .filter(line => (line.length > 1))
     .map(line => "*" :: line)
     .map(line => line.distinct).flatMap(line => {
       line
     }).map(bigram => (bigram, 1.0))
     .reduceByKey(_+_)
+    .saveAsTextFile(args.output())
 
-    val mutableMap = new scala.collection.mutable.HashMap[String, Double]
-
-    (unigramCount.collect().toList) foreach {tup =>
-      mutableMap.update(tup._1, tup._2)  
-    }
-
-    val mutableMapBC = sc.broadcast(mutableMap)
-    // end of JOB 1 -> Pushing map to a broadcast var
-
-    // JOB 2 //
-
-    val bigramCount = textFile.map(line => {
-      tokenize(line)
-    })//.filter(line => (line.length > 1))
-    .map(line => {
-      line.map(w1 => {
-        line.map(w2 => {
-          (w1, w2) // create pairs
-          })
-        }).flatten.distinct
-      })
-    .flatMap(line => line) // flatten everything and export
-    .filter({
-      case (a:String, b:String) => {
-        (a != b) // must be different
-      }
-    }).map(bigram => (bigram, 1.0))
-    .reduceByKey(_+_)
-
-    // JOB 2 AGGREGATION COMPLETE TIME TO FIND THE PMI 
-
-    // PMI => 
-
-    val totalVal = mutableMapBC.value.get("*").get
-
-    val finalCount = bigramCount.map({ 
-      case ((a:String, b:String), c:Double) =>
-        ((a,b),(log10((((c)/(totalVal)) / ((mutableMapBC.value.get(a).get/totalVal) * (mutableMapBC.value.get(b).get/totalVal)))), c))
-    }) // This might not parallelize properly hmm
-  
-    finalCount.saveAsTextFile(args.output())
   }
 }
