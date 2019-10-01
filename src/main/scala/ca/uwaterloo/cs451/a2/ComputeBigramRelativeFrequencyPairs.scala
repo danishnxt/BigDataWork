@@ -47,7 +47,7 @@ object BigramCount extends Tokenizer {
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
 
-    val conf = new SparkConf().setAppName("PMI-Pairs")
+    val conf = new SparkConf().setAppName("BigramCount")
     val sc = new SparkContext(conf)
 
     val outputDir = new Path(args.output())
@@ -57,16 +57,23 @@ object BigramCount extends Tokenizer {
     
     // JOB 1 //
 
-    val unigramCount = textFile.map(line => {
+    val bigramList = textFile.map(line => {
       tokenize(line) // every line is now a list of tokens
     }) // alpha
-    .filter(line => (line.length > 1))
-    .map(line => "*" :: line)
-    .map(line => line.distinct).flatMap(line => {
-      line
-    }).map(bigram => (bigram, 1.0))
+    .filter(line => (line.length > 1)) // no bigrams here -> LIST OF LINES
+    map(line => {
+      line.sliding(2).map(p => p.mkString(" ")).toList
+    }) //list of lists containing bigrams
+
+    val bigramACount = bigramList.map(line => {
+      line.map({
+        case (a:String, b:String) => (a, "*") // export a first one
+      })
+    }).flatten
+    .map(bigram => (bigram, 1.0))
     .reduceByKey(_+_)
-    .saveAsTextFile(args.output())
+
+    bigramACount.foreach(println) // print this garbage out :) 
 
   }
 }
