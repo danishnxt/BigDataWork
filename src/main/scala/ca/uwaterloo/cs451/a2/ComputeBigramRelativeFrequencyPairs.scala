@@ -62,7 +62,7 @@ object BigramCount extends Tokenizer {
     }) // alpha
     .filter(line => (line.length > 1)) // no bigrams here -> LIST OF LINES
     .map(line => {
-      (line.sliding(2).toList).zipped.toList
+      line.sliding(2).toList.zipped.toList
     })
 
     bigramList.foreach(println) // print this garbage out :) 
