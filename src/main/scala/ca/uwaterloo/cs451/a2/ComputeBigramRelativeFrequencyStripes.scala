@@ -62,8 +62,7 @@ object ComputeBigramRelativeFrequencyStripes extends Tokenizer {
 	  .sliding(2).map(pair_list => (pair_list(0), pair_list(1))) // 
     })
 	
-	val bigramValue = bigramList.groupByKey(args.reducers()) // compule lists
-	.mapValues(point => point.groupBy(identity).mapValues(_.size.toDouble/point.size)) // for each pair calculate over total list size
+	val bigramValue = bigramList.groupByKey(args.reducers()).mapValues(point => point.groupBy(identity).mapValues(_.size.toDouble/point.size)) // for each pair calculate over total list size
 	
   bigramValue.foreach(println)
 	bigramValue.saveAsTextFile(args.output()) // saving to file normally
