@@ -54,16 +54,16 @@ object ComputeBigramRelativeFrequencyStripes extends Tokenizer {
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
-    val textFile = sc.textFile(args.input())
+    val textFile = sc.textFile(args.input(), args.reducers())
 
     val bigramList = textFile.flatMap(line => {
       tokenize(line)
-	  .filter(line => (line.length > 1))
+	  .filter(line => (line.length > 1)) // ignoring all that don't have any bigrams
 	  .sliding(2).map(pair_list => (pair_list(0), pair_list(1))) // 
     })
 	
-	val bigramValue = bigramList.groupByKey(args.reducers())
-	.mapValues(point => point.groupBy(identity).mapValues(_.size.toDouble/point.size))
+	val bigramValue = bigramList.groupByKey(args.reducers()) // compule lists
+	.mapValues(point => point.groupBy(identity).mapValues(_.size.toDouble/point.size)) // for each pair calculate over total list size
 	
 	bigramValue.saveAsTextFile(args.output()) // saving to file normally
 	
