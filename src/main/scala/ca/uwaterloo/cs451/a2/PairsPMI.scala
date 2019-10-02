@@ -36,7 +36,7 @@ class ConfC(args: Seq[String]) extends ScallopConf(args) {
   val input = opt[String](descr = "input path", required = true)
   val output = opt[String](descr = "output path", required = true)
   val reducers = opt[Int](descr = "number of reducers", required = false, default = Some(1))
-  val threshold = opt[Int](descr = "Threshold to report pairs with", required = false, default = Some(1))
+  val threshold = opt[Double](descr = "Threshold to report pairs with", required = false, default = Some(1))
   verify()
 }
 
@@ -50,6 +50,7 @@ object PairsPMI extends Tokenizer {
     log.info("Input: " + args.input())
     log.info("Output: " + args.output())
     log.info("Number of reducers: " + args.reducers())
+    log.info("Threshold: " + args.threshold())
 
     val confC = new SparkConf().setAppName("PairsPMI")
     val sc = new SparkContext(confC)
