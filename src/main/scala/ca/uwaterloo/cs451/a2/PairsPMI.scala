@@ -107,7 +107,7 @@ object PairsPMI extends Tokenizer {
 
     val totalVal = mutableMapBC.value.get("*").get
 
-    bigramCountA = bigramCount.filter({
+    val bigramCountA = bigramCount.filter({
       case ((a:String, b:String), c:Double) => {
         (c > args.threshold)
       }
