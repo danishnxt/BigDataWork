@@ -111,7 +111,7 @@ object PairsPMI extends Tokenizer {
 
     val bigramCountA = bigramCount.filter({
       case ((a:String, b:String), c:Double) => {
-        (c > thres.get)
+        (c > thres.getOrElse(1))
       }
     })
 
