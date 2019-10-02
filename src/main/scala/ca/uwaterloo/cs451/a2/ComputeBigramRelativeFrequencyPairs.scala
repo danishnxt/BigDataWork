@@ -56,7 +56,7 @@ object ComputeBigramRelativeFrequencyPairs extends Tokenizer {
 
     val textFile = sc.textFile(args.input(), args.reducers())
     
-    // JOB 1 //
+    // File changed from stripes to implement "*" total count implmentation
 
     val bigramList = textFile.map(line => {
       tokenize(line) // every line is now a list of tokens
