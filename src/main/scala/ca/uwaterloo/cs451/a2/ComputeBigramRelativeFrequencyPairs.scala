@@ -92,7 +92,7 @@ object ComputeBigramRelativeFrequencyPairs extends Tokenizer {
       }
     })
 
-    reducedFinal.saveAsTextFile(args.output())
+    reducedFinal.toList.saveAsTextFile(args.output())
 
   }
 }
