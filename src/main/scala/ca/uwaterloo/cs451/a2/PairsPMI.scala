@@ -36,7 +36,7 @@ class ConfC(args: Seq[String]) extends ScallopConf(args) {
   val input = opt[String](descr = "input path", required = true)
   val output = opt[String](descr = "output path", required = true)
   val reducers = opt[Int](descr = "number of reducers", required = false, default = Some(1))
-  val threshold = opt[Double](descr = "Threshold to report pairs with", required = false, default = 1.0)
+  val threshold = opt[Double](descr = "Threshold to report pairs with", required = false, default = Some(1.0))
   verify()
 }
 
