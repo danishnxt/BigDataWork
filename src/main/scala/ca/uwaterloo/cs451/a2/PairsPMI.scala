@@ -107,9 +107,11 @@ object PairsPMI extends Tokenizer {
 
     val totalVal = mutableMapBC.value.get("*").get
 
+    val thres = args.threshold
+
     val bigramCountA = bigramCount.filter({
       case ((a:String, b:String), c:Double) => {
-        (c > args.threshold)
+        (c > thres)
       }
     })
 
@@ -118,6 +120,6 @@ object PairsPMI extends Tokenizer {
         ((a,b),(log10((((c)/(totalVal)) / ((mutableMapBC.value.get(a).get/totalVal) * (mutableMapBC.value.get(b).get/totalVal)))), c))
     }) // This might not parallelize properly
   
-    finalCount.saveAsTextFile(args.output())
+    finalCount.toList.saveAsTextFile(args.output())
   }
 }
