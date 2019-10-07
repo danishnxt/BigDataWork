@@ -52,10 +52,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
   private void initialize(String indexPath, String collectionPath, FileSystem fs) throws IOException {
 
     ContentSummary cs = fs.getContentSummary(new Path(indexPath));
-
-
-
-    reducers = ((int) cs.getFileCount()) - 2; // removing the single extra file
+    reducers = ((int) cs.getFileCount()) - 3; // removing the single extra file
     indexArr = new MapFile.Reader[reducers]; // declared
 
     System.out.println("Hello there -> Here are out files " + Integer.toString(reducers));
