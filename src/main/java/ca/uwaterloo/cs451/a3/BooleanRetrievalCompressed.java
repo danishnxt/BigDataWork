@@ -163,7 +163,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     // DECODE DATA
     byte[] dataReadBytes = value.getBytes(); // pull data into array
 
-    print
+    print("LENGTH OF SOMETHING -> >>>>>>>>>>" + Integer.toString(dataReadBytes.length));
 
     ArrayListWritable<PairOfInts> returnValue = new ArrayListWritable<PairOfInts>(); // will populate results here
 
