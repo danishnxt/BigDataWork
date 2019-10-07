@@ -53,8 +53,12 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
     ContentSummary cs = fs.getContentSummary(new Path(indexPath));
 
+
+
     reducers = ((int) cs.getFileCount()) - 2; // removing the single extra file
     indexArr = new MapFile.Reader[reducers]; // declared
+
+    System.out.println("Hello there -> Here are out files " + Integer.toString(reducers));
 
     if (reducers < 10) {
         stringInit = "/part-r-0000";
