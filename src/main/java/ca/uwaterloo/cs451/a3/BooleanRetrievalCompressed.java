@@ -40,18 +40,21 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 public class BooleanRetrievalCompressed extends Configured implements Tool {
-  private MapFile.Reader index;
   private FSDataInputStream collection;
   private Stack<Set<Integer>> stack;
   private int reducers;
-
-
-  private MapFile.Reader indexArr []; // declared
   private String stringInit = "";
+  private MapFile.Reader [] indexArr;
 
   private BooleanRetrievalCompressed() {}
 
   private void initialize(String indexPath, String collectionPath, FileSystem fs) throws IOException {
+
+    File folder = new File("indexPath");
+    File[] listOfFiles = folder.listFiles();
+
+    reducers = listOfFiles.length - 1; // removing the single extra file
+    indexArr = new MapFile.Reader[reducers]; // declared
 
     if (reducers < 10) {
         stringInit = "/part-r-0000";
