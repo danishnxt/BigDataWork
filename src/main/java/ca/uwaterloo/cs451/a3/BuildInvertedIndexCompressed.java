@@ -132,7 +132,6 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
 
       // done with all these values, update current word (will override if next value = same word)
       currentRunningWord = key.getLeftElement(); // to compare to next time
-
     }
 
     @Override
@@ -142,8 +141,11 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
       dataStream.flush();
       byteStream.flush();
 
-      ByteArrayOutputStream byteEmitVal = new ByteArrayOutputStream(); // same as before, only for reordering
+      ByteArrayOutputStream byteEmitVal = new ByteArrayOutputStream();
       DataOutputStream dataEmitVal = new DataOutputStream(byteEmitVal);
+
+      // This reordering is needed to match the required (int, [int,int]) output type as specified
+      // it also makes reading the file in easier since we know how many values to expect
 
       WritableUtils.writeVInt(dataEmitVal, cumDF); // this need to be first thing that is read
       dataEmitVal.write(byteStream.toByteArray()); // add the rest after

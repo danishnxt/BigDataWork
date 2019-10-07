@@ -16,6 +16,7 @@
 
 package ca.uwaterloo.cs451.a3;
 
+import org.apache.arrow.vector.complex.reader.BaseReader;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -42,16 +43,32 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
   private MapFile.Reader index;
   private FSDataInputStream collection;
   private Stack<Set<Integer>> stack;
+  private int reducers;
+
+
+  private MapFile.Reader indexArr []; // declared
+  private String stringInit = "";
 
   private BooleanRetrievalCompressed() {}
 
   private void initialize(String indexPath, String collectionPath, FileSystem fs) throws IOException {
 
-    System.out.println("ARE WE OK THIS FAR? I1"); // decoding happens after this we need to be ok to this point
-    index = new MapFile.Reader(new Path(indexPath + "/part-r-00000"), fs.getConf());
-    System.out.println("ARE WE OK THIS FAR? I2"); // decoding happens after this we need to be ok to this point
+    if (reducers < 10) {
+        stringInit = "/part-r-0000";
+    } else {
+        // assuming no more than 99 reducers will ever be stress tested with
+      stringInit = "/part-r-000";
+    }
+
+    for (int i = 0; i < reducers; i++) {
+      indexArr[i] = new MapFile.Reader(new Path(indexPath + stringInit + Integer.toString(i)), fs.getConf());
+    }
+
+//    System.out.println("ARE WE OK THIS FAR? I1"); // decoding happens after this we need to be ok to this point
+//    index = new MapFile.Reader(new Path(indexPath + "/part-r-00000"), fs.getConf());
+//    System.out.println("ARE WE OK THIS FAR? I2"); // decoding happens after this we need to be ok to this point
     collection = fs.open(new Path(collectionPath));
-    System.out.println("ARE WE OK THIS FAR? I3"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? I3"); // decoding happens after this we need to be ok to this point
     stack = new Stack<>();
   }
 
@@ -124,18 +141,20 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
   private ArrayListWritable<PairOfInts> fetchPostings(String term) throws IOException {
 
-    System.out.println("ARE WE OK THIS FAR? 5"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 5"); // decoding happens after this we need to be ok to this point
       // THIS IS WHERE MOST OF THE CODE CHANGE WILL TAKE PLACE AS WE DECODE FROM THE STOP GAP FORMAT INTO THIS
 
     Text key = new Text();
     BytesWritable value = new BytesWritable(); // need to load it into the correct datatype
+//    System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
 
-    System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
+    // decide which index to check for value -> replicate behaviour of the partioner from the other file
+    int partitionSelect = ((key.hashCode() & Integer.MAX_VALUE) % reducers);
 
     key.set(term);
-    index.get(key, value);
+    indexArr[partitionSelect].get(key, value);
 
-    System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
 
     // DECODE DATA
     byte[] dataReadBytes = value.getBytes(); // pull data into array
