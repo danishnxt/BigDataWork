@@ -21,6 +21,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.MapFile;
 import org.apache.hadoop.io.Text;
@@ -133,8 +134,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
       // THIS IS WHERE MOST OF THE CODE CHANGE WILL TAKE PLACE AS WE DECODE FROM THE STOP GAP FORMAT INTO THIS
 
     Text key = new Text();
-    PairOfWritables<IntWritable, ArrayListWritable<PairOfInts>> value =
-        new PairOfWritables<>();
+    BytesWritable value = new BytesWritable(); // need to load it into the correct datatype
 
     System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
 
