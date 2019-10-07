@@ -63,7 +63,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
       stringInit = "/part-r-000";
     }
 
-    System.out.println("Hello there -> We have this number of files -> " + Integer.toString(reducers));
+//    System.out.println("Hello there -> We have this number of files -> " + Integer.toString(reducers));
 
     for (int i = 0; i < reducers; i++) {
       indexArr[i] = new MapFile.Reader(new Path(indexPath + stringInit + Integer.toString(i)), fs.getConf());
@@ -146,19 +146,19 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
   private ArrayListWritable<PairOfInts> fetchPostings(String term) throws IOException {
 
-    System.out.println("ARE WE OK THIS FAR? 5"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 5"); // decoding happens after this we need to be ok to this point
       // THIS IS WHERE MOST OF THE CODE CHANGE WILL TAKE PLACE AS WE DECODE FROM THE STOP GAP FORMAT INTO THIS
 
     Text key = new Text();
     BytesWritable value = new BytesWritable(); // need to load it into the correct datatype
-    System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
 
     // decide which index to check for value -> replicate behaviour of the partioner from the other file
     key.set(term);
     int partitionSelect = ((term.hashCode() & Integer.MAX_VALUE) % reducers);
     indexArr[partitionSelect].get(key, value);
 
-    System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
 
     // DECODE DATA
     byte[] dataReadBytes = value.getBytes(); // pull data into array
@@ -167,17 +167,17 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
     ArrayListWritable<PairOfInts> returnValue = new ArrayListWritable<PairOfInts>(); // will populate results here
 
-    System.out.println("DEBUG POINT -1 ->");
+//    System.out.println("DEBUG POINT -1 ->");
 
     ByteArrayInputStream byteStreamRead = new ByteArrayInputStream(dataReadBytes);
     DataInputStream dataStreamRead = new DataInputStream(byteStreamRead); // ready to access
 
-    System.out.println("DEBUG POINT 0 ->");
+//    System.out.println("DEBUG POINT 0 ->");
 
     int cumDocVal = 0; // will keeping adding in this to get old values back
     int cumDF = WritableUtils.readVInt(dataStreamRead); // did we write this in the end...?
 
-    System.out.println("DEBUG POINT 1 ->" + Integer.toString(cumDF));
+//    System.out.println("DEBUG POINT 1 ->" + Integer.toString(cumDF));
 
     // For all values, add up cummulatively the dataGap and return from VINT to int the freq counts
 
@@ -185,12 +185,12 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
       int valueGap = WritableUtils.readVInt(dataStreamRead);
       int freq = WritableUtils.readVInt(dataStreamRead);
 
-      System.out.println("  DEBUG POINT 2 ->" + Integer.toString(valueGap));
-      System.out.println("  DEBUG POINT 3 ->" + Integer.toString(freq));
+//      System.out.println("  DEBUG POINT 2 ->" + Integer.toString(valueGap));
+//      System.out.println("  DEBUG POINT 3 ->" + Integer.toString(freq));
 
       cumDocVal = cumDocVal + valueGap;
 
-      System.out.println("  DEBUG POINT 4 ->" + Integer.toString(cumDocVal));
+//      System.out.println("  DEBUG POINT 4 ->" + Integer.toString(cumDocVal));
       returnValue.add(new PairOfInts(cumDocVal, freq)); //
     }
 
@@ -232,25 +232,25 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
       return -1;
     }
 
-    System.out.println("ARE WE OK THIS FAR? 1"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 1"); // decoding happens after this we need to be ok to this point
 
     if (args.collection.endsWith(".gz")) {
       System.out.println("gzipped collection is not seekable: use compressed version!");
       return -1;
     }
 
-    System.out.println("ARE WE OK THIS FAR? 2"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 2"); // decoding happens after this we need to be ok to this point
 
     FileSystem fs = FileSystem.get(new Configuration());
 
-    System.out.println("ARE WE OK THIS FAR? 3"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 3"); // decoding happens after this we need to be ok to this point
 
     initialize(args.index, args.collection, fs);
 
     System.out.println("Query: " + args.query);
     long startTime = System.currentTimeMillis();
 
-    System.out.println("ARE WE OK THIS FAR? 4"); // decoding happens after this we need to be ok to this point
+//    System.out.println("ARE WE OK THIS FAR? 4"); // decoding happens after this we need to be ok to this point
 
     runQuery(args.query);
     System.out.println("\nquery completed in " + (System.currentTimeMillis() - startTime) + "ms");
