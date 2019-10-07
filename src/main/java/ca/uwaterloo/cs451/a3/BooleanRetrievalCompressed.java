@@ -170,13 +170,20 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     int cumDocVal = 0; // will keeping adding in this to get old values back
     int cumDF = WritableUtils.readVInt(dataStreamRead); // did we write this in the end...?
 
+    System.out.println("DEBUG POINT 1 ->" + Integer.toString(cumDF));
+
     // For all values, add up cummulatively the dataGap and return from VINT to int the freq counts
 
     for (int i = 0; i < cumDF; i++) {
       int valueGap = WritableUtils.readVInt(dataStreamRead);
       int freq = WritableUtils.readVInt(dataStreamRead);
 
+      System.out.println("  DEBUG POINT 2 ->" + Integer.toString(valueGap));
+      System.out.println("  DEBUG POINT 3 ->" + Integer.toString(freq));
+
       cumDocVal = cumDocVal + valueGap;
+
+      System.out.println("  DEBUG POINT 4 ->" + Integer.toString(cumDocVal));
       returnValue.add(new PairOfInts(cumDocVal, freq)); //
     }
 
