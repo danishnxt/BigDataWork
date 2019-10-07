@@ -53,7 +53,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     File folder = new File(indexPath); //
     File[] listOfFiles = folder.listFiles();
 
-    reducers = listOfFiles.length - 1; // removing the single extra file
+    reducers = listOfFiles.length - 2; // removing the single extra file
     indexArr = new MapFile.Reader[reducers]; // declared
 
     if (reducers < 10) {
