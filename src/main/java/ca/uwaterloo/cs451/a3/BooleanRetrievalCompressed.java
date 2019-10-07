@@ -21,23 +21,19 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.MapFile;
-import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.*;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ParserProperties;
+import tl.lin.data.array.ArrayListOfInts;
 import tl.lin.data.array.ArrayListWritable;
 import tl.lin.data.pair.PairOfInts;
 import tl.lin.data.pair.PairOfWritables;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -126,8 +122,6 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     return set;
   }
 
-
-
   private ArrayListWritable<PairOfInts> fetchPostings(String term) throws IOException {
 
     System.out.println("ARE WE OK THIS FAR? 5"); // decoding happens after this we need to be ok to this point
@@ -143,13 +137,28 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
     System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
 
-    return value.getRightElement();
+    // DECODE DATA
+    byte[] dataReadBytes = value.getBytes(); // pull data into array
+    ArrayListWritable<PairOfInts> returnValue = new ArrayListWritable<PairOfInts>(); // will populate results here
+
+    ByteArrayInputStream byteStreamRead = new ByteArrayInputStream(dataReadBytes);
+    DataInputStream dataStreamRead = new DataInputStream(byteStreamRead); // ready to access
+
+    int cumDocVal = 0; // will keeping adding in this to get old values back
+    int cumDF = WritableUtils.readVInt(dataStreamRead);
+
+    // For all values, add up cummulatively the dataGap and return from VINT to int the freq counts
+
+    for (int i = 0; i < cumDF; i++) {
+      int valueGap = WritableUtils.readVInt(dataStreamRead);
+      int freq = WritableUtils.readVInt(dataStreamRead);
+
+      cumDocVal = cumDocVal + valueGap;
+      returnValue.add(new PairOfInts(cumDocVal, freq)); //
+    }
+
+    return returnValue; //
   }
-
-
-
-
-
 
   public String fetchLine(long offset) throws IOException {
     collection.seek(offset);
