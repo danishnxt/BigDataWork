@@ -155,13 +155,16 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
     // decide which index to check for value -> replicate behaviour of the partioner from the other file
     key.set(term);
-    int partitionSelect = ((key.hashCode() & Integer.MAX_VALUE) % reducers);
+    int partitionSelect = ((term.hashCode() & Integer.MAX_VALUE) % reducers);
     indexArr[partitionSelect].get(key, value);
 
     System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
 
     // DECODE DATA
     byte[] dataReadBytes = value.getBytes(); // pull data into array
+
+    print
+
     ArrayListWritable<PairOfInts> returnValue = new ArrayListWritable<PairOfInts>(); // will populate results here
 
     System.out.println("DEBUG POINT -1 ->");
