@@ -146,12 +146,12 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
   private ArrayListWritable<PairOfInts> fetchPostings(String term) throws IOException {
 
-//    System.out.println("ARE WE OK THIS FAR? 5"); // decoding happens after this we need to be ok to this point
+    System.out.println("ARE WE OK THIS FAR? 5"); // decoding happens after this we need to be ok to this point
       // THIS IS WHERE MOST OF THE CODE CHANGE WILL TAKE PLACE AS WE DECODE FROM THE STOP GAP FORMAT INTO THIS
 
     Text key = new Text();
     BytesWritable value = new BytesWritable(); // need to load it into the correct datatype
-//    System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
+    System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
 
     // decide which index to check for value -> replicate behaviour of the partioner from the other file
     int partitionSelect = ((key.hashCode() & Integer.MAX_VALUE) % reducers);
@@ -159,7 +159,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     key.set(term);
     indexArr[partitionSelect].get(key, value);
 
-//    System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
+    System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
 
     // DECODE DATA
     byte[] dataReadBytes = value.getBytes(); // pull data into array
