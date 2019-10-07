@@ -63,6 +63,8 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
       stringInit = "/part-r-000";
     }
 
+    System.out.println("Hello there -> We have this number of files -> " + Integer.toString(reducers));
+
     for (int i = 0; i < reducers; i++) {
       indexArr[i] = new MapFile.Reader(new Path(indexPath + stringInit + Integer.toString(i)), fs.getConf());
     }
