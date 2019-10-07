@@ -145,7 +145,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     DataInputStream dataStreamRead = new DataInputStream(byteStreamRead); // ready to access
 
     int cumDocVal = 0; // will keeping adding in this to get old values back
-    int cumDF = WritableUtils.readVInt(dataStreamRead);
+    int cumDF = WritableUtils.readVInt(dataStreamRead); // did we write this in the end...?
 
     // For all values, add up cummulatively the dataGap and return from VINT to int the freq counts
 

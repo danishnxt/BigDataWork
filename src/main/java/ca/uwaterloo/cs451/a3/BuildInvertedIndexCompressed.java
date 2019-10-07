@@ -104,13 +104,14 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
           dataStream.flush();
           byteStream.flush();
 
-          // possible further optimization -> create new exactly sized dataStream
-            // duplication in memory of the same data possible though?
+          ByteArrayOutputStream byteEmitVal = new ByteArrayOutputStream(); // same as before, only for reordering
+          DataOutputStream dataEmitVal = new DataOutputStream(byteEmitVal);
 
-          WritableUtils.writeVInt(dataStream, cumDF); //
+          WritableUtils.writeVInt(dataEmitVal, cumDF); // this need to be first thing that is read
+          dataEmitVal.write(byteStream.toByteArray()); // add the rest after
 
-          BytesWritable emit_list = new BytesWritable(byteStream.toByteArray());
-          context.write(new Text(currentRunningWord), emit_list);
+          BytesWritable emitList = new BytesWritable(byteEmitVal.toByteArray());
+          context.write(new Text(currentRunningWord), emitList);
 
           // reset all
           byteStream.reset(); // go again for next list
@@ -141,15 +142,14 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
       dataStream.flush();
       byteStream.flush();
 
-      // possible further optimization -> create new exactly sized dataStream
-      // duplication in memory of the same data possible though?
+      ByteArrayOutputStream byteEmitVal = new ByteArrayOutputStream(); // same as before, only for reordering
+      DataOutputStream dataEmitVal = new DataOutputStream(byteEmitVal);
 
-      WritableUtils.writeVInt(dataStream, cumDF); //
+      WritableUtils.writeVInt(dataEmitVal, cumDF); // this need to be first thing that is read
+      dataEmitVal.write(byteStream.toByteArray()); // add the rest after
 
-      BytesWritable emit_list = new BytesWritable(byteStream.toByteArray());
-      context.write(new Text(currentRunningWord), emit_list);
-
-      // reset all // not required anymore
+      BytesWritable emitList = new BytesWritable(byteEmitVal.toByteArray());
+      context.write(new Text(currentRunningWord), emitList);
 
       byteStream.close();
       dataStream.close();
