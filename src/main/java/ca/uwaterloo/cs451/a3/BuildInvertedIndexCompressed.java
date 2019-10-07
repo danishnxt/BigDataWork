@@ -107,9 +107,13 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
           // possible further optimization -> create new exactly sized dataStream
             // duplication in memory of the same data possible though?
 
-          WritableUtils.writeVInt(dataStream, cumDF); //
+          ByteArrayOutputStream byteFinal = new ByteArrayOutputStream(byteStream.size());
+          DataOutputStream dataFinal = new DataOutputStream(byteFinal);
 
-          BytesWritable emit_list = new BytesWritable(byteStream.toByteArray());
+          WritableUtils.writeVInt(dataFinal, cumDF); //
+          dataFinal.write(byteStream.toByteArray());
+
+          BytesWritable emit_list = new BytesWritable(byteFinal.toByteArray());
           context.write(new Text(currentRunningWord), emit_list);
 
           // reset all
@@ -144,9 +148,13 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
       // possible further optimization -> create new exactly sized dataStream
       // duplication in memory of the same data possible though?
 
-      WritableUtils.writeVInt(dataStream, cumDF); //
+      ByteArrayOutputStream byteFinal = new ByteArrayOutputStream(byteStream.size());
+      DataOutputStream dataFinal = new DataOutputStream(byteFinal);
 
-      BytesWritable emit_list = new BytesWritable(byteStream.toByteArray());
+      WritableUtils.writeVInt(dataFinal, cumDF); //
+      dataFinal.write(byteStream.toByteArray());
+
+      BytesWritable emit_list = new BytesWritable(byteFinal.toByteArray());
       context.write(new Text(currentRunningWord), emit_list);
 
       // reset all // not required anymore
