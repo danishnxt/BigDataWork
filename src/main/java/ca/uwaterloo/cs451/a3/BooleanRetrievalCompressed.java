@@ -50,7 +50,7 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
   private void initialize(String indexPath, String collectionPath, FileSystem fs) throws IOException {
 
-    File folder = new File("indexPath");
+    File folder = new File("indexPath/");
     File[] listOfFiles = folder.listFiles();
 
     reducers = listOfFiles.length - 1; // removing the single extra file
