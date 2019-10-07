@@ -164,8 +164,12 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     byte[] dataReadBytes = value.getBytes(); // pull data into array
     ArrayListWritable<PairOfInts> returnValue = new ArrayListWritable<PairOfInts>(); // will populate results here
 
+    System.out.println("DEBUG POINT -1 ->");
+
     ByteArrayInputStream byteStreamRead = new ByteArrayInputStream(dataReadBytes);
     DataInputStream dataStreamRead = new DataInputStream(byteStreamRead); // ready to access
+
+    System.out.println("DEBUG POINT 0 ->");
 
     int cumDocVal = 0; // will keeping adding in this to get old values back
     int cumDF = WritableUtils.readVInt(dataStreamRead); // did we write this in the end...?
