@@ -121,7 +121,12 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     return set;
   }
 
+
+
   private ArrayListWritable<PairOfInts> fetchPostings(String term) throws IOException {
+
+      // THIS IS WHERE MOST OF THE CODE CHANGE WILL TAKE PLACE AS WE DECODE FROM THE STOP GAP FORMAT INTO THIS
+
     Text key = new Text();
     PairOfWritables<IntWritable, ArrayListWritable<PairOfInts>> value =
         new PairOfWritables<>();
@@ -129,8 +134,15 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     key.set(term);
     index.get(key, value);
 
+    System.out.println("ARE WE OK THIS FAR?"); // decoding happens after this we need to be ok to this point
+
     return value.getRightElement();
   }
+
+
+
+
+
 
   public String fetchLine(long offset) throws IOException {
     collection.seek(offset);
