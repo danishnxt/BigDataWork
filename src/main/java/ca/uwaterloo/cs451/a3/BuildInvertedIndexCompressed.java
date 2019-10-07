@@ -174,7 +174,7 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
     @Option(name = "-output", metaVar = "[path]", required = true, usage = "output path")
     String output;
 
-    @Option(name = "-reducers", metaVar = "[path]", required = true, usage = "num reducers")
+    @Option(name = "-reducers", metaVar = "[path]", required = false, usage = "num reducers")
     int numReducers = 1;
   }
 
@@ -208,14 +208,15 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
     FileInputFormat.setInputPaths(job, new Path(args.input));
     FileOutputFormat.setOutputPath(job, new Path(args.output));
 
-    job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(PairOfInts.class);
+    job.setMapOutputKeyClass(PairOfStringInt.class);
+    job.setMapOutputValueClass(IntWritable.class);
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(PairOfWritables.class);
+    job.setOutputValueClass(BytesWritable.class);
     job.setOutputFormatClass(MapFileOutputFormat.class);
 
     job.setMapperClass(MyMapper.class);
     job.setReducerClass(MyReducer.class);
+    job.setPartitionerClass(MyPartitioner.class);
 
     // Delete the output directory if it exists already.
     Path outputDir = new Path(args.output);
