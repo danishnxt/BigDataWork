@@ -154,9 +154,8 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
     System.out.println("ARE WE OK THIS FAR? 6"); // decoding happens after this we need to be ok to this point
 
     // decide which index to check for value -> replicate behaviour of the partioner from the other file
-    int partitionSelect = ((key.hashCode() & Integer.MAX_VALUE) % reducers);
-
     key.set(term);
+    int partitionSelect = ((key.hashCode() & Integer.MAX_VALUE) % reducers);
     indexArr[partitionSelect].get(key, value);
 
     System.out.println("ARE WE OK THIS FAR? 7"); // decoding happens after this we need to be ok to this point
