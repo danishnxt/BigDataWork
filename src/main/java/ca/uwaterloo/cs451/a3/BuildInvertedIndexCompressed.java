@@ -20,11 +20,10 @@ import io.bespin.java.util.Tokenizer;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -39,10 +38,10 @@ import org.kohsuke.args4j.ParserProperties;
 import tl.lin.data.array.ArrayListWritable;
 import tl.lin.data.fd.Object2IntFrequencyDistribution;
 import tl.lin.data.fd.Object2IntFrequencyDistributionEntry;
-import tl.lin.data.pair.PairOfInts;
-import tl.lin.data.pair.PairOfObjectInt;
-import tl.lin.data.pair.PairOfWritables;
+import tl.lin.data.pair.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,8 +50,11 @@ import java.util.List;
 public class BuildInvertedIndexCompressed extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(BuildInvertedIndexCompressed.class);
 
-  private static final class MyMapper extends Mapper<LongWritable, Text, Text, PairOfInts> {
-    private static final Text WORD = new Text();
+  private static final class MyMapper extends Mapper<LongWritable, Text, PairOfStringInt, IntWritable> {
+
+    private static final IntWritable EMIT_COUNT = new IntWritable();
+    private static final PairOfStringInt KEY = new PairOfStringInt();
+
     private static final Object2IntFrequencyDistribution<String> COUNTS =
         new Object2IntFrequencyDistributionEntry<>();
 
@@ -67,35 +69,99 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
         COUNTS.increment(token);
       }
 
-      // Emit postings.
+      // EMIT ((),).
       for (PairOfObjectInt<String> e : COUNTS) {
-        WORD.set(e.getLeftElement());
-        context.write(WORD, new PairOfInts((int) docno.get(), e.getRightElement()));
+        EMIT_COUNT.set(e.getRightElement());
+        KEY.set(e.getLeftElement(), (int) docno.get());
+        context.write(KEY, EMIT_COUNT);
       }
     }
   }
 
   private static final class MyReducer extends
-      Reducer<Text, PairOfInts, Text, PairOfWritables<IntWritable, ArrayListWritable<PairOfInts>>> {
+      Reducer<PairOfStringInt, IntWritable, Text, BytesWritable> {
+
     private static final IntWritable DF = new IntWritable();
 
+    private static final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+    private static final DataOutputStream dataStream = new DataOutputStream(byteStream);
+    // the second needs the first byteStream to support it //
+    // variables to maintain counts //
+
+    String currentRunningWord = ""; // word we're currently building list for
+    int cumDF = 0;
+    int priorGapID = 0; // start at zero and increment
+
     @Override
-    public void reduce(Text key, Iterable<PairOfInts> values, Context context)
+    public void reduce(PairOfStringInt key, Iterable<IntWritable> values, Context context)
         throws IOException, InterruptedException {
-      Iterator<PairOfInts> iter = values.iterator();
+      Iterator<IntWritable> iter = values.iterator();
       ArrayListWritable<PairOfInts> postings = new ArrayListWritable<>();
 
-      int df = 0;
-      while (iter.hasNext()) {
-        postings.add(iter.next().clone());
-        df++;
+      if (!currentRunningWord.equals(""))  { // if yes then we've hit first word, no emit
+        if (!currentRunningWord.equals(key.getLeftElement())) { // word complete emit
+
+          dataStream.flush();
+          byteStream.flush();
+
+          // possible further optimization -> create new exactly sized dataStream
+            // duplication in memory of the same data possible though?
+
+          WritableUtils.writeVInt(dataStream, cumDF); //
+
+          BytesWritable emit_list = new BytesWritable(byteStream.toByteArray());
+          context.write(new Text(currentRunningWord), emit_list);
+
+          // reset all
+          byteStream.reset(); // go again for next list
+          priorGapID = 0;
+          cumDF = 0;
+
+        }
       }
 
-      // Sort the postings by docno ascending.
-      Collections.sort(postings);
+      while (iter.hasNext()) {
+        // push values onto list for current word
+        WritableUtils.writeVInt(dataStream, (key.getRightElement() - priorGapID)); // reduced value
+        WritableUtils.writeVInt(dataStream, iter.next().get());
+        priorGapID = key.getRightElement();
 
-      DF.set(df);
-      context.write(key, new PairOfWritables<>(DF, postings));
+        cumDF++; // keep an eye on total
+      }
+
+      // done with all these values, update current word (will override if next value = same word)
+      currentRunningWord = key.getLeftElement(); // to compare to next time
+
+    }
+
+    @Override
+    public void cleanup(Context context)
+        throws IOException, InterruptedException {
+
+      dataStream.flush();
+      byteStream.flush();
+
+      // possible further optimization -> create new exactly sized dataStream
+      // duplication in memory of the same data possible though?
+
+      WritableUtils.writeVInt(dataStream, cumDF); //
+
+      BytesWritable emit_list = new BytesWritable(byteStream.toByteArray());
+      context.write(new Text(currentRunningWord), emit_list);
+
+      // reset all // not required anymore
+
+      byteStream.close();
+      dataStream.close();
+    }
+
+  }
+
+  // this should sort it itself
+  private static final class MyPartitioner extends Partitioner<PairOfStringInt, IntWritable> {
+    @Override
+    public int getPartition(PairOfStringInt key, IntWritable value, int numReduceTasks) {
+      return (key.getLeftElement().hashCode() & Integer.MAX_VALUE) % numReduceTasks;
     }
   }
 
@@ -107,6 +173,9 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
 
     @Option(name = "-output", metaVar = "[path]", required = true, usage = "output path")
     String output;
+
+    @Option(name = "-reducers", metaVar = "[path]", required = true, usage = "num reducers")
+    int numReducers = 1;
   }
 
   /**
@@ -128,12 +197,13 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
     LOG.info("Tool: " + BuildInvertedIndex.class.getSimpleName());
     LOG.info(" - input path: " + args.input);
     LOG.info(" - output path: " + args.output);
+    LOG.info(" - num reducers: " + args.numReducers);
 
     Job job = Job.getInstance(getConf());
     job.setJobName(BuildInvertedIndex.class.getSimpleName());
     job.setJarByClass(BuildInvertedIndex.class);
 
-    job.setNumReduceTasks(1);
+    job.setNumReduceTasks(args.numReducers);
 
     FileInputFormat.setInputPaths(job, new Path(args.input));
     FileOutputFormat.setOutputPath(job, new Path(args.output));

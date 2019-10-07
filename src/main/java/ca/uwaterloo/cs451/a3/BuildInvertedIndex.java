@@ -62,16 +62,18 @@ public class BuildInvertedIndex extends Configured implements Tool {
       List<String> tokens = Tokenizer.tokenize(doc.toString());
 
       // Build a histogram of the terms.
-      COUNTS.clear();
+      COUNTS.clear(); // This is declared at high level, all objects will share this, how is this scalable?
+
       for (String token : tokens) {
         COUNTS.increment(token);
-      }
+      } // the tokens here are different -> they are being counted up here by value
 
       // Emit postings.
-      for (PairOfObjectInt<String> e : COUNTS) {
+      for (PairOfObjectInt<String> e : COUNTS) { // for each value -> total counts are being emitted
         WORD.set(e.getLeftElement());
         context.write(WORD, new PairOfInts((int) docno.get(), e.getRightElement()));
       }
+
     }
   }
 
@@ -91,7 +93,7 @@ public class BuildInvertedIndex extends Configured implements Tool {
         df++;
       }
 
-      // Sort the postings by docno ascending.
+      // Sort the postings by doc_no ascending.
       Collections.sort(postings);
 
       DF.set(df);

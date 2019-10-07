@@ -49,7 +49,7 @@ public class BooleanRetrieval extends Configured implements Tool {
   private BooleanRetrieval() {}
 
   private void initialize(String indexPath, String collectionPath, FileSystem fs) throws IOException {
-    index = new MapFile.Reader(new Path(indexPath + "/part-r-00000"), fs.getConf());
+    index = new MapFile.Reader(new Path(indexPath + "/part-r-00000"), fs.getConf()); // hardcoding huh
     collection = fs.open(new Path(collectionPath));
     stack = new Stack<>();
   }
@@ -178,7 +178,7 @@ public class BooleanRetrieval extends Configured implements Tool {
 
     System.out.println("Query: " + args.query);
     long startTime = System.currentTimeMillis();
-    runQuery(args.query);
+    runQuery(args.query); // driver function ?
     System.out.println("\nquery completed in " + (System.currentTimeMillis() - startTime) + "ms");
 
     return 1;
