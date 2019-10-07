@@ -19,6 +19,7 @@ package ca.uwaterloo.cs451.a3;
 import org.apache.arrow.vector.complex.reader.BaseReader;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.ContentSummary;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -50,10 +51,9 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
   private void initialize(String indexPath, String collectionPath, FileSystem fs) throws IOException {
 
-    File folder = new File(indexPath); //
-    File[] listOfFiles = folder.listFiles();
+    ContentSummary cs = fs.getContentSummary(new Path(indexPath));
 
-    reducers = listOfFiles.length - 2; // removing the single extra file
+    reducers = ((int) cs.getFileCount()) - 2; // removing the single extra file
     indexArr = new MapFile.Reader[reducers]; // declared
 
     if (reducers < 10) {
