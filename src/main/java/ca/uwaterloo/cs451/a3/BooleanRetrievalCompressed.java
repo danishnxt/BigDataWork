@@ -57,16 +57,16 @@ public class BooleanRetrievalCompressed extends Configured implements Tool {
 
     System.out.println("Hello there -> Here are out files " + Integer.toString(reducers));
 
-    if (reducers < 10) {
-        stringInit = "/part-r-0000";
-    } else {
-        // assuming no more than 99 reducers will ever be stress tested with
-      stringInit = "/part-r-000";
-    }
-
 //    System.out.println("Hello there -> We have this number of files -> " + Integer.toString(reducers));
 
     for (int i = 0; i < reducers; i++) {
+
+      if (i < 10) {
+        stringInit = "/part-r-0000";
+      } else {
+        stringInit = "/part-r-000";
+      }
+
       indexArr[i] = new MapFile.Reader(new Path(indexPath + stringInit + Integer.toString(i)), fs.getConf());
     }
 
