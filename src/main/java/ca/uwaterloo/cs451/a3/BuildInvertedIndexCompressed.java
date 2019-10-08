@@ -196,14 +196,14 @@ public class BuildInvertedIndexCompressed extends Configured implements Tool {
       return -1;
     }
 
-    LOG.info("Tool: " + BuildInvertedIndex.class.getSimpleName());
+    LOG.info("Tool: " + BuildInvertedIndexCompressed.class.getSimpleName());
     LOG.info(" - input path: " + args.input);
     LOG.info(" - output path: " + args.output);
     LOG.info(" - num reducers: " + args.numReducers);
 
     Job job = Job.getInstance(getConf());
-    job.setJobName(BuildInvertedIndex.class.getSimpleName());
-    job.setJarByClass(BuildInvertedIndex.class);
+    job.setJobName(BuildInvertedIndexCompressed.class.getSimpleName());
+    job.setJarByClass(BuildInvertedIndexCompressed.class);
 
     job.setNumReduceTasks(args.numReducers);
 
