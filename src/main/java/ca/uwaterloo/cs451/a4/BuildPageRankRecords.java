@@ -71,32 +71,24 @@ public class BuildPageRankRecords extends Configured implements Tool {
     @Override
     public void setup(Mapper<LongWritable, Text, IntWritable, PageRankNode>.Context context) {
 
-      System.out.println("hello 1");
+
 
       ArrayList<Integer> sources = new ArrayList<Integer>(); //
       String source_strings[] = context.getConfiguration().getStrings("sources");
 
       System.out.println(source_strings);
 
-      System.out.println("hello 2");
-
       int n = context.getConfiguration().getInt(NODE_CNT_FIELD, 0);
       if (n == 0) {
         throw new RuntimeException(NODE_CNT_FIELD + " cannot be 0!");
       }
 
-      System.out.println("hello 3");
-
       node.setType(PageRankNode.Type.Complete);
       node.setPageRank((float) -StrictMath.log(n));
-
-      System.out.println("hello 4");
 
       for (int i = 0; i < 3; i++) {
         sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
       }
-
-      System.out.println("hello 5");
 
       for (int i = 0; i < source_strings.length; i++) {
         System.out.println(sources.get((i)));
@@ -195,7 +187,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
     Configuration conf = getConf();
     conf.setInt(NODE_CNT_FIELD, n);
     conf.setInt("mapred.min.split.size", 1024 * 1024 * 1024);
-    conf.setStrings("Source", sources); // will pass the string list directly
+    conf.setStrings("sources", sources); // will pass the string list directly
 
     Job job = Job.getInstance(conf);
     job.setJobName(BuildPageRankRecords.class.getSimpleName() + ":" + inputPath);
