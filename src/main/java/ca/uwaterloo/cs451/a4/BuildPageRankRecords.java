@@ -76,6 +76,8 @@ public class BuildPageRankRecords extends Configured implements Tool {
       ArrayList<Integer> sources = new ArrayList<Integer>(); //
       String source_strings[] = context.getConfiguration().getStrings("sources");
 
+      System.out.println(source_strings);
+
       System.out.println("hello 2");
 
       int n = context.getConfiguration().getInt(NODE_CNT_FIELD, 0);
