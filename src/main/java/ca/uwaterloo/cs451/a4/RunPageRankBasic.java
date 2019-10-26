@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package package ca.uwaterloo.cs451.a3;
+package ca.uwaterloo.cs451.a4;
 
 import com.google.common.base.Preconditions;
 import org.apache.commons.cli.CommandLine;
@@ -67,7 +67,7 @@ import java.util.Iterator;
  * <code>/base/path/iter0010</code>.
  * </p>
  *
- * @see RunPageRankSchimmy
+ *
  * @author Jimmy Lin
  * @author Michael Schatz
  */
