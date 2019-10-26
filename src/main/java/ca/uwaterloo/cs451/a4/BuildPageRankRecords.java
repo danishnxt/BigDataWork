@@ -90,7 +90,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
       System.out.println("hello 4");
 
-      for (int i = 0; i < source_strings.length; i++) {
+      for (int i = 0; i < 3; i++) {
         sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
       }
 
