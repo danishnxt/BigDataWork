@@ -66,14 +66,13 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
     private static final IntWritable nid = new IntWritable();
     private static final PageRankNode node = new PageRankNode();
+    private static ArrayList<Integer> sources = new ArrayList<Integer>(); //
+    private static int sourceNode = 0;
 
     // ------------------------------------------------------------------------------------------------------- M:SETUP
     @Override
     public void setup(Mapper<LongWritable, Text, IntWritable, PageRankNode>.Context context) {
 
-
-
-      ArrayList<Integer> sources = new ArrayList<Integer>(); //
       String source_strings[] = context.getConfiguration().getStrings("sources");
 
       System.out.println(source_strings);
@@ -94,6 +93,8 @@ public class BuildPageRankRecords extends Configured implements Tool {
         System.out.println(sources.get((i)));
       }
 
+      sourceNode = sources.get(0); // first one here
+
     }
 
     // ------------------------------------------------------------------------------------------------------- M:MAP
@@ -103,7 +104,8 @@ public class BuildPageRankRecords extends Configured implements Tool {
       String[] arr = t.toString().trim().split("\\s+");
 
       nid.set(Integer.parseInt(arr[0]));
-      if (arr.length == 1) {
+
+      if (arr.length == 1) { // if lone source node
         node.setNodeId(Integer.parseInt(arr[0]));
         node.setAdjacencyList(new ArrayListOfIntsWritable());
 
@@ -118,12 +120,22 @@ public class BuildPageRankRecords extends Configured implements Tool {
         node.setAdjacencyList(new ArrayListOfIntsWritable(neighbors));
       }
 
+      if (nid.get() == sourceNode) {
+        System.out.print("SOURCE NODE BEING MODIFIED HEREREREREREREREER");
+        node.setPageRank((float) 1.0);
+      } else {
+        node.setPageRank((float) 0.0);
+      }
+
       context.getCounter("graph", "numNodes").increment(1);
       context.getCounter("graph", "numEdges").increment(arr.length - 1);
 
       if (arr.length > 1) {
         context.getCounter("graph", "numActiveNodes").increment(1);
       }
+
+      System.out.print(nid.get());
+      System.out.print(node.getPageRank());
 
       context.write(nid, node);
     }
