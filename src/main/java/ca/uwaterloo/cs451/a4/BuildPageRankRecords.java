@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import tl.lin.data.array.ArrayListOfIntsWritable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -58,20 +59,40 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
   private static final String NODE_CNT_FIELD = "node.cnt";
 
+
+  // ------------------------------------------------------------------------------------------------------- MAPPER
   private static class MyMapper extends Mapper<LongWritable, Text, IntWritable, PageRankNode> {
+
+
     private static final IntWritable nid = new IntWritable();
     private static final PageRankNode node = new PageRankNode();
 
+    // ------------------------------------------------------------------------------------------------------- M:SETUP
     @Override
     public void setup(Mapper<LongWritable, Text, IntWritable, PageRankNode>.Context context) {
+
+      ArrayList<Integer> sources = new ArrayList<Integer>(); //
+      String source_strings[] = context.getConfiguration().getStrings("sources");
+
       int n = context.getConfiguration().getInt(NODE_CNT_FIELD, 0);
       if (n == 0) {
         throw new RuntimeException(NODE_CNT_FIELD + " cannot be 0!");
       }
+
       node.setType(PageRankNode.Type.Complete);
       node.setPageRank((float) -StrictMath.log(n));
+
+      for (int i = 0; i < source_strings.length; i++) {
+        sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
+      }
+
+      for (int i = 0; i < source_strings.length; i++) {
+        System.out.println(sources.get((i)));
+      }
+
     }
 
+    // ------------------------------------------------------------------------------------------------------- M:MAP
     @Override
     public void map(LongWritable key, Text t, Context context) throws IOException,
         InterruptedException {
@@ -109,6 +130,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
   private static final String INPUT = "input";
   private static final String OUTPUT = "output";
   private static final String NUM_NODES = "numNodes";
+  private static final String SOURCE_NODES = "sources"; //This needs to be changed to take an Array fully (SPLIT ON THE COMMA)
 
   /**
    * Runs this tool.
@@ -123,6 +145,8 @@ public class BuildPageRankRecords extends Configured implements Tool {
         .withDescription("output path").create(OUTPUT));
     options.addOption(OptionBuilder.withArgName("num").hasArg()
         .withDescription("number of nodes").create(NUM_NODES));
+    options.addOption(OptionBuilder.withArgName("source").hasArg()
+            .withDescription("list of source nodes").create(SOURCE_NODES)); // UPDATE TYPE HERE
 
     CommandLine cmdline;
     CommandLineParser parser = new GnuParser();
@@ -134,7 +158,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
       return -1;
     }
 
-    if (!cmdline.hasOption(INPUT) || !cmdline.hasOption(OUTPUT) || !cmdline.hasOption(NUM_NODES)) {
+    if (!cmdline.hasOption(INPUT) || !cmdline.hasOption(OUTPUT) || !cmdline.hasOption(NUM_NODES) || !cmdline.hasOption(SOURCE_NODES)) { // CHANGE MADE HERE
       System.out.println("args: " + Arrays.toString(args));
       HelpFormatter formatter = new HelpFormatter();
       formatter.setWidth(120);
@@ -147,14 +171,19 @@ public class BuildPageRankRecords extends Configured implements Tool {
     String outputPath = cmdline.getOptionValue(OUTPUT);
     int n = Integer.parseInt(cmdline.getOptionValue(NUM_NODES));
 
+    // DEALING WITH INPUT ARRAY FOR THE SOURCE NODES //
+    String sources = cmdline.getOptionValue(SOURCE_NODES);
+
     LOG.info("Tool name: " + BuildPageRankRecords.class.getSimpleName());
     LOG.info(" - inputDir: " + inputPath);
     LOG.info(" - outputDir: " + outputPath);
     LOG.info(" - numNodes: " + n);
+    LOG.info(" - Sources: " + sources);
 
     Configuration conf = getConf();
     conf.setInt(NODE_CNT_FIELD, n);
     conf.setInt("mapred.min.split.size", 1024 * 1024 * 1024);
+    conf.setStrings("Source", sources); // will pass the string list directly
 
     Job job = Job.getInstance(conf);
     job.setJobName(BuildPageRankRecords.class.getSimpleName() + ":" + inputPath);
