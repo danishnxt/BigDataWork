@@ -111,9 +111,9 @@ public class BuildPageRankRecords extends Configured implements Tool {
       // will need a check of some sort here
 
       if (nid.get() == sourceNode) {
-        node.setPageRank((float) -StrictMath.log(1.0));
+        node.setPageRank((float) StrictMath.log(1.0));
       } else {
-        node.setPageRank((float) -StrictMath.log(0.0));
+        node.setPageRank((float) StrictMath.log(0.0));
       }
 
       context.getCounter("graph", "numNodes").increment(1);
