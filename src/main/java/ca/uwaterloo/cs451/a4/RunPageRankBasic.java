@@ -285,6 +285,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
       System.out.println("==============================================================================");
       String source_strings[] = context.getConfiguration().getStrings("sources");
+
       System.out.println("==============================================================================!!");
 
       for (int i = 0; i < source_strings.length; i++) {
@@ -362,7 +363,7 @@ public class RunPageRankBasic extends Configured implements Tool {
         .withDescription("end iteration").create(END));
     options.addOption(OptionBuilder.withArgName("num").hasArg()
         .withDescription("number of nodes").create(NUM_NODES));
-    options.addOption(OptionBuilder.withArgName("source").hasArg()
+    options.addOption(OptionBuilder.withArgName("sources").hasArg()
             .withDescription("Source nodes").create(SOURCE_NODES));
 
     CommandLine cmdline;
@@ -541,7 +542,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     job.setOutputKeyClass(IntWritable.class);
     job.setOutputValueClass(PageRankNode.class);
 
-    job.getConfiguration().setStrings("sourceNodes", sources);
+    job.getConfiguration().setStrings("sources", sources);
     job.setMapperClass(MapPageRankMassDistributionClass.class);
 
     FileSystem.get(getConf()).delete(new Path(out), true);
