@@ -75,22 +75,10 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
       String source_strings[] = context.getConfiguration().getStrings("sources");
 
-      System.out.println(source_strings);
-
-      int n = context.getConfiguration().getInt(NODE_CNT_FIELD, 0);
-      if (n == 0) {
-        throw new RuntimeException(NODE_CNT_FIELD + " cannot be 0!");
-      }
-
       node.setType(PageRankNode.Type.Complete);
-      node.setPageRank((float) -StrictMath.log(n));
-
-      for (int i = 0; i < 3; i++) {
-        sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
-      }
 
       for (int i = 0; i < source_strings.length; i++) {
-        System.out.println(sources.get((i)));
+        sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
       }
 
       sourceNode = sources.get(0); // first one here
@@ -120,11 +108,12 @@ public class BuildPageRankRecords extends Configured implements Tool {
         node.setAdjacencyList(new ArrayListOfIntsWritable(neighbors));
       }
 
+      // will need a check of some sort here
+
       if (nid.get() == sourceNode) {
-        System.out.print("SOURCE NODE BEING MODIFIED HEREREREREREREREER");
-        node.setPageRank((float) 1.0);
+        node.setPageRank((float) -StrictMath.log(1.0));
       } else {
-        node.setPageRank((float) 0.0);
+        node.setPageRank((float) -StrictMath.log(0.0));
       }
 
       context.getCounter("graph", "numNodes").increment(1);
@@ -133,9 +122,6 @@ public class BuildPageRankRecords extends Configured implements Tool {
       if (arr.length > 1) {
         context.getCounter("graph", "numActiveNodes").increment(1);
       }
-
-      System.out.print(nid.get());
-      System.out.print(node.getPageRank());
 
       context.write(nid, node);
     }

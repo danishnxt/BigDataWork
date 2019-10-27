@@ -49,8 +49,11 @@ import tl.lin.data.map.MapIF;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+//import java.util.Dictionary;
 import java.util.Iterator;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -72,7 +75,11 @@ import java.util.Iterator;
  * @author Michael Schatz
  */
 public class RunPageRankBasic extends Configured implements Tool {
+
   private static final Logger LOG = Logger.getLogger(RunPageRankBasic.class);
+  private static ArrayList<Integer>sourceNodes = new ArrayList<Integer>();
+  private static HashMap<Integer, Integer> sourceCheck = new HashMap<Integer, Integer>(); // add the sources here for a quick lookup
+  private static int sourceNode = 0; // first one here
 
   private static enum PageRank {
     nodes, edges, massMessages, massMessagesSaved, massMessagesReceived, missingStructure
@@ -90,6 +97,21 @@ public class RunPageRankBasic extends Configured implements Tool {
 
     // For passing along node structure.
     private static final PageRankNode intermediateStructure = new PageRankNode();
+
+    public void setup(Mapper<IntWritable, PageRankNode, IntWritable, PageRankNode>.Context context) {
+
+      String source_strings[] = context.getConfiguration().getStrings("sources");
+
+      int temp_s_node = 0;
+
+      for (int i = 0; i < source_strings.length; i++) {
+        temp_s_node = Integer.parseInt(source_strings[i]);
+        sourceCheck.put(temp_s_node, 1); //
+      }
+
+      sourceNode = Integer.parseInt(source_strings[0]); // first one hard-coded for now
+
+    }
 
     @Override
     public void map(IntWritable nid, PageRankNode node, Context context)
@@ -264,14 +286,19 @@ public class RunPageRankBasic extends Configured implements Tool {
     @Override
     public void map(IntWritable nid, PageRankNode node, Context context)
         throws IOException, InterruptedException {
-      float p = node.getPageRank();
 
-      float jump = (float) (Math.log(ALPHA) - Math.log(nodeCnt));
-      float link = (float) Math.log(1.0f - ALPHA)
-          + sumLogProbs(p, (float) (Math.log(missingMass) - Math.log(nodeCnt)));
+      // only process if anything to be done
 
-      p = sumLogProbs(jump, link);
-      node.setPageRank(p);
+      if (nid.get() == sourceNode) {
+
+        float p = node.getPageRank();
+        float jump = (float) (Math.log(ALPHA)); // random jump factoring
+        float link = (float) Math.log(1.0f - ALPHA) // all missing mass re-distributed
+                + sumLogProbs(p, (float) (Math.log(missingMass)));
+
+        p = sumLogProbs(jump, link);
+        node.setPageRank(p);
+      }
 
       context.write(nid, node);
     }
@@ -300,6 +327,8 @@ public class RunPageRankBasic extends Configured implements Tool {
   private static final String COMBINER = "useCombiner";
   private static final String INMAPPER_COMBINER = "useInMapperCombiner";
   private static final String RANGE = "range";
+  private static final String SOURCE_NODES = "Source nodes";
+
 
   /**
    * Runs this tool.
@@ -320,6 +349,8 @@ public class RunPageRankBasic extends Configured implements Tool {
         .withDescription("end iteration").create(END));
     options.addOption(OptionBuilder.withArgName("num").hasArg()
         .withDescription("number of nodes").create(NUM_NODES));
+    options.addOption(OptionBuilder.withArgName("source").hasArg()
+            .withDescription("Source nodes").create(SOURCE_NODES));
 
     CommandLine cmdline;
     CommandLineParser parser = new GnuParser();
@@ -332,7 +363,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     }
 
     if (!cmdline.hasOption(BASE) || !cmdline.hasOption(START) ||
-        !cmdline.hasOption(END) || !cmdline.hasOption(NUM_NODES)) {
+        !cmdline.hasOption(END) || !cmdline.hasOption(NUM_NODES) || !cmdline.hasOption(SOURCE_NODES) ) {
       System.out.println("args: " + Arrays.toString(args));
       HelpFormatter formatter = new HelpFormatter();
       formatter.setWidth(120);
@@ -349,6 +380,8 @@ public class RunPageRankBasic extends Configured implements Tool {
     boolean useInmapCombiner = cmdline.hasOption(INMAPPER_COMBINER);
     boolean useRange = cmdline.hasOption(RANGE);
 
+    String sources = cmdline.getOptionValue(SOURCE_NODES);
+
     LOG.info("Tool name: RunPageRank");
     LOG.info(" - base path: " + basePath);
     LOG.info(" - num nodes: " + n);
@@ -357,6 +390,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     LOG.info(" - use combiner: " + useCombiner);
     LOG.info(" - use in-mapper combiner: " + useInmapCombiner);
     LOG.info(" - user range partitioner: " + useRange);
+    LOG.info(" - Sources: " + sources);
 
     // Iterate PageRank.
     for (int i = s; i < e; i++) {

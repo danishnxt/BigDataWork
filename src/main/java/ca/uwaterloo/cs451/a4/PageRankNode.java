@@ -87,6 +87,7 @@ public class PageRankNode implements Writable {
     this.type = type;
   }
 
+
   /**
    * Deserializes this object.
    *
