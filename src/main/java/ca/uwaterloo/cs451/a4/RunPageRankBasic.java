@@ -327,7 +327,7 @@ public class RunPageRankBasic extends Configured implements Tool {
   private static final String COMBINER = "useCombiner";
   private static final String INMAPPER_COMBINER = "useInMapperCombiner";
   private static final String RANGE = "range";
-  private static final String SOURCE_NODES = "Source nodes";
+  private static final String SOURCE_NODES = "sources";
 
 
   /**
