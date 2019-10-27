@@ -421,7 +421,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     float mass = phase1(i, j, basePath, numNodes, useCombiner, useInMapperCombiner, sources);
 
     // Find out how much PageRank mass got lost at the dangling nodes.
-    float missing = 1.0f - (float) StrictMath.exp(mass);
+    float missing = 1.0f - (float) StrictMath.exp(0.1);
 
     // Job 2: distribute missing mass, take care of random jump factor.
     phase2(i, j, missing, basePath, numNodes, sources);
