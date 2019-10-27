@@ -54,6 +54,8 @@ import java.util.Arrays;
 //import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.lang.Math;
+
 
 /**
  * <p>
@@ -310,6 +312,8 @@ public class RunPageRankBasic extends Configured implements Tool {
         p = sumLogProbs(jump, link);
         node.setPageRank(p);
       }
+
+      node.setPageRank((float) Math.exp(node.getPageRank()));
 
       context.write(nid, node);
     }
