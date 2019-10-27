@@ -282,11 +282,7 @@ public class RunPageRankBasic extends Configured implements Tool {
       Configuration conf = context.getConfiguration();
 
       // PHASE 2 IS A SEPARATE JOB AND HENCE THIS NEEDS TO BE RUN AGAIN
-
-      System.out.println("==============================================================================");
       String source_strings[] = context.getConfiguration().getStrings("sources");
-
-      System.out.println("==============================================================================!!");
 
       for (int i = 0; i < source_strings.length; i++) {
         sourceCheck.put(Integer.parseInt(source_strings[i]), 1); //
@@ -408,9 +404,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
     // Iterate PageRank.
     for (int i = s; i < e; i++) {
-      System.out.println("RUNNING CURRENT ITERATION FULL STARTING -> -> -> -> -> -> -> -> ->" + Integer.toString(i));
       iteratePageRank(i, i + 1, basePath, n, useCombiner, useInmapCombiner, sources);
-      System.out.println("RUNNING CURRENT ITERATION FULL COMPLETE -> -> -> -> -> -> -> -> ->" + Integer.toString(i));
     }
 
     return 0;
@@ -425,7 +419,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     float mass = phase1(i, j, basePath, numNodes, useCombiner, useInMapperCombiner, sources);
 
     // Find out how much PageRank mass got lost at the dangling nodes.
-    float missing = 1.0f - (float) StrictMath.exp(0.1);
+    float missing = 1.0f - (float) StrictMath.exp(mass);
 
     // Job 2: distribute missing mass, take care of random jump factor.
     phase2(i, j, missing, basePath, numNodes, sources);
