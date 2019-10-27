@@ -613,7 +613,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
     job.getConfiguration().setBoolean("mapred.map.tasks.speculative.execution", false);
     job.getConfiguration().setBoolean("mapred.reduce.tasks.speculative.execution", false);
-
+    job.getConfiguration().setStrings("sources", sources);
     job.getConfiguration().setInt("NodeCount", numNodes);
 
     job.setNumReduceTasks(0);
@@ -634,7 +634,7 @@ public class RunPageRankBasic extends Configured implements Tool {
       // The tricky business of dealing with the String to send back in config file
 
     ArrayList<Float> missing = new ArrayList<Float>();
-    int srcLocalCount = job.getConfiguration().getStrings("sources").length;
+    int srcLocalCount = job.getConfiguration().getStrings("sources").length; // returns an array from the single
 
     // fix missing value
 
