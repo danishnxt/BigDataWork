@@ -378,6 +378,14 @@ public class RunPageRankBasic extends Configured implements Tool {
         node.setPageRank(p);
       }
 
+      for (int i = 0; i < layerCountB; i++){
+        if (nid.get() == sourceCheckB.get(i)) {
+          System.out.println("**************************");
+          System.out.println(nid.get());
+          System.out.println(node.getPageRank().get(i));
+        }
+      }
+
       context.write(nid, node);
     }
   }
