@@ -104,6 +104,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     public void setup(Mapper<IntWritable, PageRankNode, IntWritable, PageRankNode>.Context context) {
 
       String source_strings[] = context.getConfiguration().getStrings("sources");
+      layerCount = 0; // don't let the other shit override this blah
 
       for (int i = 0; i < source_strings.length; i++) {
         layerCount = layerCount + 1;
