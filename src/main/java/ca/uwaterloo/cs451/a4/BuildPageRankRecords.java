@@ -42,8 +42,10 @@ import org.apache.log4j.Logger;
 import tl.lin.data.array.ArrayListOfIntsWritable;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -66,8 +68,8 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
     private static final IntWritable nid = new IntWritable();
     private static final PageRankNode node = new PageRankNode();
-    private static ArrayList<Integer> sources = new ArrayList<Integer>(); //
-    private static int sourceNode = 0;
+    private static ArrayList<Integer> sources = new ArrayList<Integer>(); // add the sources here for a quick lookup
+    private static int layers = 0;
 
     // ------------------------------------------------------------------------------------------------------- M:SETUP
     @Override
@@ -78,10 +80,11 @@ public class BuildPageRankRecords extends Configured implements Tool {
       node.setType(PageRankNode.Type.Complete);
 
       for (int i = 0; i < source_strings.length; i++) {
+        layers = layers + 1; // know how many total
         sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
       }
 
-      sourceNode = sources.get(0); // first one here
+      // all source nodes loaded into an array
 
     }
 
@@ -92,6 +95,18 @@ public class BuildPageRankRecords extends Configured implements Tool {
       String[] arr = t.toString().trim().split("\\s+");
 
       nid.set(Integer.parseInt(arr[0]));
+      ArrayList<Float> pageRankValues = new ArrayList<Float>();
+
+        for (int i = 0; i < layers; i++) {
+          if (sources.get(i) == key.get()) {
+            pageRankValues.add((float) StrictMath.log(1.0));
+          } else {
+            pageRankValues.add((float) StrictMath.log(0.0));
+          }
+        }
+
+      node.setPageRank(pageRankValues);
+      node.setlayers(layers); // for it's internal reading and writing to file later on
 
       if (arr.length == 1) { // if lone source node
         node.setNodeId(Integer.parseInt(arr[0]));
@@ -110,11 +125,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
       // will need a check of some sort here
 
-      if (nid.get() == sourceNode) {
-        node.setPageRank((float) StrictMath.log(1.0));
-      } else {
-        node.setPageRank((float) StrictMath.log(0.0));
-      }
+
 
       context.getCounter("graph", "numNodes").increment(1);
       context.getCounter("graph", "numEdges").increment(arr.length - 1);

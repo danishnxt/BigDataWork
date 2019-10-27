@@ -26,6 +26,8 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Representation of a graph node for PageRank.
@@ -50,18 +52,13 @@ public class PageRankNode implements Writable {
 
   private Type type;
   private int nodeid;
-  private float pagerank;
+  private int layers; // will indicate how many levels of parallel map reduce jobs running / data contained
+  private ArrayList<Float> pagerank;
   private ArrayListOfIntsWritable adjacencyList;
 
+  // LAYERS ADDS A SPACE OVER HEAD BUT SAVES US FROM A PERFORMANCE PENALTY AS GIVEN FOR FUNCTIONS BELOW
+
   public PageRankNode() {}
-
-  public float getPageRank() {
-    return pagerank;
-  }
-
-  public void setPageRank(float p) {
-    this.pagerank = p;
-  }
 
   public int getNodeId() {
     return nodeid;
@@ -87,6 +84,21 @@ public class PageRankNode implements Writable {
     this.type = type;
   }
 
+  // MODIFIED // THE LATTER IS THERE FOR FUTURE PROOFING MORE
+
+  public ArrayList<Float> getPageRank() {
+    return pagerank;
+  }
+  public void setPageRank(ArrayList<Float> p) {
+    this.pagerank = p;
+  }
+
+  public int getlayers() {
+    return layers;
+  }
+  public void setlayers(int p) {
+    this.layers = p;
+  }
 
   /**
    * Deserializes this object.
@@ -96,17 +108,25 @@ public class PageRankNode implements Writable {
    */
   @Override
   public void readFields(DataInput in) throws IOException {
+
     int b = in.readByte();
     type = mapping[b];
     nodeid = in.readInt();
+    layers = in.readInt();
+    pagerank = new ArrayList<Float>();
+
+    // not quite sure where these are used but am going with the required template for now
 
     if (type.equals(Type.Mass)) {
-      pagerank = in.readFloat();
-      return;
+      for (int i = 0; i < layers; i++) {
+        pagerank.add(in.readFloat());
+      }
     }
 
     if (type.equals(Type.Complete)) {
-      pagerank = in.readFloat();
+      for (int i = 0; i < layers; i++) {
+        pagerank.add(in.readFloat());
+      }
     }
 
     adjacencyList = new ArrayListOfIntsWritable();
@@ -123,14 +143,26 @@ public class PageRankNode implements Writable {
   public void write(DataOutput out) throws IOException {
     out.writeByte(type.val);
     out.writeInt(nodeid);
+    out.writeInt(layers);
+
+    float flt_val_hold = 0;
 
     if (type.equals(Type.Mass)) {
-      out.writeFloat(pagerank);
+      Iterator<Float> iter = pagerank.iterator();
+      while (iter.hasNext()){
+        flt_val_hold = iter.next(); // get value
+        out.writeFloat(flt_val_hold);
+      }
+
       return;
     }
 
     if (type.equals(Type.Complete)) {
-      out.writeFloat(pagerank);
+      Iterator<Float> iter = pagerank.iterator();
+      while (iter.hasNext()){
+        flt_val_hold = iter.next(); // get value
+        out.writeFloat(flt_val_hold);
+      }
     }
 
     adjacencyList.write(out);
