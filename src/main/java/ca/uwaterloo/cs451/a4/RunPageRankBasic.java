@@ -310,10 +310,15 @@ public class RunPageRankBasic extends Configured implements Tool {
                 + sumLogProbs(p, (float) (Math.log(missingMass)));
 
         p = sumLogProbs(jump, link);
-        node.setPageRank(p);
-      }
+        node.setPageRank((float)Math.exp(p));
 
-      node.setPageRank((float) Math.exp(node.getPageRank()));
+      } else {
+
+        float p = node.getPageRank();
+        float link = (float) Math.log(1.0f - ALPHA) + p;
+        node.setPageRank((float)Math.exp(link));
+
+      }
 
       context.write(nid, node);
     }
