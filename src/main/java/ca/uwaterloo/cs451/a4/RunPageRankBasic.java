@@ -234,6 +234,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
         // Keep track of total PageRank mass.
         totalMass = sumLogProbs(totalMass, mass);
+
       } else if (structureReceived == 0) {
         // We get into this situation if there exists an edge pointing to a node which has no
         // corresponding node structure (i.e., PageRank mass was passed to a non-existent node)...
@@ -282,7 +283,9 @@ public class RunPageRankBasic extends Configured implements Tool {
 
       // PHASE 2 IS A SEPARATE JOB AND HENCE THIS NEEDS TO BE RUN AGAIN
 
+      System.out.println("==============================================================================");
       String source_strings[] = context.getConfiguration().getStrings("sources");
+      System.out.println("==============================================================================");
 
       for (int i = 0; i < source_strings.length; i++) {
         sourceCheck.put(Integer.parseInt(source_strings[i]), 1); //
