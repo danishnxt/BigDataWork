@@ -77,7 +77,8 @@ import java.util.HashMap;
 public class RunPageRankBasic extends Configured implements Tool {
 
   private static final Logger LOG = Logger.getLogger(RunPageRankBasic.class);
-  private static ArrayList<Integer>sourceNodes = new ArrayList<Integer>();
+
+    // To maintain list of sources
   private static HashMap<Integer, Integer> sourceCheck = new HashMap<Integer, Integer>(); // add the sources here for a quick lookup
   private static int sourceNode = 0; // first one here
 
@@ -107,6 +108,9 @@ public class RunPageRankBasic extends Configured implements Tool {
       }
       sourceNode = Integer.parseInt(source_strings[0]); // first one hard-coded for now
 
+      System.out.println("RUNNING SETUP FUNCTION ONE");
+      System.out.println(sourceCheck);
+
     }
 
     @Override
@@ -118,7 +122,6 @@ public class RunPageRankBasic extends Configured implements Tool {
       intermediateStructure.setAdjacencyList(node.getAdjacencyList());
 
       context.write(nid, intermediateStructure);
-
       int massMessages = 0;
 
       // Distribute PageRank mass to neighbors (along outgoing edges).
@@ -264,6 +267,8 @@ public class RunPageRankBasic extends Configured implements Tool {
     }
   }
 
+  // ============================================================================================================
+
   // Mapper that distributes the missing PageRank mass (lost at the dangling nodes) and takes care
   // of the random jump factor.
   private static class MapPageRankMassDistributionClass extends
@@ -335,7 +340,6 @@ public class RunPageRankBasic extends Configured implements Tool {
   private static final String RANGE = "range";
   private static final String SOURCE_NODES = "sources";
 
-
   /**
    * Runs this tool.
    */
@@ -400,7 +404,9 @@ public class RunPageRankBasic extends Configured implements Tool {
 
     // Iterate PageRank.
     for (int i = s; i < e; i++) {
+      System.out.println("RUNNING CURRENT ITERATION FULL STARTING -> -> -> -> -> -> -> -> ->" + Integer.toString(i));
       iteratePageRank(i, i + 1, basePath, n, useCombiner, useInmapCombiner, sources);
+      System.out.println("RUNNING CURRENT ITERATION FULL COMPLETE -> -> -> -> -> -> -> -> ->" + Integer.toString(i));
     }
 
     return 0;
@@ -448,7 +454,6 @@ public class RunPageRankBasic extends Configured implements Tool {
     LOG.info(" - useInmapCombiner: " + useInMapperCombiner);
     LOG.info("computed number of partitions: " + numPartitions);
     LOG.info("Source Nodes: " + sources);
-
 
     int numReduceTasks = numPartitions;
 
