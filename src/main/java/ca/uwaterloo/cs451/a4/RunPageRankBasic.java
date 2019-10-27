@@ -302,23 +302,25 @@ public class RunPageRankBasic extends Configured implements Tool {
 
       // only process if anything to be done
 
+      float jump = Float.NEGATIVE_INFINITY;
+      float link = Float.NEGATIVE_INFINITY;
+
+      float p = node.getPageRank();
+
       if (nid.get() == sourceNode) {
 
-        float p = node.getPageRank();
-        float jump = (float) (Math.log(ALPHA)); // random jump factoring
-        float link = (float) Math.log(1.0f - ALPHA) // all missing mass re-distributed
+        jump = (float) (Math.log(ALPHA)); // random jump factoring
+        link = (float) Math.log(1.0f - ALPHA) // all missing mass re-distributed
                 + sumLogProbs(p, (float) (Math.log(missingMass)));
-
-        p = sumLogProbs(jump, link);
-        node.setPageRank((float)Math.exp(p));
 
       } else {
 
-        float p = node.getPageRank();
-        float link = (float) Math.log(1.0f - ALPHA) + p;
-        node.setPageRank((float)Math.exp(link));
+        link = (float) Math.log(1.0f - ALPHA) + p;
 
       }
+
+      p = sumLogProbs(jump, link);
+      node.setPageRank((float)StrictMath.exp(p));
 
       context.write(nid, node);
     }
