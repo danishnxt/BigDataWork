@@ -110,6 +110,9 @@ public class RunPageRankBasic extends Configured implements Tool {
         sourceCheck.add(Integer.parseInt(source_strings[i])); //
       }
 
+      System.out.println("CHECK THE FOLLOWING: TOTAL LAYERS");
+      System.out.println(layerCount);
+
     }
 
     @Override
@@ -133,6 +136,10 @@ public class RunPageRankBasic extends Configured implements Tool {
         ArrayList<Float> old_mass = node.getPageRank();
         ArrayList<Float> new_mass = new ArrayList<Float>();
         // run loop to recompute the overall
+
+        System.out.println("GO ALONG WITH THIS ::: ");
+        System.out.println(old_mass.size());
+        System.out.println(old_mass.size());
 
         for (int i = 0; i < layerCount; i++) {
            new_mass.add(old_mass.get(i) - (float) StrictMath.log(list.size())); // add at end
