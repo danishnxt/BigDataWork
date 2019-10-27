@@ -113,6 +113,10 @@ public class PageRankNode implements Writable {
     type = mapping[b];
     nodeid = in.readInt();
     layers = in.readInt();
+
+    System.out.println("GET OUT WHAT WE'VE BEEN PUTTING DOWN BRO");
+    System.out.println(layers);
+
     pagerank = new ArrayList<Float>();
 
     // not quite sure where these are used but am going with the required template for now
