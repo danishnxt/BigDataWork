@@ -205,7 +205,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     private static int layerCount = 0;
 
     @Override
-    public void setup(Context context) {
+    public void setup(Reducer<IntWritable, PageRankNode, IntWritable, PageRankNode>.Context context) {
 
       layerCount = context.getConfiguration().getInt("layerCount", 1);
 
