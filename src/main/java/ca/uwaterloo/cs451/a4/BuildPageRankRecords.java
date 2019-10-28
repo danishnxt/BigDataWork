@@ -102,7 +102,6 @@ public class BuildPageRankRecords extends Configured implements Tool {
             System.out.println("TRGGER ONE CONDITION FIRED ============================");
             pageRankValues.add((float) StrictMath.log(1.0));
           } else {
-            System.out.println("TRGGER ONE CONDITION FIRED ============================");
             pageRankValues.add((float) StrictMath.log(0.0));
           }
         }
