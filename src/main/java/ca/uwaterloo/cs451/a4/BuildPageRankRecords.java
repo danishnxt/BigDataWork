@@ -99,8 +99,10 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
         for (int i = 0; i < layers; i++) {
           if (sources.get(i) == key.get()) {
+            System.out.println("TRGGER ONE CONDITION FIRED ============================");
             pageRankValues.add((float) StrictMath.log(1.0));
           } else {
+            System.out.println("TRGGER ONE CONDITION FIRED ============================");
             pageRankValues.add((float) StrictMath.log(0.0));
           }
         }

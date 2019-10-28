@@ -149,7 +149,6 @@ public class PageRankNode implements Writable {
     float flt_val_hold = 0;
 
     if (type.equals(Type.Mass)) {
-      System.out.println("VALCHK");
       Iterator<Float> iter = pagerank.iterator();
       while (iter.hasNext()){
         flt_val_hold = iter.next(); // get value
@@ -160,7 +159,6 @@ public class PageRankNode implements Writable {
     }
 
     if (type.equals(Type.Complete)) {
-      System.out.println("VALCHKB");
       Iterator<Float> iter = pagerank.iterator();
       while (iter.hasNext()){
         flt_val_hold = iter.next(); // get value
