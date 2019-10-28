@@ -56,26 +56,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.lang.Math;
 
-
-/**
- * <p>
- * Main driver program for running the basic (non-Schimmy) implementation of
- * PageRank.
- * </p>
- *
- * <p>
- * The starting and ending iterations will correspond to paths
- * <code>/base/path/iterXXXX</code> and <code>/base/path/iterYYYY</code>. As a
- * example, if you specify 0 and 10 as the starting and ending iterations, the
- * driver program will start with the graph structure stored at
- * <code>/base/path/iter0000</code>; final results will be stored at
- * <code>/base/path/iter0010</code>.
- * </p>
- *
- *
- * @author Jimmy Lin
- * @author Michael Schatz
- */
 public class RunPageRankBasic extends Configured implements Tool {
 
   private static final Logger LOG = Logger.getLogger(RunPageRankBasic.class);

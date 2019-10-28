@@ -61,16 +61,15 @@ public class BuildPageRankRecords extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(BuildPageRankRecords.class);
 
   private static final String NODE_CNT_FIELD = "node.cnt";
-
+  private static final String LAYER_CNT_FIELD = "layer.cnt";
 
   // ------------------------------------------------------------------------------------------------------- MAPPER
   private static class MyMapper extends Mapper<LongWritable, Text, IntWritable, PageRankNode> {
 
-
     private static final IntWritable nid = new IntWritable();
     private static final PageRankNode node = new PageRankNode();
     private static ArrayList<Integer> sources = new ArrayList<Integer>(); // add the sources here for a quick lookup
-    private static int layers = 0;
+    private static int layers;
 
     // ------------------------------------------------------------------------------------------------------- M:SETUP
     @Override
@@ -78,19 +77,13 @@ public class BuildPageRankRecords extends Configured implements Tool {
 
       String source_strings[] = context.getConfiguration().getStrings("sources");
 
-      node.setType(PageRankNode.Type.Complete);
-
       for (int i = 0; i < source_strings.length; i++) {
         layers = layers + 1; // know how many total
         sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
       }
 
-      for (int i = 0; i < layers; i++) {
-        System.out.println(sources.get(i));
-      }
-
+      node.setType(PageRankNode.Type.Complete);
       // all source nodes loaded into an array
-
     }
 
     // ------------------------------------------------------------------------------------------------------- M:MAP
