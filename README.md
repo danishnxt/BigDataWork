@@ -1,3 +1,3 @@
 # bigdataf2019
 
-TWO CODE FILES ARE INSIDE THE NESTED JAVA FOLDER
+All prev assignment mark and markdown files are in a folder 
