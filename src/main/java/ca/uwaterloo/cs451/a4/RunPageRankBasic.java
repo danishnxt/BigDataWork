@@ -540,10 +540,9 @@ public class RunPageRankBasic extends Configured implements Tool {
     job.waitForCompletion(true);
     System.out.println("Job Finished in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
 
-    int srcCountLocal = job.getConfiguration().getStrings("sources").length;
     ArrayListOfFloatsWritable mass = new ArrayListOfFloatsWritable();
 
-    for (int alpha = 0; alpha < srcCountLocal; alpha++) {
+    for (int alpha = 0; alpha < layerCount; alpha++) {
       mass.add(Float.NEGATIVE_INFINITY);
     }
 
@@ -551,7 +550,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     for (FileStatus f : fs.listStatus(new Path(outm))) {
       FSDataInputStream fin = fs.open(f.getPath());
 
-      for (int beta = 0; beta < srcCountLocal; beta++) {
+      for (int beta = 0; beta < layerCount; beta++) {
         mass.set(beta, sumLogProbs(mass.get(beta), fin.readFloat()));
       }
 
@@ -585,11 +584,10 @@ public class RunPageRankBasic extends Configured implements Tool {
     // COMPUTING MISSING VALUES FROM TOTAL MASS AND CONV -> String -> Conf file
 
     ArrayList<Float> missing = new ArrayList<Float>();
-    int srcLocalCount = job.getConfiguration().getStrings("sources").length; // returns an array from str
 
     String temp = "";
 
-    for (int alphaB = 0; alphaB < srcLocalCount; alphaB++) {
+    for (int alphaB = 0; alphaB < layerCount; alphaB++) {
       missing.add((1.0f - (float) StrictMath.exp(mass.get(alphaB)))); // missing now contains all left mass per layer
       LOG.info("missing PageRank mass: " + alphaB + " - " + missing.get(alphaB));
       temp = (temp + Float.toString(missing.get(alphaB)) + ","); // update the string itself // BREAK CHECK POINT
