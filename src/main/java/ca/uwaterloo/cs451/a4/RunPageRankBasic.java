@@ -80,10 +80,6 @@ public class RunPageRankBasic extends Configured implements Tool {
 
   private static final Logger LOG = Logger.getLogger(RunPageRankBasic.class);
 
-    // To maintain list of sources
-  private static ArrayList<Integer> sourceCheck; // add the sources here for a quick lookup
-  private static int layerCount = 0; // first one here
-
   private static enum PageRank {
     nodes, edges, massMessages, massMessagesSaved, massMessagesReceived, missingStructure
   };
@@ -92,6 +88,8 @@ public class RunPageRankBasic extends Configured implements Tool {
   private static class MapClass extends
       Mapper<IntWritable, PageRankNode, IntWritable, PageRankNode> {
 
+    int layerCount = 0;
+
       // The neighbor to which we're sending messages.
     private static final IntWritable neighbor = new IntWritable();
       // Contents of the messages: partial PageRank mass.
@@ -99,17 +97,9 @@ public class RunPageRankBasic extends Configured implements Tool {
       // For passing along node structure.
     private static final PageRankNode intermediateStructure = new PageRankNode();
 
+    @Override
     public void setup(Mapper<IntWritable, PageRankNode, IntWritable, PageRankNode>.Context context) {
-
-      sourceCheck = new ArrayList<Integer>();
-      layerCount = 0;
-
-      String source_strings[] = context.getConfiguration().getStrings("sources");
-
-      for (int i = 0; i < source_strings.length; i++) {
-        layerCount = layerCount + 1;
-        sourceCheck.add(Integer.parseInt(source_strings[i]));
-      }
+      layerCount = context.getConfiguration().getInt("layerCount", 1);
     }
 
     @Override
@@ -160,7 +150,13 @@ public class RunPageRankBasic extends Configured implements Tool {
   private static class CombineClass extends
       Reducer<IntWritable, PageRankNode, IntWritable, PageRankNode> {
 
+    private static int layerCount = 0; // init
     private static PageRankNode intermediateMass = new PageRankNode();
+
+    @Override
+    public void setup(Reducer<IntWritable, PageRankNode, IntWritable, PageRankNode>.Context context) {
+      layerCount = context.getConfiguration().getInt("layerCount", 1);
+    }
 
     @Override
     public void reduce(IntWritable nid, Iterable<PageRankNode> values, Context context)
@@ -206,9 +202,13 @@ public class RunPageRankBasic extends Configured implements Tool {
       Reducer<IntWritable, PageRankNode, IntWritable, PageRankNode> {
 
     private ArrayListOfFloatsWritable totalMass = new ArrayListOfFloatsWritable();
+    private static int layerCount = 0;
 
     @Override
     public void setup(Context context) {
+
+      layerCount = context.getConfiguration().getInt("layerCount", 1);
+
       for (int i = 0; i < layerCount; i++) {
         totalMass.add(Float.NEGATIVE_INFINITY); // init for log prob
       }
@@ -311,10 +311,10 @@ public class RunPageRankBasic extends Configured implements Tool {
   private static class MapPageRankMassDistributionClass extends
       Mapper<IntWritable, PageRankNode, IntWritable, PageRankNode> {
 
-    private ArrayListOfFloatsWritable missingMass;
 
-    private static int layerCountB = 0; // sep count for second job
-    private ArrayList<Integer> sourceCheckB = new ArrayList<Integer>();
+    private static int layerCount = 0; // sep count for second job
+    private ArrayList<Integer> sourceCheck = new ArrayList<Integer>();
+    private ArrayListOfFloatsWritable missingMass;
 
     @Override
     public void setup(Context context) throws IOException {
@@ -325,15 +325,12 @@ public class RunPageRankBasic extends Configured implements Tool {
       // PHASE 2 IS A SEPARATE JOB AND HENCE THIS NEEDS TO BE RUN AGAIN
       String source_strings[] = context.getConfiguration().getStrings("sources");
       String missingMass_Str[] = context.getConfiguration().getStrings("MissingMass");
+      layerCount = context.getConfiguration().getInt("layerCount", 1);
 
       for (int i = 0; i < source_strings.length; i++) {
-        layerCountB = layerCountB + 1;
-        sourceCheckB.add(Integer.parseInt(source_strings[i]), 1); //
-
-        // adding to the loop
+        sourceCheck.add(Integer.parseInt(source_strings[i]), 1);
         missingMass.add(0.0f + Float.parseFloat(missingMass_Str[i]));
       }
-
     }
 
     @Override
@@ -343,15 +340,15 @@ public class RunPageRankBasic extends Configured implements Tool {
       ArrayList<Float> jump = new ArrayList<Float>();
       ArrayList<Float> link = new ArrayList<Float>();
 
-      for (int i = 0; i < layerCountB; i++) {
+      for (int i = 0; i < layerCount; i++) {
         jump.add(Float.NEGATIVE_INFINITY);
         jump.add(Float.NEGATIVE_INFINITY);
       }
 
       ArrayListOfFloatsWritable p = node.getPageRank(); // p pageRank layers
 
-      for (int i = 0; i < layerCountB; i++) {
-        if (sourceCheckB.get(i) == nid.get()) {
+      for (int i = 0; i < layerCount; i++) {
+        if (sourceCheck.get(i) == nid.get()) {
           jump.set(i, (float) (Math.log(ALPHA))); // random jump factoring
           link.set(i, (float) Math.log(1.0f - ALPHA) // all missing mass re-distributed
                   + sumLogProbs(p.get(i), (float) (Math.log(missingMass.get(i)))));
@@ -362,7 +359,7 @@ public class RunPageRankBasic extends Configured implements Tool {
         }
       }
 
-      for (int i = 0; i < layerCountB; i++) {
+      for (int i = 0; i < layerCount; i++) {
         p.set(i, sumLogProbs(jump.get(i), link.get(i))); // re-update values for the layer
       }
 
@@ -447,6 +444,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     boolean useRange = cmdline.hasOption(RANGE);
 
     String sources = cmdline.getOptionValue(SOURCES);
+    int layerCount = sources.split(",").length; // break on comma, only values remain
 
     LOG.info("Tool name: RunPageRank");
     LOG.info(" - base path: " + basePath);
@@ -460,7 +458,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
     // Iterate PageRank.
     for (int i = s; i < e; i++) {
-      iteratePageRank(i, i + 1, basePath, n, useCombiner, useInmapCombiner, sources);
+      iteratePageRank(i, i + 1, basePath, n, useCombiner, useInmapCombiner, sources, layerCount);
     }
 
     return 0;
@@ -468,21 +466,21 @@ public class RunPageRankBasic extends Configured implements Tool {
 
   // Run each iteration.
   private void iteratePageRank(int i, int j, String basePath, int numNodes,
-      boolean useCombiner, boolean useInMapperCombiner, String sources) throws Exception {
+      boolean useCombiner, boolean useInMapperCombiner, String sources, int layerCount) throws Exception {
     // Each iteration consists of two phases (two MapReduce jobs).
 
     // Job 1: distribute PageRank mass along outgoing edges.
-    ArrayListOfFloatsWritable mass = phase1(i, j, basePath, numNodes, useCombiner, useInMapperCombiner, sources);
+    ArrayListOfFloatsWritable mass = phase1(i, j, basePath, numNodes, useCombiner, useInMapperCombiner, layerCount);
 
     // Find out how much PageRank mass got lost at the dangling nodes.
 //    float missing = 1.0f - (float) StrictMath.exp(mass); // to be computed in Phase 2 now
 
     // Job 2: distribute missing mass, take care of random jump factor.
-    phase2(i, j, mass, basePath, numNodes, sources);
+    phase2(i, j, mass, basePath, numNodes, sources, layerCount);
   }
 
   private ArrayListOfFloatsWritable phase1(int i, int j, String basePath, int numNodes,
-                                  boolean useCombiner, boolean useInMapperCombiner, String sources) throws Exception {
+                                  boolean useCombiner, boolean useInMapperCombiner, int layerCount) throws Exception {
 
     Job job = Job.getInstance(getConf());
     job.setJobName("PageRank:Basic:iteration" + j + ":Phase1");
@@ -507,7 +505,6 @@ public class RunPageRankBasic extends Configured implements Tool {
     LOG.info(" - useCombiner: " + useCombiner);
     LOG.info(" - useInmapCombiner: " + useInMapperCombiner);
     LOG.info("computed number of partitions: " + numPartitions);
-    LOG.info("Source Nodes: " + sources);
 
     int numReduceTasks = numPartitions;
 
@@ -516,7 +513,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     job.getConfiguration().setBoolean("mapred.reduce.tasks.speculative.execution", false);
     //job.getConfiguration().set("mapred.child.java.opts", "-Xmx2048m");
     job.getConfiguration().set("PageRankMassPath", outm);
-    job.getConfiguration().setStrings("sources", sources); // will pass the string list directly
+    job.getConfiguration().setInt("layerCount", layerCount); //
 
     job.setNumReduceTasks(numReduceTasks);
 
@@ -533,11 +530,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     job.setOutputValueClass(PageRankNode.class);
 
     job.setMapperClass(MapClass.class);
-
-    // if (useCombiner) {
-    //   job.setCombinerClass(CombineClass.class);
-    // }
-
+    job.setCombinerClass(CombineClass.class); // use by default
     job.setReducerClass(ReduceClass.class);
 
     FileSystem.get(getConf()).delete(new Path(out), true);
@@ -568,7 +561,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     return mass;
   }
 
-  private void phase2(int i, int j, ArrayListOfFloatsWritable mass, String basePath, int numNodes, String sources) throws Exception {
+  private void phase2(int i, int j, ArrayListOfFloatsWritable mass, String basePath, int numNodes, String sources, int layerCount) throws Exception {
     Job job = Job.getInstance(getConf());
     job.setJobName("PageRank:Basic:iteration" + j + ":Phase2");
     job.setJarByClass(RunPageRankBasic.class);
@@ -586,6 +579,7 @@ public class RunPageRankBasic extends Configured implements Tool {
     job.getConfiguration().setBoolean("mapred.reduce.tasks.speculative.execution", false);
     job.getConfiguration().setStrings("sources", sources);
     job.getConfiguration().setInt("NodeCount", numNodes);
+    job.getConfiguration().setInt("layerCount", layerCount);
 
     // ==========================================================================
     // COMPUTING MISSING VALUES FROM TOTAL MASS AND CONV -> String -> Conf file
