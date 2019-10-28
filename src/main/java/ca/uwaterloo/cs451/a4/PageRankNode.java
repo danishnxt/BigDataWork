@@ -112,20 +112,20 @@ public class PageRankNode implements Writable {
     int b = in.readByte();
     type = mapping[b];
     nodeid = in.readInt();
-    layers = in.readInt();
+//    layers = in.readInt();
 
     pagerank = new ArrayList<Float>();
 
     // not quite sure where these are used but am going with the required template for now
 
     if (type.equals(Type.Mass)) {
-      for (int i = 0; i < layers; i++) {
+      for (int i = 0; i < 3; i++) {
         pagerank.add(in.readFloat());
       }
     }
 
     if (type.equals(Type.Complete)) {
-      for (int i = 0; i < layers; i++) {
+      for (int i = 0; i < 3; i++) {
         pagerank.add(in.readFloat());
       }
     }
@@ -144,17 +144,15 @@ public class PageRankNode implements Writable {
   public void write(DataOutput out) throws IOException {
     out.writeByte(type.val);
     out.writeInt(nodeid);
-    out.writeInt(layers);
+//    out.writeInt(layers);
 
     float flt_val_hold = 0;
 
     if (type.equals(Type.Mass)) {
+      System.out.println("VALCHK");
       Iterator<Float> iter = pagerank.iterator();
       while (iter.hasNext()){
-        System.out.println("***********************");
-        System.out.println("VALCHK");
         flt_val_hold = iter.next(); // get value
-        System.out.println(flt_val_hold);
         out.writeFloat(flt_val_hold);
       }
 
@@ -162,12 +160,10 @@ public class PageRankNode implements Writable {
     }
 
     if (type.equals(Type.Complete)) {
+      System.out.println("VALCHKB");
       Iterator<Float> iter = pagerank.iterator();
       while (iter.hasNext()){
-        System.out.println("***********************");
-        System.out.println("VALCHKB");
         flt_val_hold = iter.next(); // get value
-        System.out.println(flt_val_hold);
         out.writeFloat(flt_val_hold);
       }
     }
