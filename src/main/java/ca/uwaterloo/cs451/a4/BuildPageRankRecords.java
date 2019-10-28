@@ -111,7 +111,6 @@ public class BuildPageRankRecords extends Configured implements Tool {
         }
 
       node.setPageRank(pageRankValues);
-      node.setlayers(layers); // for it's internal reading and writing to file later on
 
       if (arr.length == 1) { // if lone source node
         node.setNodeId(Integer.parseInt(arr[0]));
