@@ -18,6 +18,7 @@ package ca.uwaterloo.cs451.a4;
 
 import org.apache.hadoop.io.Writable;
 import tl.lin.data.array.ArrayListOfIntsWritable;
+import tl.lin.data.array.ArrayListOfFloatsWritable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,7 +54,7 @@ public class PageRankNode implements Writable {
   private Type type;
   private int nodeid;
   private int layers; // will indicate how many levels of parallel map reduce jobs running / data contained
-  private ArrayList<Float> pagerank;
+  private ArrayListOfFloatsWritable pagerank;
   private ArrayListOfIntsWritable adjacencyList;
 
   // LAYERS ADDS A SPACE OVER HEAD BUT SAVES US FROM A PERFORMANCE PENALTY AS GIVEN FOR FUNCTIONS BELOW
@@ -86,10 +87,10 @@ public class PageRankNode implements Writable {
 
   // MODIFIED // THE LATTER IS THERE FOR FUTURE PROOFING MORE
 
-  public ArrayList<Float> getPageRank() {
+  public ArrayListOfFloatsWritable getPageRank() {
     return pagerank;
   }
-  public void setPageRank(ArrayList<Float> p) {
+  public void setPageRank(ArrayListOfFloatsWritable p) {
     this.pagerank = p;
   }
 
@@ -114,20 +115,16 @@ public class PageRankNode implements Writable {
     nodeid = in.readInt();
 //    layers = in.readInt();
 
-    pagerank = new ArrayList<Float>();
-
     // not quite sure where these are used but am going with the required template for now
 
     if (type.equals(Type.Mass)) {
-      for (int i = 0; i < 3; i++) {
-        pagerank.add(in.readFloat());
-      }
+      pagerank = new ArrayListOfFloatsWritable();
+      pagerank.readFields(in);
     }
 
     if (type.equals(Type.Complete)) {
-      for (int i = 0; i < 3; i++) {
-        pagerank.add(in.readFloat());
-      }
+      pagerank = new ArrayListOfFloatsWritable();
+      pagerank.readFields(in);
     }
 
     adjacencyList = new ArrayListOfIntsWritable();
@@ -146,24 +143,15 @@ public class PageRankNode implements Writable {
     out.writeInt(nodeid);
 //    out.writeInt(layers);
 
-    float flt_val_hold = 0;
+
 
     if (type.equals(Type.Mass)) {
-      Iterator<Float> iter = pagerank.iterator();
-      while (iter.hasNext()){
-        flt_val_hold = iter.next(); // get value
-        out.writeFloat(flt_val_hold);
-      }
-
+      pagerank.write(out);
       return;
     }
 
     if (type.equals(Type.Complete)) {
-      Iterator<Float> iter = pagerank.iterator();
-      while (iter.hasNext()){
-        flt_val_hold = iter.next(); // get value
-        out.writeFloat(flt_val_hold);
-      }
+      pagerank.write(out);
     }
 
     adjacencyList.write(out);
@@ -171,7 +159,7 @@ public class PageRankNode implements Writable {
 
   @Override
   public String toString() {
-    return String.format("{%d %.4f %s}", nodeid, pagerank, (adjacencyList == null ? "[]"
+    return String.format("{%d %s %s}", nodeid, pagerank.toString(50), (adjacencyList == null ? "[]"
         : adjacencyList.toString(10)));
   }
 

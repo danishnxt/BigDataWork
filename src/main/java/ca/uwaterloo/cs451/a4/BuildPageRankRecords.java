@@ -40,6 +40,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 import tl.lin.data.array.ArrayListOfIntsWritable;
+import tl.lin.data.array.ArrayListOfFloatsWritable;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -99,11 +100,10 @@ public class BuildPageRankRecords extends Configured implements Tool {
       String[] arr = t.toString().trim().split("\\s+");
 
       nid.set(Integer.parseInt(arr[0]));
-      ArrayList<Float> pageRankValues = new ArrayList<Float>();
+      ArrayListOfFloatsWritable pageRankValues = new ArrayListOfFloatsWritable();
 
         for (int i = 0; i < layers; i++) {
           if (sources.get(i) == nid.get()) {
-            System.out.println("TRGGER ONE CONDITION FIRED ============================");
             pageRankValues.add((float) StrictMath.log(1.0));
           } else {
             pageRankValues.add(Float.NEGATIVE_INFINITY);
