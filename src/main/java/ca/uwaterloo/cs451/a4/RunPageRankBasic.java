@@ -261,7 +261,7 @@ public class RunPageRankBasic extends Configured implements Tool {
       }
 
       // Update the final accumulated PageRank mass.
-      node.setPageRank(totalMass);
+      node.setPageRank(mass);
       context.getCounter(PageRank.massMessagesReceived).increment(massMessagesReceived);
 
       // Error checking.
@@ -270,7 +270,7 @@ public class RunPageRankBasic extends Configured implements Tool {
         context.write(nid, node);
 
         // Keep track of total PageRank mass.
-        for (int i = 0; i < layerCount;i++) {
+        for (int i = 0; i < layerCount; i++) {
           totalMass.set(i, sumLogProbs(totalMass.get(i), mass.get(i))); // update total mass across the board
         }
 
