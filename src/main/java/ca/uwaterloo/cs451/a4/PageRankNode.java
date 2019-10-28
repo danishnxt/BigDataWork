@@ -114,9 +114,6 @@ public class PageRankNode implements Writable {
     nodeid = in.readInt();
     layers = in.readInt();
 
-    System.out.println("GET OUT WHAT WE'VE BEEN PUTTING DOWN BRO");
-    System.out.println(layers);
-
     pagerank = new ArrayList<Float>();
 
     // not quite sure where these are used but am going with the required template for now
@@ -154,7 +151,10 @@ public class PageRankNode implements Writable {
     if (type.equals(Type.Mass)) {
       Iterator<Float> iter = pagerank.iterator();
       while (iter.hasNext()){
+        System.out.println("***********************");
+        System.out.println("VALCHK");
         flt_val_hold = iter.next(); // get value
+        System.out.println(flt_val_hold);
         out.writeFloat(flt_val_hold);
       }
 
@@ -164,7 +164,10 @@ public class PageRankNode implements Writable {
     if (type.equals(Type.Complete)) {
       Iterator<Float> iter = pagerank.iterator();
       while (iter.hasNext()){
+        System.out.println("***********************");
+        System.out.println("VALCHKB");
         flt_val_hold = iter.next(); // get value
+        System.out.println(flt_val_hold);
         out.writeFloat(flt_val_hold);
       }
     }
