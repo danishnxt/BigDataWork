@@ -53,7 +53,6 @@ public class PageRankNode implements Writable {
 
   private Type type;
   private int nodeid;
-  private int layers; // will indicate how many levels of parallel map reduce jobs running / data contained
   private ArrayListOfFloatsWritable pagerank;
   private ArrayListOfIntsWritable adjacencyList;
 
@@ -92,13 +91,6 @@ public class PageRankNode implements Writable {
   }
   public void setPageRank(ArrayListOfFloatsWritable p) {
     this.pagerank = p;
-  }
-
-  public int getlayers() {
-    return layers;
-  }
-  public void setlayers(int p) {
-    this.layers = p;
   }
 
   /**
