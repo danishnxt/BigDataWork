@@ -101,12 +101,8 @@ public class BuildPageRankRecords extends Configured implements Tool {
       nid.set(Integer.parseInt(arr[0]));
       ArrayList<Float> pageRankValues = new ArrayList<Float>();
 
-        if (key.get() == 367){
-          System.out.println("MONITOR THIS ==================================================");
-        }
-
         for (int i = 0; i < layers; i++) {
-          if (sources.get(i) == key.get()) {
+          if (sources.get(i) == nid.get()) {
             System.out.println("TRGGER ONE CONDITION FIRED ============================");
             pageRankValues.add((float) StrictMath.log(1.0));
           } else {
