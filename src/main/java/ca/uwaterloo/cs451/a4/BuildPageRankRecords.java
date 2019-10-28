@@ -84,6 +84,10 @@ public class BuildPageRankRecords extends Configured implements Tool {
         sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
       }
 
+      for (int i = 0; i < layers; i++) {
+        System.out.println(sources.get(i));
+      }
+
       // all source nodes loaded into an array
 
     }
@@ -97,12 +101,16 @@ public class BuildPageRankRecords extends Configured implements Tool {
       nid.set(Integer.parseInt(arr[0]));
       ArrayList<Float> pageRankValues = new ArrayList<Float>();
 
+        if (key.get() == 367){
+          System.out.println("MONITOR THIS ==================================================");
+        }
+
         for (int i = 0; i < layers; i++) {
           if (sources.get(i) == key.get()) {
             System.out.println("TRGGER ONE CONDITION FIRED ============================");
             pageRankValues.add((float) StrictMath.log(1.0));
           } else {
-            pageRankValues.add((float) StrictMath.log(0.0));
+            pageRankValues.add(Float.NEGATIVE_INFINITY);
           }
         }
 
