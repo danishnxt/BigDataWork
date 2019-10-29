@@ -59,8 +59,8 @@ import java.util.HashMap;
 public class ExtractTopPersonalizedPageRankNodes extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(ExtractTopPersonalizedPageRankNodes.class);
 
-  private static ArrayList<String> final_keys = new ArrayList<>();
-  private static ArrayList<String> final_values = new ArrayList<>();
+  private static ArrayList<String> final_keys = new ArrayList<>(); // maintained till the end
+  private static ArrayList<String> final_values = new ArrayList<>(); // maintained till the end
   private static NumberFormat formatter = new DecimalFormat("0000");
 
   private static class MyMapper extends
@@ -231,10 +231,15 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
       // giving values out manually
 
-      for (int iB = 0; iB < final_keys.size(); iB++) {
-        if (iB % n == 0 ){
+    }
+
+    for (int ax = 0; ax < strCount; ax++) {
+      int start = (ax * n);
+      int end = (ax * n) + n;
+      for (int iB = start; iB < end; iB++) {
+        if (iB % n == 0 ) {
           System.out.println();
-          System.out.println("Source: " + srcNodes[i]);
+          System.out.println("Source: " + srcNodes[ax]);
           System.out.println();
         }
         String output = String.format("%d %.5f", Integer.parseInt(final_keys.get(iB)), Float.parseFloat(final_values.get(iB)));
