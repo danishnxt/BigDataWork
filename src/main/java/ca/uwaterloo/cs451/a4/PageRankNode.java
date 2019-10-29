@@ -137,8 +137,6 @@ public class PageRankNode implements Writable {
     out.writeInt(nodeid);
 //    out.writeInt(layers);
 
-
-
     if (type.equals(Type.Mass)) {
       pagerank.write(out);
       return;
@@ -153,8 +151,9 @@ public class PageRankNode implements Writable {
 
   @Override
   public String toString() {
-    return String.format("{%d %s %s}", nodeid, pagerank.toString(50), (adjacencyList == null ? "[]"
-        : adjacencyList.toString(10)));
+    return String.format("{%d %s %s}", nodeid,
+            (pagerank == null ? "[]" : pagerank.toString(50)),
+            (adjacencyList == null ? "[]" : adjacencyList.toString(10)));
   }
 
   /**
