@@ -234,10 +234,10 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
       for (int iB = 0; iB < final_keys.size(); iB++) {
         if (iB % n == 0 ){
           System.out.println();
-          System.out.println("Source: " + srcNodes[iB]);
+          System.out.println("Source: " + srcNodes[i]);
           System.out.println();
         }
-        String output = String.format("%.5f %d", Float.parseFloat(final_values.get(iB)), Integer.parseInt(final_keys.get(iB)));
+        String output = String.format("%d %.5f", Integer.parseInt(final_keys.get(iB)), Float.parseFloat(final_values.get(iB)));
         System.out.println(output);
       }
     }
