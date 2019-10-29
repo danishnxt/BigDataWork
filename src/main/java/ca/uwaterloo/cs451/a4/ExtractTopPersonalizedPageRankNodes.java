@@ -239,7 +239,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
         while(l != null) {
           String values[] = new String[2];// to flip these around
           values = l.split("\\s+");
-          System.out.println(values[1] + " " + values[0]);
+          System.out.println(values[1] + " " + values[0]); // first and after to match std output requirement
           l = br.readLine();
         }
 
