@@ -356,19 +356,22 @@ public class RunPageRankBasic extends Configured implements Tool {
         p.set(i, sumLogProbs(jump.get(i), link.get(i))); // re-update values for the layer
       }
 
-      System.out.println("FINAL DEBUG CHECK");
+
 
       if (nid.get() == 367) {
+        System.out.println("FINAL DEBUG CHECK");
         System.out.println("367");
         System.out.println(p.get(0));
         System.out.println(p.get(1));
         System.out.println(p.get(2));
       } else if (nid.get() == 249) {
+        System.out.println("FINAL DEBUG CHECK");
         System.out.println("249");
         System.out.println(p.get(0));
         System.out.println(p.get(1));
         System.out.println(p.get(2));
       } else if (nid.get() == 145) {
+        System.out.println("FINAL DEBUG CHECK");
         System.out.println("145");
         System.out.println(p.get(0));
         System.out.println(p.get(1));
