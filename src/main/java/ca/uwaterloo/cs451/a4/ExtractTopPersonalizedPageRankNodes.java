@@ -49,6 +49,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ExtractTopPersonalizedPageRankNodes extends Configured implements Tool {
@@ -56,10 +57,11 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
   private static class MyMapper extends
       Mapper<IntWritable, PageRankNode, PairOfInts, FloatWritable> {
-
-      // This wasn't working with ArrayList somehow, reverting to old style list
-    private TopScoredObjects<Integer> [] myQueueList;
     private int layerCount;
+      // This wasn't working with ArrayList somehow, reverting to old style list
+//    private ArrayList<TopScoredObjects<>> MyQueueList = new ArrayList<TopScoredObjects<Integer>> ;
+
+    private TopScoredObjects<Integer> [] myQueueList;
 
     @Override
     public void setup(Context context) throws IOException {
@@ -98,8 +100,12 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
   private static class MyReducer extends
       Reducer<PairOfInts, FloatWritable, FloatWritable, IntWritable> {
-    private static TopScoredObjects<Integer> [] myQueueListB;
+
     private int layerCount; // maintain number of layers
+    //    private ArrayList<TopScoredObjects<>> MyQueueList = new ArrayList<TopScoredObjects<Integer>> ; // needs type but was emp before?
+    //    private ArrayList<TopScoredObjects<>> MyQueueList; ??
+    private static TopScoredObjects<Integer> [] myQueueListB;
+
 
     @Override
     public void setup(Context context) throws IOException {
