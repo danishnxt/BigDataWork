@@ -97,7 +97,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
   }
 
   private static class MyReducer extends
-      Reducer<IntWritable, FloatWritable, FloatWritable, Text> {
+      Reducer<IntWritable, FloatWritable, IntWritable, Text> {
     private static TopScoredObjects<Integer> queue;
     private HashMap<Integer, Text> results = new HashMap<>();
 
@@ -121,12 +121,12 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
     @Override
     public void cleanup(Context context) throws IOException, InterruptedException {
-      FloatWritable key = new FloatWritable();
+      IntWritable key = new IntWritable();
       Text value = new Text();
 
         for (PairOfObjectFloat<Integer> pair : queue.extractAll()) {
 
-          key.set(pair.getRightElement());
+          key.set(pair.getLeftElement());
           // We're outputting a string so we can control the formatting.
           value.set(String.format("%.5f", pair.getRightElement()));
           final_keys.add(key.toString());
