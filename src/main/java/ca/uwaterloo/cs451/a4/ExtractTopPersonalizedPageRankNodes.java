@@ -56,7 +56,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
   private static final Logger LOG = Logger.getLogger(ExtractTopPersonalizedPageRankNodes.class);
 
   private static class MyMapper extends
-      Mapper<IntWritable, PageRankNode, PairOfInts, FloatWritable> {
+      Mapper<IntWritable, PageRankNode, IntWritable, FloatWritable> {
     private int layerCount;
       // This wasn't working with ArrayList somehow, reverting to old style list
 //    private ArrayList<TopScoredObjects<>> MyQueueList = new ArrayList<TopScoredObjects<Integer>> ;
@@ -85,12 +85,12 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
     @Override
     public void cleanup(Context context) throws IOException, InterruptedException {
-      PairOfInts key = new PairOfInts();
+      IntWritable key = new IntWritable();
       FloatWritable value = new FloatWritable();
 
       for (int i = 0; i < layerCount; i++) {
         for (PairOfObjectFloat<Integer> pair : myQueueList[i].extractAll()) {
-          key.set(pair.getLeftElement(), i);
+          key.set(pair.getLeftElement());
           value.set(pair.getRightElement());
           context.write(key, value);
         }
