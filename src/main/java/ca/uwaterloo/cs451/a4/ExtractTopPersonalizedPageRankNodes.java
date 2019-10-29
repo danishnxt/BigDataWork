@@ -42,6 +42,7 @@ import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 import tl.lin.data.pair.PairOfObjectFloat;
 import tl.lin.data.pair.PairOfInts;
+import tl.lin.data.pair.PairOfObjectInt;
 import tl.lin.data.queue.TopScoredObjects;
 
 import java.io.BufferedInputStream;
@@ -51,36 +52,35 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.HashMap;
 
 public class ExtractTopPersonalizedPageRankNodes extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(ExtractTopPersonalizedPageRankNodes.class);
 
+  private static ArrayList<String> final_keys = new ArrayList<>();
+  private static ArrayList<String> final_values = new ArrayList<>();
+  private static NumberFormat formatter = new DecimalFormat("0000");
+
   private static class MyMapper extends
       Mapper<IntWritable, PageRankNode, IntWritable, FloatWritable> {
-    private int layerCount;
-      // This wasn't working with ArrayList somehow, reverting to old style list
-//    private ArrayList<TopScoredObjects<>> MyQueueList = new ArrayList<TopScoredObjects<Integer>> ;
 
-    private TopScoredObjects<Integer> [] myQueueList;
+      // This wasn't working with ArrayList somehow, reverting to old style list
+    private TopScoredObjects<Integer> queue;
+    private int layerVal;
 
     @Override
     public void setup(Context context) throws IOException {
-
       int k = context.getConfiguration().getInt("n", 100);
-      layerCount = context.getConfiguration().getInt("sourceCount", 1); // know how many places to pull data from
-
-      myQueueList = new TopScoredObjects[layerCount]; // initializing array
-      for (int i = 0; i < layerCount; i++) {
-        myQueueList[i] = new TopScoredObjects<>(k);
-      }
+      layerVal = context.getConfiguration().getInt("curLayer", 1); // know how many places to pull data from
+      queue = new TopScoredObjects<>(k);
     }
 
     @Override
     public void map(IntWritable nid, PageRankNode node, Context context) throws IOException,
         InterruptedException {
-      for (int i = 0; i < layerCount; i++){
-        myQueueList[i].add(node.getNodeId(), node.getPageRank().get(i)); // adding into top Scored value List itself here
-      }
+        queue.add(node.getNodeId(), (float) StrictMath.exp(node.getPageRank().get(layerVal))); // adding into top Scored value List itself here
     }
 
     @Override
@@ -88,43 +88,30 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
       IntWritable key = new IntWritable();
       FloatWritable value = new FloatWritable();
 
-      for (int i = 0; i < layerCount; i++) {
-        for (PairOfObjectFloat<Integer> pair : myQueueList[i].extractAll()) {
-          key.set(pair.getLeftElement());
-          value.set(pair.getRightElement());
-          context.write(key, value);
-        }
+      for (PairOfObjectFloat<Integer> pair : queue.extractAll()) {
+        key.set(pair.getLeftElement());
+        value.set(pair.getRightElement());
+        context.write(key, value);
       }
     }
   }
 
   private static class MyReducer extends
-      Reducer<PairOfInts, FloatWritable, FloatWritable, IntWritable> {
-
-    private int layerCount; // maintain number of layers
-    //    private ArrayList<TopScoredObjects<>> MyQueueList = new ArrayList<TopScoredObjects<Integer>> ; // needs type but was emp before?
-    //    private ArrayList<TopScoredObjects<>> MyQueueList; ??
-    private static TopScoredObjects<Integer> [] myQueueListB;
-
+      Reducer<IntWritable, FloatWritable, FloatWritable, Text> {
+    private static TopScoredObjects<Integer> queue;
+    private HashMap<Integer, Text> results = new HashMap<>();
 
     @Override
     public void setup(Context context) throws IOException {
-
       int k = context.getConfiguration().getInt("n", 100);
-      int layerCount = context.getConfiguration().getInt("sourceCount", 100);
-      String[] sources = context.getConfiguration().getStrings("sources");
-
-      myQueueListB = new TopScoredObjects[layerCount];
-      for (int i = 0; i < layerCount; i++) {
-        myQueueListB[i] = new TopScoredObjects<>(k); // passin in context as before, just in a loop
-      }
+      queue = new TopScoredObjects<Integer>(k);
     }
 
     @Override
-    public void reduce(PairOfInts nid, Iterable<FloatWritable> iterable, Context context)
+    public void reduce(IntWritable nid, Iterable<FloatWritable> iterable, Context context)
         throws IOException {
       Iterator<FloatWritable> iter = iterable.iterator();
-      myQueueListB[nid.getRightElement()].add(nid.getLeftElement(), iter.next().get());
+      queue.add(nid.get(), iter.next().get());
 
       // Shouldn't happen. Throw an exception.
       if (iter.hasNext()) {
@@ -135,16 +122,17 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
     @Override
     public void cleanup(Context context) throws IOException, InterruptedException {
       FloatWritable key = new FloatWritable();
-      IntWritable value = new IntWritable();
+      Text value = new Text();
 
-      for (int i = 0; i < layerCount; i++) {
-        for (PairOfObjectFloat<Integer> pair : myQueueListB[i].extractAll()) {
+        for (PairOfObjectFloat<Integer> pair : queue.extractAll()) {
+
           key.set(pair.getRightElement());
           // We're outputting a string so we can control the formatting.
-          value.set(pair.getLeftElement());
+          value.set(String.format("%.5f", pair.getRightElement()));
+          final_keys.add(key.toString());
+          final_values.add(value.toString());
           context.write(key, value);
         }
-      }
     }
   }
 
@@ -202,67 +190,56 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
     LOG.info(" - top: " + n);
     LOG.info(" - sources: " + sources);
 
-    int strCount = sources.split(",").length;
+    String srcNodes [] = sources.split(",");
+    int strCount = srcNodes.length;
 
-    Configuration conf = getConf();
-    conf.setInt("mapred.min.split.size", 1024 * 1024 * 1024);
-    conf.setInt("n", n);
-    conf.setInt("sourceCount", strCount);
-    conf.setStrings("sources", sources);
+    for (int i = 0; i < strCount; i++) {
 
-    Job job = Job.getInstance(conf);
-    job.setJobName(ExtractTopPersonalizedPageRankNodes.class.getName() + ":" + inputPath);
-    job.setJarByClass(ExtractTopPersonalizedPageRankNodes.class);
+      Configuration conf = getConf();
+      conf.setInt("mapred.min.split.size", 1024 * 1024 * 1024);
+      conf.setInt("n", n);
+      conf.setInt("layerVal", i); // currently on this layer
 
-    job.setNumReduceTasks(1);
+      Job job = Job.getInstance(conf);
+      job.setJobName(ExtractTopPersonalizedPageRankNodes.class.getName() + ":" + inputPath);
+      job.setJarByClass(ExtractTopPersonalizedPageRankNodes.class);
 
-    FileInputFormat.addInputPath(job, new Path(inputPath));
-    FileOutputFormat.setOutputPath(job, new Path(outputPath));
+      job.setNumReduceTasks(1);
 
-    job.setInputFormatClass(SequenceFileInputFormat.class);
-    job.setOutputFormatClass(TextOutputFormat.class);
+      String newOutputPath = outputPath + "/Src-" + Integer.toString(i) + "-t";
 
-    job.setMapOutputKeyClass(IntWritable.class);
-    job.setMapOutputValueClass(FloatWritable.class);
+      FileInputFormat.addInputPath(job, new Path(inputPath));
+      FileOutputFormat.setOutputPath(job, new Path(newOutputPath));
 
-    job.setOutputKeyClass(IntWritable.class);
-    job.setOutputValueClass(Text.class);
-    // Text instead of FloatWritable so we can control formatting
+      job.setInputFormatClass(SequenceFileInputFormat.class);
+      job.setOutputFormatClass(TextOutputFormat.class);
 
-    job.setMapperClass(MyMapper.class);
-    job.setReducerClass(MyReducer.class);
+      job.setMapOutputKeyClass(IntWritable.class);
+      job.setMapOutputValueClass(FloatWritable.class);
 
-    // Delete the output directory if it exists already.
-    FileSystem.get(conf).delete(new Path(outputPath), true);
+      job.setOutputKeyClass(IntWritable.class);
+      job.setOutputValueClass(Text.class);
+      // Text instead of FloatWritable so we can control formatting
 
-    job.waitForCompletion(true);
+      job.setMapperClass(MyMapper.class);
+      job.setReducerClass(MyReducer.class);
 
-    // giving values out manually
+      // Delete the output directory if it exists already.
+      FileSystem.get(conf).delete(new Path(outputPath), true);
 
-    String[] sourceSpl = sources.split(""); // get a list of strings in here
-    Path path = new Path(outputPath + "/part-r-00000");
-    FileSystem fs = FileSystem.get(new Configuration());
-    BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(path)));
+      job.waitForCompletion(true);
 
-    int nid, i = 0;
-    float pageRankValue;
-    String str;
+      // giving values out manually
 
-    // This is all merely just for the output computation
-
-    while((str = br.readLine()) != null) {
-      if(i % n == 0) {
-        System.out.println();
-        System.out.println("Source:\t" + sourceSpl[strCount/n]);
+      for (int iB = 0; iB < final_keys.size(); iB++) {
+        if (iB % n == 0 ){
+          System.out.println();
+          System.out.println("Source: " + srcNodes[iB]);
+          System.out.println();
+        }
+        String output = String.format("%.5f %d", Float.parseFloat(final_values.get(iB)), Integer.parseInt(final_values.get(iB)));
+        System.out.println(output);
       }
-
-      String[] tokens = str.split("\\t");
-      pageRankValue = Float.parseFloat(tokens[0]);
-      pageRankValue = (float) StrictMath.exp(pageRankValue);
-      nid = Integer.parseInt(tokens[1]);
-      System.out.println(String.format("%.5f %d", pageRankValue, nid));
-      i++;
-
     }
 
     return 0;
