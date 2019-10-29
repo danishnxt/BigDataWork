@@ -44,7 +44,10 @@ import tl.lin.data.pair.PairOfObjectFloat;
 import tl.lin.data.pair.PairOfInts;
 import tl.lin.data.queue.TopScoredObjects;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -227,6 +230,34 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
     FileSystem.get(conf).delete(new Path(outputPath), true);
 
     job.waitForCompletion(true);
+
+    // giving values out manually
+
+    String[] sourceSpl = sources.split(""); // get a list of strings in here
+    Path path = new Path(outputPath + "/part-r-00000");
+    FileSystem fs = FileSystem.get(new Configuration());
+    BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(path)));
+
+    int nid, i = 0;
+    float pageRankValue;
+    String str;
+
+    // This is all merely just for the output computation
+
+    while((str = br.readLine()) != null) {
+      if(i % n == 0) {
+        System.out.println();
+        System.out.println("Source:\t" + sourceSpl[strCount/n]);
+      }
+
+      String[] tokens = str.split("\\t");
+      pageRankValue = Float.parseFloat(tokens[0]);
+      pageRankValue = (float) StrictMath.exp(pageRankValue);
+      nid = Integer.parseInt(tokens[1]);
+      System.out.println(String.format("%.5f %d", pageRankValue, nid));
+      i++;
+
+    }
 
     return 0;
   }
