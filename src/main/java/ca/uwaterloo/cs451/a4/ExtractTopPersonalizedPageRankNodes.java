@@ -59,12 +59,8 @@ import java.util.HashMap;
 public class ExtractTopPersonalizedPageRankNodes extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(ExtractTopPersonalizedPageRankNodes.class);
 
-  private static NumberFormat formatter = new DecimalFormat("0000");
-
   private static class MyMapper extends
       Mapper<IntWritable, PageRankNode, IntWritable, FloatWritable> {
-
-      // This wasn't working with ArrayList somehow, reverting to old style list
     private TopScoredObjects<Integer> queue;
     private int layerVal;
 
@@ -190,6 +186,9 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
     String srcNodes [] = sources.split(",");
     int strCount = srcNodes.length;
 
+    // THE JOBS ARE PUT IN A LOOP AND RUN ONE BY ONE, SAVING EACH OUTPUT TO A DIFFERENT FOLDER
+    // AFTER THE LOOPS - THE FOLDERS ARE ITERATED OVER AND ALL OUTPUT TO STD OUT AT THE SAME TIME
+
     for (int i = 0; i < strCount; i++) {
 
       Configuration conf = getConf();
@@ -224,12 +223,16 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
       job.waitForCompletion(true);
     }
 
+    // loops complete -> read and output to STD output now
+
     for (int i = 0; i < strCount; i++) {
 
       Path path = new Path(outputPath + "/lay-" + i + "/part-r-00000"); // since we're only using one reduce task
       FileSystem fs = FileSystem.get(confF); // overall configuration
       System.out.println();
       System.out.println("Source: " + srcNodes[i]);
+
+        // read file config for system
 
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(path)));
       try {

@@ -308,19 +308,7 @@ public class RunPersonalizedPageRankBasic extends Configured implements Tool {
       String missingMass_Str[] = context.getConfiguration().getStrings("MissingMass");
       layerCount = context.getConfiguration().getInt("layerCount", 1);
 
-      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
-      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
-      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
-      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
-      System.out.println(layerCount);
-      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
-      System.out.print(source_strings[0]);
-
       for (int ib = 0; ib < layerCount; ib++) {
-
-        System.out.println("LAYER COUNT ITER");
-        System.out.println(ib);
-
         sourceCheck.add(Integer.parseInt(source_strings[ib]));
         missingMass.add(0.0f + Float.parseFloat(missingMass_Str[ib]));
       }
@@ -355,29 +343,6 @@ public class RunPersonalizedPageRankBasic extends Configured implements Tool {
       for (int i = 0; i < layerCount; i++) {
         p.set(i, sumLogProbs(jump.get(i), link.get(i))); // re-update values for the layer
       }
-
-
-
-      if (nid.get() == 367) {
-        System.out.println("FINAL DEBUG CHECK");
-        System.out.println("367");
-        System.out.println(p.get(0));
-        System.out.println(p.get(1));
-        System.out.println(p.get(2));
-      } else if (nid.get() == 249) {
-        System.out.println("FINAL DEBUG CHECK");
-        System.out.println("249");
-        System.out.println(p.get(0));
-        System.out.println(p.get(1));
-        System.out.println(p.get(2));
-      } else if (nid.get() == 145) {
-        System.out.println("FINAL DEBUG CHECK");
-        System.out.println("145");
-        System.out.println(p.get(0));
-        System.out.println(p.get(1));
-        System.out.println(p.get(2));
-      }
-
 
       node.setPageRank(p); // reset values back to node
       context.write(nid, node);
@@ -610,8 +575,7 @@ public class RunPersonalizedPageRankBasic extends Configured implements Tool {
     }
 
     temp = temp.substring(0, temp.length() - 1); // remove the last comma
-    System.out.println("CHECK FOR CORRECT MISSING VALUE OF STRING ============");
-    System.out.println(temp);
+
 
     // By this point we have out STRING OF missing values
     job.getConfiguration().setStrings("MissingMass", temp);
