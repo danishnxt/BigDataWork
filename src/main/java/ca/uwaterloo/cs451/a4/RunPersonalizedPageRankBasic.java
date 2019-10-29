@@ -94,6 +94,7 @@ public class RunPersonalizedPageRankBasic extends Configured implements Tool {
       int massMessages = 0;
 
       // Distribute PageRank mass to neighbors (along outgoing edges).
+
       if (node.getAdjacencyList().size() > 0) {
         // Each neighbor gets an equal share of PageRank mass.
         ArrayListOfIntsWritable list = node.getAdjacencyList();
