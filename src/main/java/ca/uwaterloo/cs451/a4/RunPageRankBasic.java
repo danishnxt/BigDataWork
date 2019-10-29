@@ -293,7 +293,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
 
     private static int layerCount = 0; // sep count for second job
-    private ArrayList<Integer> sourceCheck = new ArrayList<Integer>();
+    private ArrayList<Integer> sourceCheck;
     private ArrayListOfFloatsWritable missingMass;
 
     @Override
@@ -301,15 +301,16 @@ public class RunPageRankBasic extends Configured implements Tool {
       Configuration conf = context.getConfiguration();
 
       missingMass = new ArrayListOfFloatsWritable();
+      sourceCheck = new ArrayList<Integer>();
 
       // PHASE 2 IS A SEPARATE JOB AND HENCE THIS NEEDS TO BE RUN AGAIN
       String source_strings[] = context.getConfiguration().getStrings("sources");
       String missingMass_Str[] = context.getConfiguration().getStrings("MissingMass");
       layerCount = context.getConfiguration().getInt("layerCount", 1);
 
-      for (int i = 0; i < source_strings.length; i++) {
-        sourceCheck.add(Integer.parseInt(source_strings[i]), 1);
-        missingMass.add(0.0f + Float.parseFloat(missingMass_Str[i]));
+      for (int ib = 0; ib < layerCount; ib++) {
+        sourceCheck.add(Integer.parseInt(source_strings[ib]), 1);
+        missingMass.add(0.0f + Float.parseFloat(missingMass_Str[ib]));
       }
     }
 
