@@ -58,7 +58,9 @@ public class PageRankNode implements Writable {
 
   // LAYERS ADDS A SPACE OVER HEAD BUT SAVES US FROM A PERFORMANCE PENALTY AS GIVEN FOR FUNCTIONS BELOW
 
-  public PageRankNode() {}
+  public PageRankNode() {
+      pagerank = new ArrayListOfFloatsWritable();
+  }
 
   public int getNodeId() {
     return nodeid;
@@ -110,14 +112,19 @@ public class PageRankNode implements Writable {
     // not quite sure where these are used but am going with the required template for now
 
     if (type.equals(Type.Mass)) {
-      pagerank = new ArrayListOfFloatsWritable();
-      pagerank.readFields(in);
+//      pagerank = new ArrayListOfFloatsWritable();
+//      pagerank.readFields(in);
+        return;
     }
 
     if (type.equals(Type.Complete)) {
-      pagerank = new ArrayListOfFloatsWritable();
-      pagerank.readFields(in);
+//      pagerank = new ArrayListOfFloatsWritable();
+//      pagerank.readFields(in);
+      return;
     }
+
+    pagerank = new ArrayListOfFloatsWritable();
+    pagerank.readFields(in);
 
     adjacencyList = new ArrayListOfIntsWritable();
     adjacencyList.readFields(in);
@@ -134,16 +141,17 @@ public class PageRankNode implements Writable {
     out.writeByte(type.val);
     out.writeInt(nodeid);
 //    out.writeInt(layers);
-
+    pagerank.write(out); // do so whatever
 
 
     if (type.equals(Type.Mass)) {
-      pagerank.write(out);
+//      pagerank.write(out);
       return;
     }
 
     if (type.equals(Type.Complete)) {
-      pagerank.write(out);
+//      pagerank.write(out);
+      return;
     }
 
     adjacencyList.write(out);
@@ -151,8 +159,9 @@ public class PageRankNode implements Writable {
 
   @Override
   public String toString() {
-    return String.format("{%d %s %s}", nodeid, pagerank.toString(50), (adjacencyList == null ? "[]"
-        : adjacencyList.toString(10)));
+    return String.format("{%d %s %s}", nodeid,
+            (pagerank == null ? "[]" :  pagerank.toString(10)),
+            (adjacencyList == null ? "[]" : adjacencyList.toString(10)));
   }
 
   /**
