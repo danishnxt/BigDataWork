@@ -174,6 +174,8 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
       return -1;
     }
 
+    Configuration confF = getConf();
+
     String inputPath = cmdline.getOptionValue(INPUT);
     String outputPath = cmdline.getOptionValue(OUTPUT);
     int n = Integer.parseInt(cmdline.getOptionValue(TOP));
@@ -202,7 +204,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
       job.setNumReduceTasks(1);
 
       FileInputFormat.addInputPath(job, new Path(inputPath));
-      FileOutputFormat.setOutputPath(job, new Path(outputPath));
+      FileOutputFormat.setOutputPath(job, new Path(outputPath + "/lay-" + i));
 
       job.setInputFormatClass(SequenceFileInputFormat.class);
       job.setOutputFormatClass(TextOutputFormat.class);
@@ -218,11 +220,35 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
       job.setReducerClass(MyReducer.class);
 
       // Delete the output directory if it exists already.
-      FileSystem.get(conf).delete(new Path(outputPath), true);
+      FileSystem.get(conf).delete(new Path(outputPath + "/lay-" + i), true);
       job.waitForCompletion(true);
     }
 
+    for (int i = 0; i < strCount; i++) {
+
+      Path path = new Path(outputPath + "/lay-" + i + "/part-r-00000"); // since we're only using one reduce task
+      FileSystem fs = FileSystem.get(confF); // overall configuration
+      System.out.println("Source: " + srcNodes[i]);
+
+      BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(path)));
+      try {
+        String l;
+        l = br.readLine();
+
+        while(l != null) {
+          String values[] = new String[2];// to flip these around
+          values = l.split("\\s+");
+          System.out.println(values[0] + " " + values[1]);
+          l = br.readLine();
+        }
+
+      } finally {
+        br.close();
+      }
+    }
+
     return 0;
+
   }
 
   /**
