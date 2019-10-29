@@ -56,10 +56,8 @@ public class PageRankNode implements Writable {
   private ArrayListOfFloatsWritable pagerank;
   private ArrayListOfIntsWritable adjacencyList;
 
-  // LAYERS ADDS A SPACE OVER HEAD BUT SAVES US FROM A PERFORMANCE PENALTY AS GIVEN FOR FUNCTIONS BELOW
-
   public PageRankNode() {
-    pagerank = new ArrayListOfFloatsWritable();
+//    pagerank = new ArrayListOfFloatsWritable();
   }
 
   public int getNodeId() {
@@ -114,6 +112,7 @@ public class PageRankNode implements Writable {
     if (type.equals(Type.Mass)) {
       pagerank = new ArrayListOfFloatsWritable();
       pagerank.readFields(in);
+      return; // was this tripping it up? Maybe it was just reading mass type and didn't get the next one in?
     }
 
     if (type.equals(Type.Complete)) {
