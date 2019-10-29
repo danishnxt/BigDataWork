@@ -56,9 +56,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.lang.Math;
 
-public class RunPageRankBasic extends Configured implements Tool {
+public class RunPersonalizedPageRankBasic extends Configured implements Tool {
 
-  private static final Logger LOG = Logger.getLogger(RunPageRankBasic.class);
+  private static final Logger LOG = Logger.getLogger(RunPersonalizedPageRankBasic.class);
 
   private static enum PageRank {
     nodes, edges, massMessages, massMessagesSaved, massMessagesReceived, missingStructure
@@ -395,10 +395,10 @@ public class RunPageRankBasic extends Configured implements Tool {
    * @throws Exception if tool encounters an exception
    */
   public static void main(String[] args) throws Exception {
-    ToolRunner.run(new RunPageRankBasic(), args);
+    ToolRunner.run(new RunPersonalizedPageRankBasic(), args);
   }
 
-  public RunPageRankBasic() {}
+  public RunPersonalizedPageRankBasic() {}
 
   private static final String BASE = "base";
   private static final String NUM_NODES = "numNodes";
@@ -500,7 +500,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
     Job job = Job.getInstance(getConf());
     job.setJobName("PageRank:Basic:iteration" + j + ":Phase1");
-    job.setJarByClass(RunPageRankBasic.class);
+    job.setJarByClass(RunPersonalizedPageRankBasic.class);
 
     String in = basePath + "/iter" + formatter.format(i);
     String out = basePath + "/iter" + formatter.format(j) + "t";
@@ -579,7 +579,7 @@ public class RunPageRankBasic extends Configured implements Tool {
   private void phase2(int i, int j, ArrayListOfFloatsWritable mass, String basePath, int numNodes, String sources, int layerCount) throws Exception {
     Job job = Job.getInstance(getConf());
     job.setJobName("PageRank:Basic:iteration" + j + ":Phase2");
-    job.setJarByClass(RunPageRankBasic.class);
+    job.setJarByClass(RunPersonalizedPageRankBasic.class);
 
     LOG.info("number of nodes: " + numNodes);
 

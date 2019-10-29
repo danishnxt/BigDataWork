@@ -57,8 +57,8 @@ import java.util.HashMap;
  * @author Jimmy Lin
  * @author Michael Schatz
  */
-public class BuildPageRankRecords extends Configured implements Tool {
-  private static final Logger LOG = Logger.getLogger(BuildPageRankRecords.class);
+public class BuildPersonalizedPageRankRecords extends Configured implements Tool {
+  private static final Logger LOG = Logger.getLogger(BuildPersonalizedPageRankRecords.class);
 
   private static final String NODE_CNT_FIELD = "node.cnt";
   private static final String LAYER_CNT_FIELD = "layer.cnt";
@@ -135,7 +135,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
     }
   }
 
-  public BuildPageRankRecords() {}
+  public BuildPersonalizedPageRankRecords() {}
 
   private static final String INPUT = "input";
   private static final String OUTPUT = "output";
@@ -184,7 +184,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
     // DEALING WITH INPUT ARRAY FOR THE SOURCE NODES //
     String sources = cmdline.getOptionValue(SOURCE_NODES);
 
-    LOG.info("Tool name: " + BuildPageRankRecords.class.getSimpleName());
+    LOG.info("Tool name: " + BuildPersonalizedPageRankRecords.class.getSimpleName());
     LOG.info(" - inputDir: " + inputPath);
     LOG.info(" - outputDir: " + outputPath);
     LOG.info(" - numNodes: " + n);
@@ -196,8 +196,8 @@ public class BuildPageRankRecords extends Configured implements Tool {
     conf.setStrings("sources", sources); // will pass the string list directly
 
     Job job = Job.getInstance(conf);
-    job.setJobName(BuildPageRankRecords.class.getSimpleName() + ":" + inputPath);
-    job.setJarByClass(BuildPageRankRecords.class);
+    job.setJobName(BuildPersonalizedPageRankRecords.class.getSimpleName() + ":" + inputPath);
+    job.setJarByClass(BuildPersonalizedPageRankRecords.class);
 
     job.setNumReduceTasks(0);
 
@@ -230,6 +230,6 @@ public class BuildPageRankRecords extends Configured implements Tool {
    * @throws Exception if tool encounters an exception
    */
   public static void main(String[] args) throws Exception {
-    ToolRunner.run(new BuildPageRankRecords(), args);
+    ToolRunner.run(new BuildPersonalizedPageRankRecords(), args);
   }
 }
