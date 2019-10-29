@@ -228,6 +228,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
       Path path = new Path(outputPath + "/lay-" + i + "/part-r-00000"); // since we're only using one reduce task
       FileSystem fs = FileSystem.get(confF); // overall configuration
+      System.out.println();
       System.out.println("Source: " + srcNodes[i]);
 
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(path)));
@@ -238,7 +239,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
         while(l != null) {
           String values[] = new String[2];// to flip these around
           values = l.split("\\s+");
-          System.out.println(values[0] + " " + values[1]);
+          System.out.println(values[1] + " " + values[0]);
           l = br.readLine();
         }
 
