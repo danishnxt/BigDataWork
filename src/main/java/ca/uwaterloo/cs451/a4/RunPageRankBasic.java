@@ -308,7 +308,16 @@ public class RunPageRankBasic extends Configured implements Tool {
       String missingMass_Str[] = context.getConfiguration().getStrings("MissingMass");
       layerCount = context.getConfiguration().getInt("layerCount", 1);
 
+      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
+      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
+      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
+      System.out.println(layerCount);
+
       for (int ib = 0; ib < layerCount; ib++) {
+
+        System.out.println("LAYER COUNT ITER");
+        System.out.println(ib);
+
         sourceCheck.add(Integer.parseInt(source_strings[ib]), 1);
         missingMass.add(0.0f + Float.parseFloat(missingMass_Str[ib]));
       }
