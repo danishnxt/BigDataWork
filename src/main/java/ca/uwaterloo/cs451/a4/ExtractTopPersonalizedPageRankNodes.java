@@ -237,7 +237,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
           System.out.println("Source: " + srcNodes[iB]);
           System.out.println();
         }
-        String output = String.format("%.5f %d", Float.parseFloat(final_values.get(iB)), Integer.parseInt(final_values.get(iB)));
+        String output = String.format("%.5f %d", Float.parseFloat(final_values.get(iB)), Integer.parseInt(final_keys.get(iB)));
         System.out.println(output);
       }
     }
