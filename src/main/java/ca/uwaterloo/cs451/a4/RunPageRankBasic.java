@@ -321,7 +321,7 @@ public class RunPageRankBasic extends Configured implements Tool {
         System.out.println("LAYER COUNT ITER");
         System.out.println(ib);
 
-        sourceCheck.add(Integer.parseInt(source_strings[ib]), 1);
+        sourceCheck.add(Integer.parseInt(source_strings[ib]));
         missingMass.add(0.0f + Float.parseFloat(missingMass_Str[ib]));
       }
     }
