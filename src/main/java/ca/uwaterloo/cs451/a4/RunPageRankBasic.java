@@ -311,6 +311,7 @@ public class RunPageRankBasic extends Configured implements Tool {
       System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
       System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
       System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
+      System.out.println("SYSTEM GETTING FOOOOOKCED HERE ->");
       System.out.println(layerCount);
 
       for (int ib = 0; ib < layerCount; ib++) {
