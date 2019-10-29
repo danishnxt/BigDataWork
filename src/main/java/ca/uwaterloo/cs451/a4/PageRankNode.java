@@ -114,13 +114,13 @@ public class PageRankNode implements Writable {
     if (type.equals(Type.Mass)) {
 //      pagerank = new ArrayListOfFloatsWritable();
 //      pagerank.readFields(in);
-        return;
+//        return;
     }
 
     if (type.equals(Type.Complete)) {
 //      pagerank = new ArrayListOfFloatsWritable();
 //      pagerank.readFields(in);
-      return;
+//      return;
     }
 
     pagerank = new ArrayListOfFloatsWritable();
@@ -146,12 +146,12 @@ public class PageRankNode implements Writable {
 
     if (type.equals(Type.Mass)) {
 //      pagerank.write(out);
-      return;
+//      return;
     }
 
     if (type.equals(Type.Complete)) {
 //      pagerank.write(out);
-      return;
+//      return;
     }
 
     adjacencyList.write(out);
