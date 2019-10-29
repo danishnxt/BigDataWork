@@ -335,7 +335,7 @@ public class RunPageRankBasic extends Configured implements Tool {
 
       for (int i = 0; i < layerCount; i++) {
         jump.add(Float.NEGATIVE_INFINITY);
-        jump.add(Float.NEGATIVE_INFINITY);
+        link.add(Float.NEGATIVE_INFINITY);
       }
 
       ArrayListOfFloatsWritable p = node.getPageRank(); // p pageRank layers
