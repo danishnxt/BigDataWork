@@ -198,7 +198,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
       Configuration conf = getConf();
       conf.setInt("mapred.min.split.size", 1024 * 1024 * 1024);
       conf.setInt("n", n);
-      conf.setInt("layerVal", i); // currently on this layer
+      conf.setInt("curLayer", i); // currently on this layer
 
       Job job = Job.getInstance(conf);
       job.setJobName(ExtractTopPersonalizedPageRankNodes.class.getName() + ":" + inputPath);
@@ -240,9 +240,8 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
         if (iB % n == 0 ) {
           System.out.println();
           System.out.println("Source: " + srcNodes[ax]);
-          System.out.println();
         }
-        String output = String.format("%d %.5f", Integer.parseInt(final_keys.get(iB)), Float.parseFloat(final_values.get(iB)));
+        String output = String.format("%.5f %d", Float.parseFloat(final_values.get(iB)), Integer.parseInt(final_keys.get(iB)));
         System.out.println(output);
       }
     }
