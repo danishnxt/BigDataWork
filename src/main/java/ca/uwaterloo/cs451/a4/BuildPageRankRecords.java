@@ -69,7 +69,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
     private static final IntWritable nid = new IntWritable();
     private static final PageRankNode node = new PageRankNode();
     private static ArrayList<Integer> sources = new ArrayList<Integer>(); // add the sources here for a quick lookup
-    private static int layers;
+    private static int layerCount;
 
     // ------------------------------------------------------------------------------------------------------- M:SETUP
     @Override
@@ -78,7 +78,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
       String source_strings[] = context.getConfiguration().getStrings("sources");
 
       for (int i = 0; i < source_strings.length; i++) {
-        layers = layers + 1; // know how many total
+        layerCount = layerCount + 1; // know how many total
         sources.add(Integer.parseInt(source_strings[i])); // get the list and have it parsed here
       }
 
@@ -95,7 +95,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
       nid.set(Integer.parseInt(arr[0]));
       ArrayListOfFloatsWritable pageRankValues = new ArrayListOfFloatsWritable();
 
-        for (int i = 0; i < layers; i++) {
+        for (int i = 0; i < layerCount; i++) {
           if (sources.get(i) == nid.get()) {
             pageRankValues.add((float) StrictMath.log(1.0));
           } else {
@@ -168,7 +168,7 @@ public class BuildPageRankRecords extends Configured implements Tool {
       return -1;
     }
 
-    if (!cmdline.hasOption(INPUT) || !cmdline.hasOption(OUTPUT) || !cmdline.hasOption(NUM_NODES) || !cmdline.hasOption(SOURCE_NODES)) { // CHANGE MADE HERE
+      if (!cmdline.hasOption(INPUT) || !cmdline.hasOption(OUTPUT) || !cmdline.hasOption(NUM_NODES) || !cmdline.hasOption(SOURCE_NODES)) { // CHANGE MADE HERE
       System.out.println("args: " + Arrays.toString(args));
       HelpFormatter formatter = new HelpFormatter();
       formatter.setWidth(120);
