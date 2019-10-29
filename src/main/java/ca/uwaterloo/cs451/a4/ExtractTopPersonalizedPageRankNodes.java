@@ -59,8 +59,6 @@ import java.util.HashMap;
 public class ExtractTopPersonalizedPageRankNodes extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(ExtractTopPersonalizedPageRankNodes.class);
 
-  private static ArrayList<String> final_keys = new ArrayList<>(); // maintained till the end
-  private static ArrayList<String> final_values = new ArrayList<>(); // maintained till the end
   private static NumberFormat formatter = new DecimalFormat("0000");
 
   private static class MyMapper extends
@@ -127,10 +125,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
         for (PairOfObjectFloat<Integer> pair : queue.extractAll()) {
 
           key.set(pair.getLeftElement());
-          // We're outputting a string so we can control the formatting.
           value.set(String.format("%.5f", pair.getRightElement()));
-          final_keys.add(key.toString());
-          final_values.add(value.toString());
           context.write(key, value);
         }
     }
@@ -206,10 +201,8 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
       job.setNumReduceTasks(1);
 
-      String newOutputPath = outputPath + "/Src-" + Integer.toString(i) + "-t";
-
       FileInputFormat.addInputPath(job, new Path(inputPath));
-      FileOutputFormat.setOutputPath(job, new Path(newOutputPath));
+      FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
       job.setInputFormatClass(SequenceFileInputFormat.class);
       job.setOutputFormatClass(TextOutputFormat.class);
@@ -226,24 +219,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
 
       // Delete the output directory if it exists already.
       FileSystem.get(conf).delete(new Path(outputPath), true);
-
       job.waitForCompletion(true);
-
-      // giving values out manually
-
-    }
-
-    for (int ax = 0; ax < strCount; ax++) {
-      int start = (ax * n);
-      int end = (ax * n) + n;
-      for (int iB = start; iB < end; iB++) {
-        if (iB % n == 0 ) {
-          System.out.println();
-          System.out.println("Source: " + srcNodes[ax]);
-        }
-        String output = String.format("%.5f %d", Float.parseFloat(final_values.get(iB)), Integer.parseInt(final_keys.get(iB)));
-        System.out.println(output);
-      }
     }
 
     return 0;
@@ -256,6 +232,7 @@ public class ExtractTopPersonalizedPageRankNodes extends Configured implements T
    * @throws Exception if tool encounters an exception
    */
   public static void main(String[] args) throws Exception {
+
     int res = ToolRunner.run(new ExtractTopPersonalizedPageRankNodes(), args);
     System.exit(res);
   }
