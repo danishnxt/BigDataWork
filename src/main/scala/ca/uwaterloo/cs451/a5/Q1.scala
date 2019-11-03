@@ -28,10 +28,10 @@ object Q1 {
   val log = Logger.getLogger(getClass().getName())
 
   def dateCheck(dataline:String, date:String): Boolean = {
+
     val values = dataline.split("|")
-  println("---------")
-  println(values(0))
-  println(date)
+    values.foreach(println)
+
     if (values(10) == date)
       true
     else
