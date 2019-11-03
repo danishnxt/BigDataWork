@@ -69,7 +69,7 @@ object Q1 {
   def main(argv: Array[String]) {
     val args = new Conf_q1(argv)
 
-      val type_val = argv(3)
+      val type_val = argv(3) // lets try this out for the scala thing
       println(type_val)
 
     log.info("Input: " + args.input())
