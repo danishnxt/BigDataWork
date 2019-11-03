@@ -42,7 +42,7 @@ object Q1 {
     val textFile = sc.textFile(args.input() + file) // import from the file directly
     // shipdate -> 10th value
 
-    val lines = split{ s => s}
+    val lines = textfile.map{ s => s}
 
     lines.foreach(println)
     System.out.println("This is a test of what we're going to be doing today!")
