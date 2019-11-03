@@ -9,7 +9,7 @@ import org.apache.hadoop.fs._
 import org.rogach.scallop._
 
 class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
-  mainOptions = Seq(input, output, reducers)
+  mainOptions = Seq(input, date, inp_type)
   val input = opt[String](descr = "input path", required = true)
   val date = opt[String](descr = "data input", required = true)
   val inp_type = opt[String](descr = "what kind of file we are to expect", required = true)
