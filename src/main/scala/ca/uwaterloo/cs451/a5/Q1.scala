@@ -68,9 +68,6 @@ object Q1 {
   def main(argv: Array[String]) {
 //    val args = new Conf_q1(argv)
 
-    log.info("Input: " + args.input())
-    log.info("Output: " + args.date())
-
     val input = argv(1)
     val date = argv(3)
     val fileType = argv(4)
