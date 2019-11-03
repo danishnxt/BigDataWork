@@ -42,6 +42,7 @@ object Q1 {
     val textFile = sc.textFile(args.input() + file) // import from the file directly
     // shipdate -> 10th value
 
+    // hello
     val lines = textFile.map{ s => s}
 
     lines.foreach(println)
