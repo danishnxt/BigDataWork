@@ -76,12 +76,12 @@ object Q1 {
     val date = argv(3)
     val fileType = argv(4)
 
-    val textFile  // this is what we
 
-    if (fileType == "--text")
-      textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
-    else if (fileType == "--parquet")
-      textFile = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
+
+//    if (fileType == "--text")
+//      textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
+//    else if (fileType == "--parquet")
+    val textFile = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
 
 
     val confA = new SparkConf().setAppName("Q1 - SQL")
