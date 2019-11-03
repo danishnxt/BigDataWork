@@ -29,14 +29,14 @@ object Q1 {
 
   def dateCheck(dataline:String, date:String): Boolean = {
     val values = dataline.split("|")
-    if (values(10) == data)
+    if (values(10) == date)
       true
     else
       false
   }
 
   def processQuery(data:Any, date:String):Any = {
-    val lines = textFile.map { s => s }
+    val lines = data.map { s => s }
     val actualLines = lines.filter(dateCheck(date))
     actualLines
   }
@@ -62,7 +62,7 @@ object Q1 {
 //      4
     // hello
 
-    actualLines = processQuery(textFile, date)
+    val actualLines = processQuery(textFile, date)
     actualLines.foreach(println)
   }
 }
