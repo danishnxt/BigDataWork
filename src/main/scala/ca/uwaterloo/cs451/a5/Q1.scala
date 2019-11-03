@@ -27,7 +27,7 @@ object Q1 {
 
   val log = Logger.getLogger(getClass().getName())
 
-  def dateCheck(dataline, date): Boolean = {
+  def dateCheck(dataline:String, date:String): Boolean = {
     val values = dataline.split("|")
     if (values(10) == data)
       true
@@ -35,7 +35,7 @@ object Q1 {
       false
   }
 
-  def processQuery(data, date) = {
+  def processQuery(data:Any, date:String):Any = {
     val lines = textFile.map { s => s }
     val actualLines = lines.filter(dateCheck(date))
     actualLines
