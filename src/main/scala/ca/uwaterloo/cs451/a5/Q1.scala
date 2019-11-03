@@ -29,6 +29,9 @@ object Q1 {
 
   def dateCheck(dataline:String, date:String): Boolean = {
     val values = dataline.split("|")
+  println("---------")
+  println(values(10))
+  println(date)
     if (values(10) == date)
       true
     else
