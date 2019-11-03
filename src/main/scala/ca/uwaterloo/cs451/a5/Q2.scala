@@ -75,7 +75,6 @@ object Q2 {
   def main(argv: Array[String]) {
 //    val args = new Conf_q1(argv)
 
-    spark.driver.allowMultipleContexts = true
     val sparkSession = SparkSession.builder.getOrCreate
 
     val input = argv(1)
@@ -92,8 +91,8 @@ object Q2 {
     val textLineItem = textFileItem.map{s => s.toString().mkString("|")}
     val textOrders = textFileOrder.map{s => s.toString().mkString("|")}
 
-    val confA = new SparkConf().setAppName("Q1 - SQL")
-    val sc = new SparkContext(confA)
+//    val confA = new SparkConf().setAppName("Q1 - SQL")
+//    val sc = new SparkContext(confA)
 
     val filteredDateLines = processLines(textLineItem, date)
 //    val actualLines = processQuery(filteredDateLines, textOrders) // just need to emerge these and match them
