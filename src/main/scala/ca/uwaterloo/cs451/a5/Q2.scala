@@ -10,7 +10,7 @@ import org.rogach.scallop._
 
 import org.apache.spark.sql.SparkSession
 
-class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
+class Conf_q2(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date) // , inp_type)
   val input = opt[String](descr = "input path", required = true)
   val date = opt[String](descr = "data input", required = true)
@@ -57,7 +57,7 @@ object Q1 {
       false
   }
 
-  def processQuery(data:org.apache.spark.rdd.RDD[String], date:String) = {
+  def processLines(dataLine:org.apache.spark.rdd.RDD[String] date:String) = {
     val lines = data.map { s => s }
     if (date.length == 10)
       lines.filter(s => dateCheckA(s, date)) // run the filter for every s
@@ -65,6 +65,11 @@ object Q1 {
       lines.filter(s => dateCheckB(s, date)) // run the filter for every s
     else // year only
       lines.filter(s => dateCheckC(s, date)) // run the filter for every s
+  }
+
+  def processQuery(LineInfo:org.apache.spark.rdd.RDD[String], OrderInfo:org.apache.spark.rdd.RDD[String]) = {
+    val grouped = LineInfo.cogroup(OrderInfo)
+    grouped.foreach(println())
   }
 
   def main(argv: Array[String]) {
@@ -79,15 +84,15 @@ object Q1 {
 //    if (fileType == "--text")
 //      textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
 //    else if (fileType == "--parquet")
-    val textFile = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
-    val alpha = textFile.map{s => s}
-    alpha.foreach(println)
 
-//    val confA = new SparkConf().setAppName("Q1 - SQL")
-//    val sc = new SparkContext(confA)
+    val textFileItem = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
+    val textFileOrder = (sparkSession.read.parquet(input + "/orders")).rdd // read for a parquet file
 
-//    val actualLines = processQuery(textFile, date)
-//    actualLines.foreach(println)
+    val confA = new SparkConf().setAppName("Q1 - SQL")
+    val sc = new SparkContext(confA)
+
+    val filteredDateLines = processLines(textFileItem, date)
+    val actualLines = processQuery(filteredDateLines, textFileOrder) // just need to emerge these and match them
 
   }
 }
