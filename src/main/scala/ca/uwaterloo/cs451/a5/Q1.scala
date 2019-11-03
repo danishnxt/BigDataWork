@@ -35,7 +35,7 @@ object Q1 {
       false
   }
 
-  def processQuery(data:Any, date:String):Any = {
+  def processQuery(data:String, date:String):Array[String] = {
     val lines = data.map { s => s }
     val actualLines = lines.filter(dateCheck(date))
     actualLines
@@ -54,15 +54,17 @@ object Q1 {
 
     val textFile = sc.textFile(args.input() + file) // import from the file directly
 
+    val actualLines = processQuery(textFile, args.date())
+    actualLines.foreach(println)
+
     // if ()
-//      10
+    //      10
     // else if
-//      7
+    //      7
     // else
-//      4
+    //      4
     // hello
 
-    val actualLines = processQuery(textFile, date)
-    actualLines.foreach(println)
+
   }
 }
