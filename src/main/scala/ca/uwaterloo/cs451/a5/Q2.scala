@@ -17,7 +17,7 @@ class Conf_q2(args: Seq[String]) extends ScallopConf(args) {
   verify()
 }
 
-object Q1 {
+object Q2 {
 
   val log = Logger.getLogger(getClass().getName())
 
