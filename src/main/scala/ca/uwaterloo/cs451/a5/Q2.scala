@@ -58,7 +58,7 @@ object Q2 {
   }
 
   def processLines(dataLine:org.apache.spark.rdd.RDD[String], date:String) = {
-    val lines = data.map { s => s }
+    val lines = dataLine.map { s => s }
     if (date.length == 10)
       lines.filter(s => dateCheckA(s, date)) // run the filter for every s
     else if (date.length == 7)
@@ -67,10 +67,10 @@ object Q2 {
       lines.filter(s => dateCheckC(s, date)) // run the filter for every s
   }
 
-  def processQuery(LineInfo:org.apache.spark.rdd.RDD[String], OrderInfo:org.apache.spark.rdd.RDD[String]) = {
-    val grouped = LineInfo.cogroup(OrderInfo)
-    grouped.foreach(println())
-  }
+//  def processQuery(LineInfo:org.apache.spark.rdd.RDD[String], OrderInfo:org.apache.spark.rdd.RDD[String]) = {
+//    val grouped = LineInfo.cogroup(OrderInfo)
+//    grouped.foreach(println())
+//  }
 
   def main(argv: Array[String]) {
 //    val args = new Conf_q1(argv)
@@ -95,7 +95,7 @@ object Q2 {
     val sc = new SparkContext(confA)
 
     val filteredDateLines = processLines(textLineItem, date)
-    val actualLines = processQuery(filteredDateLines, textOrders) // just need to emerge these and match them
+//    val actualLines = processQuery(filteredDateLines, textOrders) // just need to emerge these and match them
 
   }
 }
