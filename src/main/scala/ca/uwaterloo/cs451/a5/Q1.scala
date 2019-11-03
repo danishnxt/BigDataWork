@@ -12,7 +12,8 @@ class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date) // , inp_type)
   val input = opt[String](descr = "input path", required = true)
   val date = opt[String](descr = "data input", required = true)
-//  val text = opt[Boolean](descr = "what kind of file we are to expect", required = false)
+  val text = opt[String](descr = "what kind of file we are to expect", required = false)
+  val parquet = opt[String](descr = "what kind of file we are to expect", required = false)
   verify()
 }
 
@@ -69,11 +70,10 @@ object Q1 {
   def main(argv: Array[String]) {
     val args = new Conf_q1(argv)
 
-      val type_val = argv(3) // lets try this out for the scala thing
-      println(type_val)
-
     log.info("Input: " + args.input())
     log.info("Output: " + args.date())
+    log.info("Output: " + args.text())
+    log.info("Output: " + args.parquet())
 
     val confA = new SparkConf().setAppName("Q1 - SQL")
     val sc = new SparkContext(confA)
