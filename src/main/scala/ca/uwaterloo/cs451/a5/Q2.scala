@@ -88,11 +88,14 @@ object Q2 {
     val textFileItem = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
     val textFileOrder = (sparkSession.read.parquet(input + "/orders")).rdd // read for a parquet file
 
+    val textLineItem = textFileItem.map{s => s.mkString()}
+    val textOrders = textFileOrder.map{s => s.mkString()}
+
     val confA = new SparkConf().setAppName("Q1 - SQL")
     val sc = new SparkContext(confA)
 
-    val filteredDateLines = processLines(textFileItem, date)
-    val actualLines = processQuery(filteredDateLines, textFileOrder) // just need to emerge these and match them
+    val filteredDateLines = processLines(textLineItem, date)
+    val actualLines = processQuery(filteredDateLines, textOrders) // just need to emerge these and match them
 
   }
 }
