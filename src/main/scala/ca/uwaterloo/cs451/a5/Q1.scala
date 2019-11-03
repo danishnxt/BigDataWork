@@ -12,8 +12,6 @@ class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date) // , inp_type)
   val input = opt[String](descr = "input path", required = true)
   val date = opt[String](descr = "data input", required = true)
-  val text = opt[String](descr = "what kind of file we are to expect", required = false)
-  val parquet = opt[String](descr = "what kind of file we are to expect", required = false)
   verify()
 }
 
@@ -68,21 +66,28 @@ object Q1 {
   }
 
   def main(argv: Array[String]) {
-    val args = new Conf_q1(argv)
+//    val args = new Conf_q1(argv)
 
     log.info("Input: " + args.input())
     log.info("Output: " + args.date())
-    log.info("Output: " + args.text())
-    log.info("Output: " + args.parquet())
+
+    val input = argv[1]
+    val date = argv[3]
+    val fileType = argv[4]
+
+    if (fileType == "--text")
+      println("First kind")
+    else
+      println("Second kind")
 
     val confA = new SparkConf().setAppName("Q1 - SQL")
     val sc = new SparkContext(confA)
 
     val file = "/lineitem.tbl" // this is what we
 
-    val textFile = sc.textFile(args.input() + file) // import from the file directly
+    val textFile = sc.textFile(input + file) // import from the file directly
 
-    val actualLines = processQuery(textFile, args.date())
+    val actualLines = processQuery(textFile, date)
     actualLines.foreach(println)
 
   }
