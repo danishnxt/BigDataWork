@@ -69,6 +69,9 @@ object Q1 {
   def main(argv: Array[String]) {
     val args = new Conf_q1(argv)
 
+      val type_val = argv(3)
+      println(type_val)
+
     log.info("Input: " + args.input())
     log.info("Output: " + args.date())
 
