@@ -57,7 +57,7 @@ object Q1 {
       false
   }
 
-  def processLines(dataLine:org.apache.spark.rdd.RDD[String] date:String) = {
+  def processLines(dataLine:org.apache.spark.rdd.RDD[String], date:String) = {
     val lines = data.map { s => s }
     if (date.length == 10)
       lines.filter(s => dateCheckA(s, date)) // run the filter for every s
