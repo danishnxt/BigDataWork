@@ -82,15 +82,15 @@ object Q1 {
 //      textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
 //    else if (fileType == "--parquet")
     val textFile = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
-    alpha = textFile.map{s => s}
+    val alpha = textFile.map{s => s}
     alpha.foreach(println)
 
 
-    val confA = new SparkConf().setAppName("Q1 - SQL")
-    val sc = new SparkContext(confA)
+//    val confA = new SparkConf().setAppName("Q1 - SQL")
+//    val sc = new SparkContext(confA)
 
-    val actualLines = processQuery(textFile, date)
-    actualLines.foreach(println)
+//    val actualLines = processQuery(textFile, date)
+//    actualLines.foreach(println)
 
   }
 }
