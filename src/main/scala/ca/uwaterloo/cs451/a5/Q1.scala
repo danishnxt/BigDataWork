@@ -27,6 +27,20 @@ object Q1 {
 
   val log = Logger.getLogger(getClass().getName())
 
+  def dateCheck(dataline, date): Boolean = {
+    val values = dataline.split("|")
+    if (values(10) == data)
+      true
+    else
+      false
+  }
+
+  def processQuery(data, date) = {
+    val lines = textFile.map { s => s }
+    val actualLines = lines.filter(dateCheck(date))
+    actualLines
+  }
+
   def main(argv: Array[String]) {
     val args = new Conf_q1(argv)
 
@@ -39,13 +53,16 @@ object Q1 {
     val file = "/lineitem.tbl" // this is what we
 
     val textFile = sc.textFile(args.input() + file) // import from the file directly
-    // shipdate -> 10th value
 
+    // if ()
+//      10
+    // else if
+//      7
+    // else
+//      4
     // hello
-    val lines = textFile.map{ s => s}
 
-    lines.foreach(println)
-    System.out.println("This is a test of what we're going to be doing today!")
-
+    actualLines = processQuery(textFile, date)
+    actualLines.foreach(println)
   }
 }
