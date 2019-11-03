@@ -58,9 +58,9 @@ object Q1 {
 
   def processQuery(data:org.apache.spark.rdd.RDD[String], date:String) = {
     val lines = data.map { s => s }
-    if (date.lenth == 10)
+    if (date.length == 10)
       lines.filter(s => dateCheckA(s, date)) // run the filter for every s
-    else if (date.lenhgth == 7)
+    else if (date.length == 7)
       lines.filter(s => dateCheckB(s, date)) // run the filter for every s
     else // year only
       lines.filter(s => dateCheckC(s, date)) // run the filter for every s
