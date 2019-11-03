@@ -71,9 +71,9 @@ object Q1 {
     log.info("Input: " + args.input())
     log.info("Output: " + args.date())
 
-    val input = argv[1]
-    val date = argv[3]
-    val fileType = argv[4]
+    val input = argv(1)
+    val date = argv(3)
+    val fileType = argv(4)
 
     if (fileType == "--text")
       println("First kind")
