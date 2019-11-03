@@ -8,6 +8,9 @@ import org.apache.log4j._
 import org.apache.hadoop.fs._
 import org.rogach.scallop._
 
+import org.apache.spark.sql.SparkSession
+val sparkSession = SparkSession.builder.getOrCreate
+
 class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date) // , inp_type)
   val input = opt[String](descr = "input path", required = true)
@@ -72,17 +75,16 @@ object Q1 {
     val date = argv(3)
     val fileType = argv(4)
 
+    val file =  // this is what we
+
     if (fileType == "--text")
-      println("First kind")
-    else
-      println("Second kind")
+      val textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
+    else if (fileType == "--parquet")
+      val lineitemDF = sparkSession.read.parquet(input + "/lineitem") // read for a parquet file
+      val textFile = lineitemDF.rdd
 
     val confA = new SparkConf().setAppName("Q1 - SQL")
     val sc = new SparkContext(confA)
-
-    val file = "/lineitem.tbl" // this is what we
-
-    val textFile = sc.textFile(input + file) // import from the file directly
 
     val actualLines = processQuery(textFile, date)
     actualLines.foreach(println)
