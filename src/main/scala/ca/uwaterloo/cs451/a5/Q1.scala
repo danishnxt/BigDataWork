@@ -18,19 +18,39 @@ class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
 
 object Q1 {
 
-  // input for data can be length -> 10
-  //                              -> 7
-  //                              -> 4
-
-  // assume only year coming in for the time being
-  // assume only text file for the time being
-
   val log = Logger.getLogger(getClass().getName())
 
-  def dateCheck(dataline:String, date:String): Boolean = {
-    val values = dataline.split('|')
+  // CHECKING FULL DATE VALUE
+  def dateCheckA(dataline:String, date:String): Boolean = {
+    if (dataline.split('|')(10) == date)
+      true
+    else
+      false
+  }
 
-    if (values(10) == date)
+  // CHECKING YEAR AND MONTH VALUE
+  def dateCheckB(dataline:String, date:String): Boolean = {
+
+    val value_date = dataline.split('|')(10).split('-')
+    val dateSpl = date.split('-') // split up the date values
+
+    if (value_date(0) == dateSpl(0)) // checking year
+      if (value_date(1) == dateSpl(1)) // checking month
+        true
+      else
+        false
+    else
+      false
+
+  }
+
+  // CHECKING YEAR VALUE ONLY
+  def dateCheckC(dataline:String, date:String): Boolean = {
+
+    val value_date = dataline.split('|')(10).split('-')
+    val dateSpl = date.split('-') // split up the date values
+
+    if (value_date(0) == dateSpl(0))
       true
     else
       false
@@ -38,8 +58,12 @@ object Q1 {
 
   def processQuery(data:org.apache.spark.rdd.RDD[String], date:String) = {
     val lines = data.map { s => s }
-    val actualLines = lines.filter(s => dateCheck(s, date)) // run the filter for every s
-    actualLines
+    if (date.lenth == 10)
+      lines.filter(s => dateCheckA(s, date)) // run the filter for every s
+    else if (date.lenhgth == 7)
+      lines.filter(s => dateCheckB(s, date)) // run the filter for every s
+    else // year only
+      lines.filter(s => dateCheckC(s, date)) // run the filter for every s
   }
 
   def main(argv: Array[String]) {
@@ -57,15 +81,6 @@ object Q1 {
 
     val actualLines = processQuery(textFile, args.date())
     actualLines.foreach(println)
-
-    // if ()
-    //      10
-    // else if
-    //      7
-    // else
-    //      4
-    // hello
-
 
   }
 }
