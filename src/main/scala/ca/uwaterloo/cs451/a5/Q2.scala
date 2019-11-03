@@ -75,6 +75,7 @@ object Q2 {
   def main(argv: Array[String]) {
 //    val args = new Conf_q1(argv)
 
+    spark.driver.allowMultipleContexts = true
     val sparkSession = SparkSession.builder.getOrCreate
 
     val input = argv(1)
