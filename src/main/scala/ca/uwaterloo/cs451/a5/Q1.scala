@@ -37,9 +37,14 @@ object Q1 {
     val confA = new SparkConf().setAppName("Q1 - SQL")
     val sc = new SparkContext(confA)
 
-    val textFile = sc.textFile(args.input())
+    val file = "/lineitem.tbl" // this is what we
 
-//  System.out.println(charCounts.collect().mkString(", "))
+    val textFile = sc.textFile(args.input() + file) // import from the file directly
+    // shipdate -> 10th value
+
+    val lines = split{ s => s}
+
+    lines.foreach(println)
     System.out.println("This is a test of what we're going to be doing today!")
 
   }
