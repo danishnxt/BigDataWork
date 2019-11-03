@@ -32,7 +32,6 @@ object Q1 {
 
     log.info("Input: " + args.input())
     log.info("Output: " + args.date())
-    log.info("Number of reducers: " + args.inp_type())
 
     val confA = new SparkConf().setAppName("Q1 - SQL")
     val sc = new SparkContext(confA)
