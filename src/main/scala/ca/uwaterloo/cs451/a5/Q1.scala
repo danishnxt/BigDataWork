@@ -32,8 +32,6 @@ object Q1 {
   // CHECKING YEAR AND MONTH VALUE
   def dateCheckB(dataline:String, date:String): Boolean = {
 
-    val sparkSession = SparkSession.builder.getOrCreate
-
     val value_date = dataline.split('|')(10).split('-')
     val dateSpl = date.split('-') // split up the date values
 
@@ -72,6 +70,8 @@ object Q1 {
   def main(argv: Array[String]) {
 //    val args = new Conf_q1(argv)
 
+    val sparkSession = SparkSession.builder.getOrCreate
+
     val input = argv(1)
     val date = argv(3)
     val fileType = argv(4)
@@ -82,6 +82,8 @@ object Q1 {
 //      textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
 //    else if (fileType == "--parquet")
     val textFile = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
+    alpha = textFile.map{s => s}
+    alpha.foreach(println)
 
 
     val confA = new SparkConf().setAppName("Q1 - SQL")
