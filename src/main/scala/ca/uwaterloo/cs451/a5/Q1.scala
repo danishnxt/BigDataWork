@@ -9,7 +9,6 @@ import org.apache.hadoop.fs._
 import org.rogach.scallop._
 
 import org.apache.spark.sql.SparkSession
-val sparkSession = SparkSession.builder.getOrCreate
 
 class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date) // , inp_type)
@@ -32,6 +31,8 @@ object Q1 {
 
   // CHECKING YEAR AND MONTH VALUE
   def dateCheckB(dataline:String, date:String): Boolean = {
+
+    val sparkSession = SparkSession.builder.getOrCreate
 
     val value_date = dataline.split('|')(10).split('-')
     val dateSpl = date.split('-') // split up the date values
