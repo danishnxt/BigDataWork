@@ -35,7 +35,7 @@ object Q1 {
       false
   }
 
-  def processQuery(data:org.apache.spark.rdd.RDD[String], date:String):Array[String] = {
+  def processQuery(data:org.apache.spark.rdd.RDD[String], date:String) = {
     val lines = data.map { s => s }
     val actualLines = lines.filter(s => dateCheck(s, date)) // run the filter for every s
     actualLines
