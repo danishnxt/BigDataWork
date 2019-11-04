@@ -43,7 +43,7 @@ object Q1 {
     } else {
       val sparkSession = SparkSession.builder.getOrCreate
       val lineitemDF = sparkSession.read.parquet(folder + "/lineitem")
-      printf("Answer = %d" ,(lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date)) // read for a parquet file
+      printf("Answer = %d" ,(lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date))) // read for a parquet file
     }
   }
 }
