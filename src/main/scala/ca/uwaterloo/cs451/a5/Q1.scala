@@ -13,9 +13,9 @@ import org.apache.spark.sql.SparkSession
 class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date, text_opt, parquet_opt)
   val input = opt[String](descr = "input path", required = true)
-  val date = opt[String](descr = "data input", required = true)
-  val text_opt = opt[Boolean]()
-  val parquet_opt = opt[Boolean]()
+  val date = opt[String](descr = "LineItem date - query value", required = true)
+  val text_opt = opt[Boolean](required = false)
+  val parquet_opt = opt[Boolean](required = false)
   verify()
 }
 
@@ -26,24 +26,24 @@ object Q1 {
   def main(argv: Array[String]) {
     val args = new Conf_q1(argv)
 
-    val confA = new SparkConf().setAppName("Q1 - SQL")
+    val confA = new SparkConf().setAppName("Q1 - SQL - LineItem ship date")
     val sc = new SparkContext(confA)
 
     val folder = args.input()
-    val textBool = args.text_opt()
     val date = args.date() // get the date out of the thinge
-    val dateLength = date.length() // all the cases
+
+    val textBool = args.text_opt()
     val parquetBool = args.parquet_opt()
 
-    if (textBool == true) {
-      textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
-      printf ("Got a text input file for now!")
+    val dateLength = date.length() // all the cases
 
+    if (textBool == true) {
+      val textFile = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
+      printf("Answer = %d", (textFile.filter(entry => (entry.split('|')(10)).substring(0,dateLength) == date)))
     } else {
       val sparkSession = SparkSession.builder.getOrCreate
       val lineitemDF = sparkSession.read.parquet(folder + "/lineitem")
-      printf("Answer = %d" ,(sparkSession.read.parquet(input + "/lineitem")).rdd.filter(entry => entry(10).toString().substring(0,dateLength) == date)) // read for a parquet file
+      printf("Answer = %d" ,(lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date)) // read for a parquet file
     }
-
   }
 }
