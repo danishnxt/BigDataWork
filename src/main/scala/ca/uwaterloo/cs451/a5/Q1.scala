@@ -41,6 +41,7 @@ object Q1 {
       val textFile = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
       val allEntriesA = textFile.filter(entry => (entry.split('|')(10)).substring(0,dateLength) == date)
       val finalVal = allEntriesA.map(line => (1, 1)).reduceByKey(_+_).map(s => s._2).collect()
+      println("HELLO CHECK HERE")
       println(finalVal)
     }
 //    else {
