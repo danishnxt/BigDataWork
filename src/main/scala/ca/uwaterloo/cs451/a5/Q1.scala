@@ -43,8 +43,10 @@ object Q1 {
       val finalVal = allEntriesA.map(line => (1, 1)).reduceByKey(_+_).collect()
 
       println("HELLO CHECK HERE")
+      println(finalVal(0)(1))
       finalVal.foreach(println)
-      println(finalVal)
+
+
     }
 //    else {
 //      val sparkSession = SparkSession.builder.getOrCreate
