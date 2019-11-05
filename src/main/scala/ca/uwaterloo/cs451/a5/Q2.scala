@@ -63,12 +63,14 @@ object Q2 {
       val textFileItem = (sparkSession.read.parquet(folder + "/lineitem")).rdd // read for a parquet file
       val textFileOrder = (sparkSession.read.parquet(folder + "/orders")).rdd // read for a parquet file
 
-      var lineItem_Rec = textFileItem.map(entry => (entry(0), entry(10))).filter(entry => entry._2.substring(0, dateLength) == date)
-      var orders_Rec = textFileOrder.map(entry => (entry(0), entry(6)))
+      var lineItem_Rec = textFileItem.map(entry => (entry(0).toString(), entry(10).toString())).filter(entry => entry._2.substring(0, dateLength) == date)
+      var orders_Rec = textFileOrder.map(entry => (entry(0).toString(), entry(6).toString()))
 
       val mixX = lineItem_Rec.cogroup(orders_Rec)
-      val mixXB = mixX.filter(entry => (entry._2._1.toArray contains date && entry._2._2 != null)).map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
-      mixXB.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
+      val mixXB = mixX.filter(entry => (entry._2._1.toArray contains date && entry._2._2.head != null))
+      val result = mixXB.map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
+      //
+      result.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
 
     }
 
