@@ -49,7 +49,7 @@ object Q2 {
       var orders_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(6)))
 
       val mixX = lineItem_Rec.cogroup(orders_Rec)
-      val mixXB = mixX.filter(entry => (entry._2._1.length != 0)) //&& !entry._2._2.isEmpty)) // check internal values because null check doesn't work outside
+      val mixXB = mixX.filter(entry => (entry._2._1.toArray contains date && entry._2._2.head != null))
       val result = mixXB.map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
 //
       result.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
@@ -57,20 +57,20 @@ object Q2 {
 //      result.foreach(println)
 
     }
-//    else {
+    else {
 //
-//      val sparkSession = SparkSession.builder.getOrCreate
-//      val textFileItem = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
-//      val textFileOrder = (sparkSession.read.parquet(input + "/orders")).rdd // read for a parquet file
-//
-//      var lineItem_Rec = textFileItem.map(entry => (entry(0), entry(10))).filter(entry => entry._2.substring(0, dateLength) == date)
-//      var orders_Rec = textFileOrder.map(entry => (entry(0), entry(6)))
-//
-//      val mixX = lineItem_Rec.cogroup(orders_Rec)
-//      val mixXB = mixX.filter(entry => (entry._2._1 != null && entry._2._2 != null)).map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
-//      mixXB.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
-//
-//    }
+      val sparkSession = SparkSession.builder.getOrCreate
+      val textFileItem = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
+      val textFileOrder = (sparkSession.read.parquet(input + "/orders")).rdd // read for a parquet file
+
+      var lineItem_Rec = textFileItem.map(entry => (entry(0), entry(10))).filter(entry => entry._2.substring(0, dateLength) == date)
+      var orders_Rec = textFileOrder.map(entry => (entry(0), entry(6)))
+
+      val mixX = lineItem_Rec.cogroup(orders_Rec)
+      val mixXB = mixX.filter(entry => (entry._2._1.toArray contains date && entry._2._2 != null)).map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
+      mixXB.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
+
+    }
 
 
   }
