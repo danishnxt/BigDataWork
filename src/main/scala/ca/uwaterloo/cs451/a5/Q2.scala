@@ -45,15 +45,10 @@ object Q2 {
       val textFileOrder = sc.textFile(folder + "/orders.tbl") // import from the file directly
 
       // convert to full arrays
-      var lineItem_Rec = textFileItem.map(entry => entry.split('|'))
-      lineItem_Rec = lineItem_Rec.map(entry => (entry(0), entry(10)))
+      var lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0), entry.split('|')(10))).filter(entry => entry._2.substring(0, dateLength) == date)
+      var orders_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(6)))
 
-      var orders_Rec = textFileOrder.map(entry => entry.split('|'))
-      orders_Rec = textFileOrder.map(entry => (entry(0), entry(6)))
-
-      val correctDateOrders = textFileItem.filter(entry => (entry._1.substring(0, dateLength) == date))
-
-      val mixX = correctDateOrders.cogroup(orders_Rec)
+      val mixX = lineItem_Rec.cogroup(orders_Rec)
       mixX.foreach(println)
 
     }
