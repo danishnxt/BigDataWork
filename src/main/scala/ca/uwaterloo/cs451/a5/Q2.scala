@@ -50,7 +50,7 @@ object Q2 {
 
       val mixX = lineItem_Rec.cogroup(orders_Rec)
       val mixXB = mixX.filter(entry => (entry._2._1 != null && entry._2._2 != null))
-      val mixC = mixXB.map(entry => (entry._1, entry._2._2))
+      val mixXC = mixXB.map(entry => (entry._1, entry._2._2))
 
       mixXC.foreach(println)
 
