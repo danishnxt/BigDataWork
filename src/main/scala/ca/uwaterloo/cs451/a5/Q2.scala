@@ -60,8 +60,8 @@ object Q2 {
     else {
 //
       val sparkSession = SparkSession.builder.getOrCreate
-      val textFileItem = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
-      val textFileOrder = (sparkSession.read.parquet(input + "/orders")).rdd // read for a parquet file
+      val textFileItem = (sparkSession.read.parquet(folder + "/lineitem")).rdd // read for a parquet file
+      val textFileOrder = (sparkSession.read.parquet(folder + "/orders")).rdd // read for a parquet file
 
       var lineItem_Rec = textFileItem.map(entry => (entry(0), entry(10))).filter(entry => entry._2.substring(0, dateLength) == date)
       var orders_Rec = textFileOrder.map(entry => (entry(0), entry(6)))
