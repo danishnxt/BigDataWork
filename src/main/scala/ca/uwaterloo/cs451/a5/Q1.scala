@@ -11,7 +11,7 @@ import org.rogach.scallop._
 import org.apache.spark.sql.SparkSession
 
 class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
-  mainOptions = Seq(input, date, text_opt, parquet_opt)
+  mainOptions = Seq(input, date, text, parquet)
   val input = opt[String](descr = "input path", required = true)
   val date = opt[String](descr = "LineItem date - query value", required = true)
   val text = opt[Boolean](required = false)
