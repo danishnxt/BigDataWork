@@ -40,10 +40,12 @@ object Q1 {
     if (textBool == true) {
       val textFile = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
       val allEntriesA = textFile.filter(entry => (entry.split('|')(10)).substring(0,dateLength) == date)
-      val finalVal = allEntriesA.map(line => (1, 1)).reduceByKey(_+_)
-      finalVal.foreach(println)
+      val finalVal = allEntriesA.map(line => (1, 1)).reduceByKey(_+_).collect()
+
       println("HELLO CHECK HERE")
-//      println(finalVal)
+      finalVal.foreach(println)
+
+      //      println(finalVal)
     }
 //    else {
 //      val sparkSession = SparkSession.builder.getOrCreate
