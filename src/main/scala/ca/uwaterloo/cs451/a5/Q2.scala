@@ -49,7 +49,12 @@ object Q2 {
       var orders_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(6)))
 
       val mixX = lineItem_Rec.cogroup(orders_Rec)
-      mixX.foreach(println)
+      val mixXB = mixX.filter(entry => (entry._2._1 != null && entry._2._2 != null))
+      val mixC = mixXB.map(entry => (entry._1, entry._2._2))
+
+      mixXC.foreach(println)
+
+
 
     }
       //    else {
