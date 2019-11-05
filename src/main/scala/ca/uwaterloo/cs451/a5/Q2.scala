@@ -51,8 +51,10 @@ object Q2 {
       val mixX = lineItem_Rec.cogroup(orders_Rec)
       val mixXB = mixX.filter(entry => (entry._2._1 != null && entry._2._2 != null))
       val mixXC = mixXB.map(entry => (entry._1, entry._2._2))
+      val mixXD = mixXC.sortBy(_._.1.toInt)
+      val mixXE = mixXD.take(20)
 
-      mixXC.foreach(println)
+      mixXE.foreach(println)
 
 
 
