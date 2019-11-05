@@ -11,91 +11,58 @@ import org.rogach.scallop._
 import org.apache.spark.sql.SparkSession
 
 class Conf_q2(args: Seq[String]) extends ScallopConf(args) {
-  mainOptions = Seq(input, date) // , inp_type)
+  mainOptions = Seq(input, date, text, parquet)
   val input = opt[String](descr = "input path", required = true)
   val date = opt[String](descr = "data input", required = true)
+  val text = opt[Boolean](required = false)
+  val parquet = opt[Boolean](required = false)
   verify()
 }
 
 object Q2 {
 
-  val log = Logger.getLogger(getClass().getName())
-
-  // CHECKING FULL DATE VALUE
-  def dateCheckA(dataline:String, date:String): Boolean = {
-    if (dataline.split('|')(10) == date)
-      true
-    else
-      false
-  }
-
-  // CHECKING YEAR AND MONTH VALUE
-  def dateCheckB(dataline:String, date:String): Boolean = {
-
-    val value_date = dataline.split('|')(10).split('-')
-    val dateSpl = date.split('-') // split up the date values
-
-    if (value_date(0) == dateSpl(0)) // checking year
-      if (value_date(1) == dateSpl(1)) // checking month
-        true
-      else
-        false
-    else
-      false
-
-  }
-
-  // CHECKING YEAR VALUE ONLY
-  def dateCheckC(dataline:String, date:String): Boolean = {
-
-    val value_date = dataline.split('|')(10).split('-')
-    val dateSpl = date.split('-') // split up the date values
-
-    if (value_date(0) == dateSpl(0))
-      true
-    else
-      false
-  }
-
-  def processLines(dataLine:org.apache.spark.rdd.RDD[String], date:String) = {
-    val lines = dataLine.map { s => s }
-    if (date.length == 10)
-      lines.filter(s => dateCheckA(s, date)) // run the filter for every s
-    else if (date.length == 7)
-      lines.filter(s => dateCheckB(s, date)) // run the filter for every s
-    else // year only
-      lines.filter(s => dateCheckC(s, date)) // run the filter for every s
-  }
-
-//  def processQuery(LineInfo:org.apache.spark.rdd.RDD[String], OrderInfo:org.apache.spark.rdd.RDD[String]) = {
-//    val grouped = LineInfo.cogroup(OrderInfo)
-//    grouped.foreach(println())
-//  }
-
   def main(argv: Array[String]) {
-//    val args = new Conf_q1(argv)
+    val args = new Conf_q1(argv)
 
-    val sparkSession = SparkSession.builder.getOrCreate
+    val confA = new SparkConf().setAppName("Q2 - SQL")
+    val sc = new SparkContext(confA)
+    val log = Logger.getLogger(getClass().getName())
 
-    val input = argv(1)
-    val date = argv(3)
-    val fileType = argv(4)
+    // GET ARGS
 
-//    if (fileType == "--text")
-//      textFile = sc.textFile(input + "/lineitem.tbl") // import from the file directly
-//    else if (fileType == "--parquet")
+    val folder = args.input()
+    val date = args.date()
 
-    val textFileItem = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
-    val textFileOrder = (sparkSession.read.parquet(input + "/orders")).rdd // read for a parquet file
+    val textBool = args.text()
+    val parquetBool = args.parquet()
 
-    val textLineItem = textFileItem.map{s => s.toString().mkString("|")}
-    val textOrders = textFileOrder.map{s => s.toString().mkString("|")}
+    val dateLength = date.length() // all the cases
 
-//    val confA = new SparkConf().setAppName("Q1 - SQL")
-//    val sc = new SparkContext(confA)
+    // check what we're dealing with
 
-    val filteredDateLines = processLines(textLineItem, date)
-//    val actualLines = processQuery(filteredDateLines, textOrders) // just need to emerge these and match them
+    if (textBool) {
+      val textFileItem = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
+      val textFileOrder = sc.textFile(folder + "/orders.tbl") // import from the file directly
+
+      // convert to full arrays
+      lineItem_Rec = textFileItem.map(entry => entry.split('|'))
+      orders_Rec = textFileOrder.map(entry => entry.split('|'))
+
+      val correctDateOrders = textFileItem.filter(entry => (entry(10).substring(0,dateLength) == date).map(entry => (entry(0), 1)).reduceByKey(_+_).collect // giving each a purposeful value
+      val prunedOrders = textFileOrder.map(entry => (entry(0), entry(6)))).reduceByKey(_+_).collect()
+
+      mixX = correctDateOrders.cogroup(prunedOrders)
+      mixX.foreach(println)
+
+    }
+      //    else {
+//
+//      val sparkSession = SparkSession.builder.getOrCreate
+//      val textFileItem = (sparkSession.read.parquet(input + "/lineitem")).rdd // read for a parquet file
+//      val textFileOrder = (sparkSession.read.parquet(input + "/orders")).rdd // read for a parquet file
+//
+//    }
+
 
   }
 }
