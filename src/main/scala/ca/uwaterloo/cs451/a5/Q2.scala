@@ -49,7 +49,7 @@ object Q2 {
       var orders_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(6)))
 
       val mixX = lineItem_Rec.cogroup(orders_Rec)
-      val mixXB = mixX.filter(entry => (entry._2._1.toArray contains date && entry._2._2.head != null))
+      val mixXB = mixX.filter(entry => ((entry._2._1.toArray contains date) && entry._2._2.head != null))
       val result = mixXB.map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
 //
       result.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
@@ -67,7 +67,7 @@ object Q2 {
       var orders_Rec = textFileOrder.map(entry => (entry(0).toString(), entry(6).toString()))
 
       val mixX = lineItem_Rec.cogroup(orders_Rec)
-      val mixXB = mixX.filter(entry => (entry._2._1.toArray contains date && entry._2._2.head != null))
+      val mixXB = mixX.filter(entry => ((entry._2._1.toArray contains date) && entry._2._2.head != null))
       val result = mixXB.map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
       //
       result.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
