@@ -44,8 +44,7 @@ object Q1 {
 
       println("HELLO CHECK HERE")
       finalVal.foreach(println)
-
-      //      println(finalVal)
+      println(finalVal)
     }
 //    else {
 //      val sparkSession = SparkSession.builder.getOrCreate
