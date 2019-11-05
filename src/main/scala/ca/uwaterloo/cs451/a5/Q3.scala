@@ -45,16 +45,16 @@ object Q3 {
       val textFilePart = sc.textFile(folder + "/part.tbl") // import from the file directly
       val textFileSupplier = sc.textFile(folder + "/supplier.tbl") // import from the file directly
 
-      val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0), entry.split('|')(1), entry.split('|')(2), entry.split('|')(10))).filter(entry => entry._2.substring(0, dateLength) == date)
+      val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0), entry.split('|')(1), entry.split('|')(2), entry.split('|')(10))).filter(entry => entry._4.substring(0, dateLength) == date)
       // ordernum, part, supp, date
 
       val part_Rec = textFilePart.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only
       val supplier_Rec = textFileSupplier.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only thru BROADCAST
 
-      val global_part = sc.broadcast(part_Rec.collectAsMap())
-      val global_supplier = sc.broadcast(supplier_Rec.collectAsMap())
+      val global_part = sc.broadcast()
+      val global_supplier = sc.broadcast()
 
-      val finalVal = lineItem_Rec.map(entry => (entry._1.toInt, global_part.value.filter(s => (s._1 == entry._2)).head._2, global_supplier.value.filter(s1 => (s1._2 == entry._3)).head._2))
+      val finalVal = lineItem_Rec.map(entry => (entry._1.toInt, global_part.value.filter(s => (s._1 == entry._2))(0)._2, global_supplier.value.filter(s1 => (s1._2 == entry._3))(0)._2))
 
       val finalB = finalVal.sortBy(_._1).take(20)
       finalB.foreach(s => (printf("(%d,%s,%s)\n", s._1, s._2, s._3)))
