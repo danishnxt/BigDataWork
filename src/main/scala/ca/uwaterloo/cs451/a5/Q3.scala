@@ -24,7 +24,7 @@ object Q3 {
   def main(argv: Array[String]) {
     val args = new Conf_q1(argv)
 
-    val confA = new SparkConf().setAppName("Q2 - SQL")
+    val confA = new SparkConf().setAppName("Q3 - SQL")
     val sc = new SparkContext(confA)
     val log = Logger.getLogger(getClass().getName())
 
@@ -48,16 +48,17 @@ object Q3 {
       val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0), entry.split('|')(1), entry.split('|')(2), entry.split('|')(10))).filter(entry => entry._2.substring(0, dateLength) == date)
       // ordernum, part, supp, date
 
-
       val part_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only
       val supplier_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only thru BROADCAST
 
       val global_part = sc.broadcast(part_Rec)
       val global_supplier = sc.broadcast(supplier_Rec)
 
-      val final = lineItem_Rec.map(entry => (entry._1.toInt, global_part.value.filter(s => (s._1 == entry._2)).head._2, global_supplier.value.filter(s => (s._2 == entry._3)).head._2)).sortBy(_._1).take(20)
+      val final = lineItem_Rec.map(entry => (entry._1.toInt, global_part.value.filter(s => (s._1 == entry._2)).head._2, global_supplier.value.filter(s => (s._2 == entry._3)).head._2))
+
+      val finalB = final.sortBy(_._1).take(20)
 //
-      final.foreach(s => (printf("(%d,%s,%s)\n", s._1, s._2, s._3)))
+      finalB.foreach(s => (printf("(%d,%s,%s)\n", s._1, s._2, s._3)))
 
 //      result.foreach(println)
 
