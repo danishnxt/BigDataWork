@@ -14,8 +14,8 @@ class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date, text_opt, parquet_opt)
   val input = opt[String](descr = "input path", required = true)
   val date = opt[String](descr = "LineItem date - query value", required = true)
-  val text_opt = opt[Boolean](required = false)
-  val parquet_opt = opt[Boolean](required = false)
+  val text = opt[Boolean](required = false)
+  val parquet = opt[Boolean](required = false)
   verify()
 }
 
@@ -41,18 +41,13 @@ object Q1 {
       val textFile = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
       val allEntriesA = textFile.filter(entry => (entry.split('|')(10)).substring(0,dateLength) == date)
       val finalVal = allEntriesA.map(line => (1, 1)).reduceByKey(_+_).collect()
-
-      println("HELLO CHECK HERE")
-      println(finalVal(0)._2)
-      finalVal.foreach(println)
-
-
+      printf("Answer = %d", finalVal(0)._2)
+    } else {
+      val sparkSession = SparkSession.builder.getOrCreate
+      val lineitemDF = sparkSession.read.parquet(folder + "/lineitem")
+      val allEntriesB = lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date) // read for a parquet file
+      val finalValB = allEntriesB.map(line => (1, 1)).reduceByKey(_+_).collect()
+      printf("Answer = %d", finalValB(0)._2)
     }
-//    else {
-//      val sparkSession = SparkSession.builder.getOrCreate
-//      val lineitemDF = sparkSession.read.parquet(folder + "/lineitem")
-//      val allEntriesB = lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date) // read for a parquet file
-//      finalVal = (allEntriesB.map(line => (1,1)).reduce(_+_))(1)
-//    }
   }
 }
