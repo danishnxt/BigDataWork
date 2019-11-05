@@ -51,8 +51,8 @@ object Q3 {
       val part_Rec = textFilePart.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only
       val supplier_Rec = textFileSupplier.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only thru BROADCAST
 
-      val global_part = sc.broadcast()
-      val global_supplier = sc.broadcast()
+      val global_part = sc.broadcast(part_Rec)
+      val global_supplier = sc.broadcast(supplier_Rec)
 
       val finalVal = lineItem_Rec.map(entry => (entry._1.toInt, global_part.value.filter(s => (s._1 == entry._2))(0)._2, global_supplier.value.filter(s1 => (s1._2 == entry._3))(0)._2))
 
