@@ -22,7 +22,7 @@ class Conf_q2(args: Seq[String]) extends ScallopConf(args) {
 object Q2 {
 
   def main(argv: Array[String]) {
-    val args = new Conf_q1(argv)
+    val args = new Conf_q3(argv)
 
     val confA = new SparkConf().setAppName("Q2 - SQL")
     val sc = new SparkContext(confA)
