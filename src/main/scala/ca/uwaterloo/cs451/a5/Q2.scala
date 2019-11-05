@@ -54,7 +54,7 @@ object Q2 {
       val mixXD = mixXC.sortBy(_._1)
       val mixXE = mixXD.take(20)
 
-      mixXE.foreach(s => (printf("(%d,%s)\n", s._1, s._2)))
+      mixXE.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
 
 
 
