@@ -49,7 +49,7 @@ object Q2 {
       var orders_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(6)))
 
       val mixX = lineItem_Rec.cogroup(orders_Rec)
-      val mixXB = mixX.filter(entry => (entry._2._1.head != null)) //&& entry._2._2.head != null)) // check internal values because null check doesn't work outside
+      val mixXB = mixX.filter(entry => (entry._2._1.head != "")) //&& entry._2._2.head != null)) // check internal values because null check doesn't work outside
       val result = mixXB.map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
 //
       result.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
