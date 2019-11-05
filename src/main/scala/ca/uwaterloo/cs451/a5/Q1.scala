@@ -43,7 +43,7 @@ object Q1 {
       val finalVal = allEntriesA.map(line => (1, 1)).reduceByKey(_+_).collect()
 
       println("HELLO CHECK HERE")
-      println(finalVal(0)(1))
+      println(finalVal(0)._2)
       finalVal.foreach(println)
 
 
