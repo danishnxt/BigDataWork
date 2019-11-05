@@ -48,8 +48,8 @@ object Q3 {
       val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0), entry.split('|')(1), entry.split('|')(2), entry.split('|')(10))).filter(entry => entry._2.substring(0, dateLength) == date)
       // ordernum, part, supp, date
 
-      val part_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only
-      val supplier_Rec = textFileOrder.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only thru BROADCAST
+      val part_Rec = textFilePart.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only
+      val supplier_Rec = textFileSupplier.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only thru BROADCAST
 
       val global_part = sc.broadcast(part_Rec)
       val global_supplier = sc.broadcast(supplier_Rec)
