@@ -32,8 +32,8 @@ object Q1 {
     val folder = args.input()
     val date = args.date() // get the date out of the thinge
 
-    val textBool = args.text_opt()
-    val parquetBool = args.parquet_opt()
+    val textBool = args.text()
+    val parquetBool = args.parquet()
 
     val dateLength = date.length() // all the cases
 
