@@ -39,11 +39,15 @@ object Q1 {
 
     if (textBool == true) {
       val textFile = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
-      printf("Answer = %d", (textFile.filter(entry => (entry.split('|')(10)).substring(0,dateLength) == date)))
-    } else {
-      val sparkSession = SparkSession.builder.getOrCreate
-      val lineitemDF = sparkSession.read.parquet(folder + "/lineitem")
-      printf("Answer = %d" ,(lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date))) // read for a parquet file
+      val allEntriesA = textFile.filter(entry => (entry.split('|')(10)).substring(0,dateLength) == date)
+      finalVal = (allEntriesA.map(line => (1, 1)).reduce(_+_))(1)
+      println("CHECK VALUE -> ", finalVal)
     }
+//    else {
+//      val sparkSession = SparkSession.builder.getOrCreate
+//      val lineitemDF = sparkSession.read.parquet(folder + "/lineitem")
+//      val allEntriesB = lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date) // read for a parquet file
+//      finalVal = (allEntriesB.map(line => (1,1)).reduce(_+_))(1)
+//    }
   }
 }
