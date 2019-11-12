@@ -46,8 +46,8 @@ object Q6 {
         val indComps = entry.split('|')
         val discountedPrice = indComps(5).toDouble * (1 - indComps(6).toDouble)
         val ActSum = discountedPrice * (1 - indComps(7).toDouble)
-        ((indComps(8), indComps(9)),(indComps(4).toDouble, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10)))
-      }.filter(entry => entry._2._7.substring(0, dateLength) == date))
+        ((indComps(8), indComps(9)),(indComps(4).toLong, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10).toString()))
+      }.filter(entry => entry._2._7.substring(0, dateLength) == date)
 
       val AggVal = lineItem_Rec.reduceByKey((alpha, beta) => (alpha._1 + beta._1, alpha._2 + beta._2, alpha._3 + beta._3, alpha._4 + beta._4, alpha._5 + beta._5, alpha._6 + beta._6)).collect()
 
@@ -57,15 +57,16 @@ object Q6 {
       })
 
     } else {
-//
+
+      // get moniker is a shorter code to get the same thing done as prev questions -> useful, will not be changing previous questions however, they are functionally correct
+
       val sparkSession = SparkSession.builder.getOrCreate
       val rddFileItem = (sparkSession.read.parquet(folder + "/lineitem")).rdd // read for a parquet file
       var lineItem_Rec = rddFileItem.map { entry =>
-        val indComps = entry.split('|')
-        val discountedPrice = indComps(5).toDouble * (1 - indComps(6).toDouble)
-        val ActSum = discountedPrice * (1 - indComps(7).toDouble)
-        ((indComps(8), indComps(9)),(indComps(4).toDouble, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10)))
-      }.filter(entry => entry._2._7.substring(0, dateLength) == date))
+        val discountedPrice = entry.getDouble(5) * (1 - entry.getDouble(6))
+        val ActSum = discountedPrice * (1 - entry.getDouble(7))
+        ((entry(8).toString(), entry(9).toString()),(entry.getDouble(4).toInt, entry.getDouble(5), discountedPrice, ActSum, entry.getDouble(6), 1, entry(10).toString().substring(0, dateLength))) // get long not possible
+      }.filter(entry => entry._2._7 == date) // filtering already happened
 
       val AggVal = lineItem_Rec.reduceByKey((alpha, beta) => (alpha._1 + beta._1, alpha._2 + beta._2, alpha._3 + beta._3, alpha._4 + beta._4, alpha._5 + beta._5, alpha._6 + beta._6)).collect()
 
