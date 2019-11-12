@@ -45,12 +45,12 @@ object Q4 {
       val textFileCustomer = sc.textFile(folder + "/customer.tbl") // import from the file directly
       val textFileOrders = sc.textFile(folder + "/orders.tbl") // import from the file directly
 
-      val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0), entry.split('|')(10))).filter(entry => entry._2.substring(0, dateLength) == date)
+      val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(10))).filter(entry => entry._2.substring(0, dateLength) == date)
       // ordernum, part, supp, date
 
-      val nation_Rec = textFileNation.map(entry => (entry.split('|')(0), entry.split('|')(1))) // reference only thru BROADCAST
-      val customer_Rec = textFileCustomer.map(entry => (entry.split('|')(0), entry.split('|')(3))) // reference only thru BROADCAST
-      val orders_Rec = textFileOrders.map(entry => (entry.split('|')(0), entry.split('|')(1))) // to be grouped with orders
+      val nation_Rec = textFileNation.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(1))) // reference only thru BROADCAST
+      val customer_Rec = textFileCustomer.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(3).trim.toInt)) // reference only thru BROADCAST
+      val orders_Rec = textFileOrders.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(1).trim.toInt)) // to be grouped with orders
 
       val global_nation = sc.broadcast(nation_Rec.collectAsMap())
       val global_customer = sc.broadcast(customer_Rec.collectAsMap())
@@ -73,14 +73,13 @@ object Q4 {
         }
 
       val retVal = finalVal
-          .map((case (alpha, beta) => (alpha, global_customer.value.getOrElse(beta, -999).asInstanceOf[Int]))).filter(entry => entry._2 != -999) // remove dead values
-          .map(case (alpha, beta) => (alpha, beta, global_nation.value.getOrElse(beta, "").toString())).map(case (alpha, beta, gamma) => ((beta, gamma),1)) // restructure
+          .map{case (alpha, beta) => (alpha, global_customer.value.getOrElse(beta, -999).asInstanceOf[Int]))}.filter(entry => entry._2 != -999)
+          .map{case (alpha, beta) => (alpha, beta, global_nation.value.getOrElse(beta, "").toString())}.map{ case (alpha, beta, gamma) => ((beta, gamma),1)} // restructure
           .reduceByKey(_+_).map(entry => (entry._1._1, entry._1._2, entry._2)).collect().sortBy(_._1) // count, restructure and emit
 
       retVal.foreach(entry => (printf("(%d,%s,%s)\n", entry._1, entry._2, entry._3)))
 
-    }
-    else {
+    } else {
 //
       val sparkSession = SparkSession.builder.getOrCreate
 
