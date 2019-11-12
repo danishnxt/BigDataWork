@@ -64,7 +64,7 @@ object Q4 {
             var itrB = beta._2.iterator
 
             while (itrA.hasNext) {
-              val cKey = itrA.hasNext
+              val cKey = itrA.next
               while (itrB.hasNext) {
                 listD += (alpha -> cKey)
                 itrB.next // keep moving the iterator forward
@@ -105,7 +105,7 @@ object Q4 {
             var itrB = beta._2.iterator
 
             while (itrA.hasNext) {
-              val cKey = itrA.hasNext
+              val cKey = itrA.next
               while (itrB.hasNext) {
                 listD += (alpha -> cKey)
                 itrB.next // keep moving the iterator forward
