@@ -29,7 +29,6 @@ object Q5 {
     // GET ARGS
 
     val folder = args.input()
-    val date = args.date()
 
     val textBool = args.text()
     val parquetBool = args.parquet()
