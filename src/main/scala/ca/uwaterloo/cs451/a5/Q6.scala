@@ -48,6 +48,9 @@ object Q6 {
         val ActSum = discountedPrice * (1 - indComps(7).toDouble)
         ((indComps(8), indComps(9)),(indComps(4).toLong, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10).toString()))
       }.filter(entry => entry._2._7.substring(0, dateLength) == date)
+      .map {
+        case(alpha, beta) => (alpha, (beta._1,beta._2,beta._3,beta._4,beta._5,beta._6))
+      } // filtering already happened remove data for aggeregation
 
       val AggVal = lineItem_Rec.reduceByKey((alpha, beta) => (alpha._1 + beta._1, alpha._2 + beta._2, alpha._3 + beta._3, alpha._4 + beta._4, alpha._5 + beta._5, alpha._6 + beta._6)).collect()
 
@@ -75,7 +78,7 @@ object Q6 {
       val AggVal = lineItem_Rec.reduceByKey((alpha, beta) => (alpha._1 + beta._1, alpha._2 + beta._2, alpha._3 + beta._3, alpha._4 + beta._4, alpha._5 + beta._5, alpha._6 + beta._6)).collect()
 
       AggVal.foreach(entry => {
-        val total = p._2._6
+        val total = entry._2._6
         println(entry._1._1, entry._1._2, entry._2._1, entry._2._2, entry._2._3, entry._2._4, entry._2._1/total, entry._2._2/total, entry._2._5/total) // finalize total values
       })
 
