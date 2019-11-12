@@ -82,7 +82,7 @@ object Q5 {
       val rddFileCustomer = (sparkSession.read.parquet(folder + "/customer")).rdd // read for a parquet file
       val rddFileOrders = (sparkSession.read.parquet(folder + "/orders")).rdd // read for a parquet file
 
-      var lineItem_Rec = rddFileItem.map(entry => (entry(0).asInstanceOf[Int], entry(10).toString())).filter(entry => entry._4.substring(0, dateLength) == date) // date filtering
+      var lineItem_Rec = rddFileItem.map(entry => (entry(0).asInstanceOf[Int], entry(10).toString().substring(0,7)))
       var nation_Rec = rddFileNation.map(entry => (entry(0).asInstanceOf[Int], entry(1).toString()))
       var customer_Rec = rddFileCustomer.map(entry => (entry(0).asInstanceOf[Int], entry(3).asInstanceOf[Int]))
       var orders_Rec = rddFileOrders.map(entry => (entry(0).asInstanceOf[Int], entry(1).asInstanceOf[Int]))
