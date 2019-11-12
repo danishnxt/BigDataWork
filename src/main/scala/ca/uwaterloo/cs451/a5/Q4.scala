@@ -97,21 +97,21 @@ object Q4 {
       val global_customer = sc.broadcast(customer_Rec.collectAsMap())
 
       val finalVal = orders.cogroup(lineItem_Rec)
-        .flatmap(
-      case (alpha, beta) =>
-        var listD = new ListBuffer[(int, int)]() // create a new list on the fly
-        var itrA = beta._1.iterator
-        var itrB = beta._2.iterator
+        .flatmap {
+          case (alpha, beta) =>
+            var listD = new ListBuffer[(int, int)]() // create a new list on the fly
+            var itrA = beta._1.iterator
+            var itrB = beta._2.iterator
 
-        while(itrA.hasNext) {
-          val cKey = itrA.hasNext
-          while (itrB.hasNext) {
-            listD += (alpha -> cKey)
-            itrB.next // keep moving the iterator forward
-          }
+            while (itrA.hasNext) {
+              val cKey = itrA.hasNext
+              while (itrB.hasNext) {
+                listD += (alpha -> cKey)
+                itrB.next // keep moving the iterator forward
+              }
+            }
+            listD // emit this in the end
         }
-        listD // emit this in the end
-      )
 
       val retVal = finalVal
         .map{case (alpha, beta) => (alpha, global_customer.value.getOrElse(beta, -999).asInstanceOf[Int])}.filter(entry => entry._2 != -999) // remove dead values
