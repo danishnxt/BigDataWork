@@ -27,7 +27,7 @@ object Q4 {
     val sc = new SparkContext(confA)
     val log = Logger.getLogger(getClass().getName())
 
-    // GET ARGS
+    // GET ARGS //
 
     val folder = args.input()
     val date = args.date()
