@@ -12,6 +12,7 @@ import org.apache.spark.sql.SparkSession
 class Conf_q6(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date, text, parquet)
   val input = opt[String](descr = "input path", required = true)
+  val date = opt[String](descr = "data input", required = true)
   val text = opt[Boolean](required = false)
   val parquet = opt[Boolean](required = false)
   verify()
@@ -20,7 +21,7 @@ class Conf_q6(args: Seq[String]) extends ScallopConf(args) {
 object Q6 {
 
   def main(argv: Array[String]) {
-    val args = new Conf_q5(argv)
+    val args = new Conf_q6(argv)
 
     val confA = new SparkConf().setAppName("Q6 - SQL")
     val sc = new SparkContext(confA)
@@ -34,86 +35,45 @@ object Q6 {
     val textBool = args.text()
     val parquetBool = args.parquet()
 
+    val dateLength = date.length() // all the cases
+
     // check what we're dealing with
 
     if (textBool) {
+
       val textFileItem = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
-      val textFileNation = sc.textFile(folder + "/nation.tbl") // import from the file directly
-      val textFileCustomer = sc.textFile(folder + "/customer.tbl") // import from the file directly
-      val textFileOrders = sc.textFile(folder + "/orders.tbl") // import from the file directly
+      val lineItem_Rec = textFileItem.map { entry =>
+        val indComps = entry.split('|')
+        val discountedPrice = indComps(5).toDouble * (1 - indComps(6).toDouble)
+        val ActSum = discountedPrice * (1 - indComps(7).toDouble)
+        ((indComps(8), indComps(9)),(indComps(4).toDouble, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10)))
+      }.filter(entry => entry._2._7.substring(0, dateLength) == date))
 
-      val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(10).substring(0, 7)))
-      val nation_Rec = textFileNation.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(1))) // reference only thru BROADCAST
-      val customer_Rec = textFileCustomer.map(entry => (entry.split('|')(0),trim.toInt, entry.split('|')(3).trim.toInt))
-      val orders_Rec = textFileOrders.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(1).trim.toInt))
+      val AggVal = lineItem_Rec.reduceByKey((alpha, beta) => (alpha._1 + beta._1, alpha._2 + beta._2, alpha._3 + beta._3, alpha._4 + beta._4, alpha._5 + beta._5, alpha._6 + beta._6)).collect()
 
-      val global_nation = sc.broadcast(nation_Rec.collectAsMap())
-      val global_customer = sc.broadcast(customer_Rec.collectAsMap())
+      AggVal.foreach(entry => {
+        val total = p._2._6
+        println(entry._1._1, entry._1._2, entry._2._1, entry._2._2, entry._2._3, entry._2._4, entry._2._1/total, entry._2._2/total, entry._2._5/total) // finalize total values
+      })
 
-      val finalVal = orders.cogroup(lineItem_Rec)
-        .flatmap {
-          case (alpha, beta) =>
-            var listD = new ListBuffer[(int, int)]() // create a new list on the fly
-            var itrA = beta._1.iterator
-            var itrB = beta._2.iterator
-
-            while (itrA.hasNext) {
-              val cKey = itrA.hasNext
-              while (itrB.hasNext) {
-                listD += (alpha -> (cKey, itrB.next)) // instead add value to this
-              }
-            }
-            listD // emit this in the end
-        }
-
-      val retVal = finalVal
-          .map{case (alpha, beta) => ((alpha, beta._2.toString), global_customer.value.getOrElse(beta._1, -999).asInstanceOf[Int])}.filter(entry => entry._2 != -999) // remove dead values
-          .map{case (alpha, beta) => (alpha, global_nation.value.getOrElse(beta, "").toString())}.map{case (alpha, beta) => ((alpha._2, beta),1)} // restructure
-          .filter{case (alpha, beta) => alpha._2 == "CANADA" || alpha._2 == "UNITED STATES"} // adding in this filter case
-          .reduceByKey(_+_).map(entry => (entry._1._2, entry._1._1, entry._2)).sortBy(_._1).collect() // count, restructure and emit
-
-      retVal.foreach(println)
-    }
-    else {
+    } else {
 //
       val sparkSession = SparkSession.builder.getOrCreate
-
       val rddFileItem = (sparkSession.read.parquet(folder + "/lineitem")).rdd // read for a parquet file
-      val rddFileNation = (sparkSession.read.parquet(folder + "/nation")).rdd // read for a parquet file
-      val rddFileCustomer = (sparkSession.read.parquet(folder + "/customer")).rdd // read for a parquet file
-      val rddFileOrders = (sparkSession.read.parquet(folder + "/orders")).rdd // read for a parquet file
+      var lineItem_Rec = rddFileItem.map { entry =>
+        val indComps = entry.split('|')
+        val discountedPrice = indComps(5).toDouble * (1 - indComps(6).toDouble)
+        val ActSum = discountedPrice * (1 - indComps(7).toDouble)
+        ((indComps(8), indComps(9)),(indComps(4).toDouble, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10)))
+      }.filter(entry => entry._2._7.substring(0, dateLength) == date))
 
-      var lineItem_Rec = rddFileItem.map(entry => (entry(0).asInstanceOf[Int], entry(10).toString())).filter(entry => entry._4.substring(0, dateLength) == date) // date filtering
-      var nation_Rec = rddFileNation.map(entry => (entry(0).asInstanceOf[Int], entry(1).toString()))
-      var customer_Rec = rddFileCustomer.map(entry => (entry(0).asInstanceOf[Int], entry(3).asInstanceOf[Int]))
-      var orders_Rec = rddFileOrders.map(entry => (entry(0).asInstanceOf[Int], entry(1).asInstanceOf[Int]))
+      val AggVal = lineItem_Rec.reduceByKey((alpha, beta) => (alpha._1 + beta._1, alpha._2 + beta._2, alpha._3 + beta._3, alpha._4 + beta._4, alpha._5 + beta._5, alpha._6 + beta._6)).collect()
 
-      val global_nation = sc.broadcast(nation_Rec.collectAsMap())
-      val global_customer = sc.broadcast(customer_Rec.collectAsMap())
+      AggVal.foreach(entry => {
+        val total = p._2._6
+        println(entry._1._1, entry._1._2, entry._2._1, entry._2._2, entry._2._3, entry._2._4, entry._2._1/total, entry._2._2/total, entry._2._5/total) // finalize total values
+      })
 
-      val finalVal = orders.cogroup(lineItem_Rec)
-        .flatmap {
-          case (alpha, beta) =>
-            var listD = new ListBuffer[(int, int)]() // create a new list on the fly
-            var itrA = beta._1.iterator
-            var itrB = beta._2.iterator
-
-            while (itrA.hasNext) {
-              val cKey = itrA.hasNext
-              while (itrB.hasNext) {
-                listD += (alpha -> (cKey, itrB.next)) // instead add value to this
-              }
-            }
-            listD // emit this in the end
-        }
-
-      val retVal = finalVal
-        .map{case (alpha, beta) => ((alpha, beta._2.toString), global_customer.value.getOrElse(beta._1, -999).asInstanceOf[Int])}.filter(entry => entry._2 != -999) // remove dead values
-        .map{case (alpha, beta) => (alpha, global_nation.value.getOrElse(beta, "").toString())}.map{case (alpha, beta) => ((alpha._2, beta),1)} // restructure
-        .filter{case (alpha, beta) => alpha._2 == "CANADA" || alpha._2 == "UNITED STATES"} // adding in this filter case
-        .reduceByKey(_+_).map(entry => (entry._1._2, entry._1._1, entry._2)).sortBy(_._1).collect() // count, restructure and emit
-
-      retVal.foreach(println)
     }
   }
 }
