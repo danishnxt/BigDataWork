@@ -47,7 +47,7 @@ object Q7 {
 
       val lineItem_Rec = textFileItem
         .map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(5).trim.toDouble, entry.split('|')(6).trim.toDouble, entry.split('|')(10))).filter(entry => (entry._4 > date))
-        .map(entry => (entry._1, entry._2*(1 - entry._3)))
+        .map(entry => (entry._1, entry._2 * (1 - entry._3)))
 
       val customer_Rec = textFileCustomer
         .map(entry => {
@@ -59,36 +59,36 @@ object Q7 {
         .map(entry => {
           val spltVal = entry.split('|')
           (spltVal(0).trim.toInt, spltVal(1).trim.toInt, spltVal(4), spltVal(7).trim.toInt)
-        }).filter (entry => entry._3 > date).map(entry => (entry._1, (entry._2, entry._3, entry._4)))
+        }).filter(entry => entry._3 > date).map(entry => (entry._1, (entry._2, entry._3, entry._4)))
 
       val global_Customer = sc.broadcast(customer_Rec.collectAsMap())
 
       val FinalValue = orders_Rec.cogroup(lineItem_Rec)
         .flatmap {
-          case(alpha, beta) =>
-            var dList = new ListBuffer[(Int,(Int, String, Int, Double))]()
+          case (alpha, beta) =>
+            var dList = new ListBuffer[(Int, (Int, String, Int, Double))]()
             var itrA = beta._1.iterator
             var itrB = beta._2.iterator
 
             while (itrA.hasNext) {
               val ord = itrA.next // get value out
-               while (itrB.hasNext) {
-                  dList += (alpha -> (ord._1, ord._2, ord._3, itrB.next))
-               }
+              while (itrB.hasNext) {
+                dList += (alpha -> (ord._1, ord._2, ord._3, itrB.next))
+              }
             }
             dLlist
         }
 
       val retVal = FinalValue.map {
-//        case (alpha, beta) => ((global_Customer.value.getOrElse(beta._1, null).toString, alpha beta._2, beta._3) -> (beta._4)) #didnt' recog for some reason
+        //        case (alpha, beta) => ((global_Customer.value.getOrElse(beta._1, null).toString, alpha beta._2, beta._3) -> (beta._4)) #didnt' recog for some reason
         case (alpha, beta) => ((global_Customer.value.getOrElse(beta._1, null).asInstanceof[String], alpha, beta._2, beta._3) -> (beta._4))
-      }.filter(x => x._1._1 != null).reduceByKey(_+_).map {
+      }.filter(x => x._1._1 != null).reduceByKey(_ + _).map {
         case (alpha, beta) => (alpha._1, alpha._2, beta, alpha._3, alpha._4)
       }.collect().sortBy(_._3).reverse().take(10) // descending order
 
       retVal.foreach(println)
-
-    } else {
+    }
+//    } else {
 
       // get moniker is a shorter code to get the same thing done as prev questions -> useful, will not be changing previous questions however, they are functionally correct
 
