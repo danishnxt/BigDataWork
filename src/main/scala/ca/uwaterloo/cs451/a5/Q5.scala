@@ -44,7 +44,7 @@ object Q5 {
 
       val lineItem_Rec = textFileItem.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(10).substring(0, 7)))
       val nation_Rec = textFileNation.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(1))) // reference only thru BROADCAST
-      val customer_Rec = textFileCustomer.map(entry => (entry.split('|')(0),trim.toInt, entry.split('|')(3).trim.toInt))
+      val customer_Rec = textFileCustomer.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(3).trim.toInt))
       val orders_Rec = textFileOrders.map(entry => (entry.split('|')(0).trim.toInt, entry.split('|')(1).trim.toInt))
 
       val global_nation = sc.broadcast(nation_Rec.collectAsMap())
