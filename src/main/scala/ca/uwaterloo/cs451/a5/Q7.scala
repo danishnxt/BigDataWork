@@ -97,8 +97,8 @@ object Q7 {
       val rddFileCustomer = (sparkSession.read.parquet(folder + "/customer")).rdd // read for a parquet file
       val rddFileOrders = (sparkSession.read.parquet(folder + "/orders")).rdd // read for a parquet file
 
-      var lineItem_Rec = rddFileItem.map(entry => (entry.getInt(0), entry.getDouble(5), entry.getDouble(6), entry.getString(10))).filter(entry -> entry._4 > date).map(entry => (entry._1, entry._2*(1 - entry._3)))
-      var order_Rec = rddFileOrders.map(entry => (entry.getInt(0), entry.getInt(1), entry.getString(4), entry.getInt(7))).filter(entry -> entry._3 > date).map(entry => (entry._1, (entry._2, entry._3, entry._4)))
+      var lineItem_Rec = rddFileItem.map(entry => (entry.getInt(0), entry.getDouble(5), entry.getDouble(6), entry.getString(10))).filter(entry => entry._4 > date).map(entry => (entry._1, entry._2*(1 - entry._3)))
+      var order_Rec = rddFileOrders.map(entry => (entry.getInt(0), entry.getInt(1), entry.getString(4), entry.getInt(7))).filter(entry => entry._3 > date).map(entry => (entry._1, (entry._2, entry._3, entry._4)))
 
       var customer_Rec = rddFileCustomer.map(entry => (entry.getInt(0), entry.getString(1)))
       val global_Customer = sc.broadcast(customer_Rec.collectAsMap())
