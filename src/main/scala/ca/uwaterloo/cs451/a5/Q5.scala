@@ -51,7 +51,7 @@ object Q5 {
       val global_customer = sc.broadcast(customer_Rec.collectAsMap())
 
       val finalVal = orders_Rec.cogroup(lineItem_Rec)
-        .flatmap {
+        .flatMap {
           case (alpha, beta) =>
             var listD = new ListBuffer[(int, int)]() // create a new list on the fly
             var itrA = beta._1.iterator
@@ -92,7 +92,7 @@ object Q5 {
       val global_customer = sc.broadcast(customer_Rec.collectAsMap())
 
       val finalVal = orders_Rec.cogroup(lineItem_Rec)
-        .flatmap {
+        .flatMap {
           case (alpha, beta) =>
             var listD = new ListBuffer[(int, int)]() // create a new list on the fly
             var itrA = beta._1.iterator
