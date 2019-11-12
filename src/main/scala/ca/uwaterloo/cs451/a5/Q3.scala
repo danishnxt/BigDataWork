@@ -54,29 +54,40 @@ object Q3 {
       val global_part = sc.broadcast(part_Rec.collectAsMap())
       val global_supplier = sc.broadcast(supplier_Rec.collectAsMap())
 
-      val finalVal = lineItem_Rec.map(entry => (entry._1.toInt, global_part.value.filter(s => (s._1 == entry._2)).head._2, global_supplier.value.filter(s => (s._1 == entry._3)).head._2))
+      val finalVal = lineItem_Rec
+        .map(entry => (entry._1.toInt, global_part.value.getOrElse(entry._2, null), global_supplier.value.getOrElse(entry._3, null))) // ID, PART ID, SUPP ID
+        .filter(entry => entry._2 != null) // remove non-existent values
+        .filter(entry => entry._3 != null) // remove non-existent values
 
-      val finalB = finalVal.sortBy(_._1).take(20)
-      finalB.foreach(s => (printf("(%d,%s,%s)\n", s._1, s._2, s._3)))
+      val retVal = finalVal.sortBy(_._1).take(20)
+      retVal.foreach(entry => (printf("(%d,%s,%s)\n", entry._1, entry._2, entry._3)))
 //      result.foreach(println)
 
     }
-//    else {
-////
-//      val sparkSession = SparkSession.builder.getOrCreate
-//      val textFileItem = (sparkSession.read.parquet(folder + "/lineitem")).rdd // read for a parquet file
-//      val textFileOrder = (sparkSession.read.parquet(folder + "/orders")).rdd // read for a parquet file
+    else {
 //
-//      var lineItem_Rec = textFileItem.map(entry => (entry(0).toString(), entry(10).toString())).filter(entry => entry._2.substring(0, dateLength) == date)
-//      var orders_Rec = textFileOrder.map(entry => (entry(0).toString(), entry(6).toString()))
-//
-//      val mixX = lineItem_Rec.cogroup(orders_Rec)
-//      val mixXB = mixX.filter(entry => ((entry._2._1.toArray contains date) && entry._2._2.head != null))
-//      val result = mixXB.map(entry => (entry._1.toInt, entry._2._2)).sortBy(_._1).take(20)
-//      //
-//      result.foreach(s => (printf("(%d,%s)\n", s._1, s._2.head)))
-//
-//    }
+      val sparkSession = SparkSession.builder.getOrCreate
+
+      val rddFileItem = (sparkSession.read.parquet(folder + "/lineitem")).rdd // read for a parquet file
+      val rddFilePart = (sparkSession.read.parquet(folder + "/part")).rdd // read for a parquet file
+      val rddFileSupplier = (sparkSession.read.parquet(folder + "/supplier")).rdd // read for a parquet file
+
+      var lineItem_Rec = rddFileItem.map(entry => (entry(0).toString(), entry(1).toString, entry(2).toString(), entry(10).toString())).filter(entry => entry._4.substring(0, dateLength) == date) // date filtering
+      var orders_Rec = rddFilePart.map(entry => (entry(0).toString(), entry(1).toString()))
+      var supplier_Rec = rddFileSupplier.map(entry => (entry(0).toString(), entry(1).toString()))
+
+      var global_part = sc.broadcast(orders_Rec.collectAsMap())
+      var global_supplier = sc.broadcast(supplier_Rec.collectAsMap())
+
+      val finalVal = lineItem_Rec
+        .map(entry => (entry._1.toInt, global_part.value.getOrElse(entry._2, null), global_supplier.value.getOrElse(entry._3, null))) // ID, PART ID, SUPP ID
+        .filter(entry => entry._2 != null) // remove non-existent values
+        .filter(entry => entry._3 != null) // remove non-existent values
+      //
+      val retVal = finalVal.sortBy(_._1).take(20)
+      retVal.foreach(entry => (printf("(%d,%s,%s)\n", entry._1, entry._2, entry._3)))
+
+    }
 
 
   }
