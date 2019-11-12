@@ -53,7 +53,7 @@ object Q5 {
       val finalVal = orders_Rec.cogroup(lineItem_Rec)
         .flatMap {
           case (alpha, beta) =>
-            var listD = new ListBuffer[(int, int)]() // create a new list on the fly
+            var listD = new ListBuffer[(Int, Int)]() // create a new list on the fly
             var itrA = beta._1.iterator
             var itrB = beta._2.iterator
 
@@ -94,7 +94,7 @@ object Q5 {
       val finalVal = orders_Rec.cogroup(lineItem_Rec)
         .flatMap {
           case (alpha, beta) =>
-            var listD = new ListBuffer[(int, int)]() // create a new list on the fly
+            var listD = new ListBuffer[(Int, Int)]() // create a new list on the fly
             var itrA = beta._1.iterator
             var itrB = beta._2.iterator
 
