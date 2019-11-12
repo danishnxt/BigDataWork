@@ -9,7 +9,7 @@ import org.apache.hadoop.fs._
 import org.rogach.scallop._
 import org.apache.spark.sql.SparkSession
 
-class Conf_q5(args: Seq[String]) extends ScallopConf(args) {
+class Conf_q6(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, date, text, parquet)
   val input = opt[String](descr = "input path", required = true)
   val text = opt[Boolean](required = false)
@@ -17,12 +17,12 @@ class Conf_q5(args: Seq[String]) extends ScallopConf(args) {
   verify()
 }
 
-object Q5 {
+object Q6 {
 
   def main(argv: Array[String]) {
     val args = new Conf_q5(argv)
 
-    val confA = new SparkConf().setAppName("Q5 - SQL")
+    val confA = new SparkConf().setAppName("Q6 - SQL")
     val sc = new SparkContext(confA)
     val log = Logger.getLogger(getClass().getName())
 
@@ -50,7 +50,7 @@ object Q5 {
       val global_nation = sc.broadcast(nation_Rec.collectAsMap())
       val global_customer = sc.broadcast(customer_Rec.collectAsMap())
 
-      val finalVal = orders_Rec.cogroup(lineItem_Rec)
+      val finalVal = orders.cogroup(lineItem_Rec)
         .flatmap {
           case (alpha, beta) =>
             var listD = new ListBuffer[(int, int)]() // create a new list on the fly
@@ -91,7 +91,7 @@ object Q5 {
       val global_nation = sc.broadcast(nation_Rec.collectAsMap())
       val global_customer = sc.broadcast(customer_Rec.collectAsMap())
 
-      val finalVal = orders_Rec.cogroup(lineItem_Rec)
+      val finalVal = orders.cogroup(lineItem_Rec)
         .flatmap {
           case (alpha, beta) =>
             var listD = new ListBuffer[(int, int)]() // create a new list on the fly
