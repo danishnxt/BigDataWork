@@ -73,9 +73,14 @@ object Q4 {
         }
 
       val retVal = finalVal
-          .map{case (alpha, beta) => (alpha, global_customer.value.getOrElse(beta, -999).asInstanceOf[Int]))}.filter(entry => entry._2 != -999)
-          .map{case (alpha, beta) => (alpha, beta, global_nation.value.getOrElse(beta, "").toString())}.map{ case (alpha, beta, gamma) => ((beta, gamma),1)} // restructure
-          .reduceByKey(_+_).map(entry => (entry._1._1, entry._1._2, entry._2)).collect().sortBy(_._1) // count, restructure and emit
+          .map{ case (alpha, beta) => (alpha, global_customer.value.getOrElse(beta, -999).asInstanceOf[Int]))}
+          .filter(entry => entry._2 != -999)
+          .map{case (alpha, beta) => (alpha, beta, global_nation.value.getOrElse(beta, "").toString())}
+          .map{ case (alpha, beta, gamma) => ((beta, gamma),1)} // restructure
+          .reduceByKey(_+_)
+          .map(entry => (entry._1._1, entry._1._2, entry._2))
+          .collect()
+          .sortBy(_._1) // count, restructure and emit
 
       retVal.foreach(entry => (printf("(%d,%s,%s)\n", entry._1, entry._2, entry._3)))
 
