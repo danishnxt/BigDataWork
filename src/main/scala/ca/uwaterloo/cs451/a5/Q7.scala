@@ -83,7 +83,7 @@ object Q7 {
         case (alpha, beta) => ((global_Customer.value.getOrElse(beta._1, null).asInstanceOf[String], alpha, beta._2, beta._3) -> (beta._4))
       }.filter(x => x._1._1 != null).reduceByKey(_ + _).map {
         case (alpha, beta) => (alpha._1, alpha._2, beta, alpha._3, alpha._4)
-      }.collect().sortBy(_._3).reverse().take(10) // descending order
+      }.collect().sortBy(_._3).reverse.take(10) // descending order
 
       retVal.foreach(println)
     }
