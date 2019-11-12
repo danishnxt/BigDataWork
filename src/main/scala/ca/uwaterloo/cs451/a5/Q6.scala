@@ -62,11 +62,15 @@ object Q6 {
 
       val sparkSession = SparkSession.builder.getOrCreate
       val rddFileItem = (sparkSession.read.parquet(folder + "/lineitem")).rdd // read for a parquet file
+
       var lineItem_Rec = rddFileItem.map { entry =>
         val discountedPrice = entry.getDouble(5) * (1 - entry.getDouble(6))
         val ActSum = discountedPrice * (1 - entry.getDouble(7))
         ((entry(8).toString(), entry(9).toString()),(entry.getDouble(4).toInt, entry.getDouble(5), discountedPrice, ActSum, entry.getDouble(6), 1, entry(10).toString().substring(0, dateLength))) // get long not possible
-      }.filter(entry => entry._2._7 == date) // filtering already happened
+      }.filter(entry => entry._2._7 == date)
+      .map {
+        case(alpha, beta) => (alpha, (beta._1,beta._2,beta._3,beta._4,beta._5,beta._6))
+      } // filtering already happened remove data for aggeregation
 
       val AggVal = lineItem_Rec.reduceByKey((alpha, beta) => (alpha._1 + beta._1, alpha._2 + beta._2, alpha._3 + beta._3, alpha._4 + beta._4, alpha._5 + beta._5, alpha._6 + beta._6)).collect()
 
