@@ -46,7 +46,7 @@ object Q6 {
         val indComps = entry.split('|')
         val discountedPrice = indComps(5).toDouble * (1 - indComps(6).toDouble)
         val ActSum = discountedPrice * (1 - indComps(7).toDouble)
-        ((indComps(8), indComps(9)),(indComps(4).toLong, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10).toString()))
+        ((indComps(8), indComps(9)),(indComps(4).toDouble, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10).toString()))
       }.filter(entry => entry._2._7.substring(0, dateLength) == date)
       .map {
         case(alpha, beta) => (alpha, (beta._1,beta._2,beta._3,beta._4,beta._5,beta._6))
@@ -56,7 +56,7 @@ object Q6 {
 
       AggVal.foreach(entry => {
         val total = entry._2._6
-        println(entry._1._1, entry._1._2, entry._2._1, entry._2._2, entry._2._3, entry._2._4, entry._2._1/total, entry._2._2/total, entry._2._5/total) // finalize total values
+        println(entry._1._1, entry._1._2, entry._2._1, entry._2._2, entry._2._3, entry._2._4, entry._2._1/total, entry._2._2/total, entry._2._5/total, total) // finalize total values
       })
 
     } else {
@@ -69,7 +69,7 @@ object Q6 {
       var lineItem_Rec = rddFileItem.map { entry =>
         val discountedPrice = entry.getDouble(5) * (1 - entry.getDouble(6))
         val ActSum = discountedPrice * (1 - entry.getDouble(7))
-        ((entry(8).toString(), entry(9).toString()),(entry.getDouble(4).toInt, entry.getDouble(5), discountedPrice, ActSum, entry.getDouble(6), 1, entry(10).toString().substring(0, dateLength))) // get long not possible
+        ((entry(8).toString(), entry(9).toString()),(entry.getDouble(4), entry.getDouble(5), discountedPrice, /**/ActSum, entry.getDouble(6), 1, entry(10).toString().substring(0, dateLength))) // get long not possible
       }.filter(entry => entry._2._7 == date)
       .map {
         case(alpha, beta) => (alpha, (beta._1,beta._2,beta._3,beta._4,beta._5,beta._6))
@@ -79,7 +79,7 @@ object Q6 {
 
       AggVal.foreach(entry => {
         val total = entry._2._6
-        println(entry._1._1, entry._1._2, entry._2._1, entry._2._2, entry._2._3, entry._2._4, entry._2._1/total, entry._2._2/total, entry._2._5/total) // finalize total values
+        println(entry._1._1, entry._1._2, entry._2._1, entry._2._2, entry._2._3, entry._2._4, entry._2._1/total, entry._2._2/total, entry._2._5/total, total) // finalize total values
       })
 
     }
