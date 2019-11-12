@@ -103,7 +103,7 @@ object Q7 {
       var customer_Rec = rddFileCustomer.map(entry => (entry.getInt(0), entry.getString(1)))
       val global_Customer = sc.broadcast(customer_Rec.collectAsMap())
 
-      val FinalValue = orders_Rec.cogroup(lineItem_Rec).flatMap {
+      val FinalValue = order_Rec.cogroup(lineItem_Rec).flatMap {
         case (alpha, beta) =>
           var dList = new ListBuffer[(Int, (Int, String, Int, Double))]()
           var itrA = beta._1.iterator
