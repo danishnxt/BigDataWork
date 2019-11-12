@@ -45,7 +45,7 @@ object Q6 {
       val lineItem_Rec = textFileItem.map { entry =>
         val indComps = entry.split('|')
         val discountedPrice = indComps(5).toDouble * (1 - indComps(6).toDouble)
-        val ActSum = discountedPrice * (1 - indComps(7).toDouble)
+        val ActSum = discountedPrice * (1 + indComps(7).toDouble)
         ((indComps(8), indComps(9)),(indComps(4).toDouble, indComps(5).toDouble, discountedPrice, ActSum, indComps(6).toDouble, 1, indComps(10).toString()))
       }.filter(entry => entry._2._7.substring(0, dateLength) == date)
       .map {
@@ -68,7 +68,7 @@ object Q6 {
 
       var lineItem_Rec = rddFileItem.map { entry =>
         val discountedPrice = entry.getDouble(5) * (1 - entry.getDouble(6))
-        val ActSum = discountedPrice * (1 - entry.getDouble(7))
+        val ActSum = discountedPrice * (1 + entry.getDouble(7))
         ((entry(8).toString(), entry(9).toString()),(entry.getDouble(4), entry.getDouble(5), discountedPrice, /**/ActSum, entry.getDouble(6), 1, entry(10).toString().substring(0, dateLength))) // get long not possible
       }.filter(entry => entry._2._7 == date)
       .map {
