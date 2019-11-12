@@ -75,7 +75,7 @@ object Q7 {
                 dList += (alpha -> (ord._1, ord._2, ord._3, itrB.next()))
               }
             }
-            dLlist
+            dList
         }
 
       val retVal = FinalValue.map {
