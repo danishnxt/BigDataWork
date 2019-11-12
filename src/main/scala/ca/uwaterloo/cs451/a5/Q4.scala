@@ -56,6 +56,7 @@ object Q4 {
       val global_customer = sc.broadcast(customer_Rec.collectAsMap())
 
       val finalVal = orders_Rec.cogroup(lineItem_Rec)
+        .filter(entry => !entry._2._1.isEmpty & !entry._2._2.isEmpty)
         .flatMap {
           case (alpha, beta) =>
             var listD = new ListBuffer[(Int, Int)]() // create a new list on the fly
