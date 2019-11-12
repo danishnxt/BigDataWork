@@ -61,7 +61,7 @@ object Q7 {
           (spltVal(0).trim.toInt, spltVal(1).trim.toInt, spltVal(4), spltVal(7).trim.toInt)
         }).filter (entry => entry._3 > date).map(entry => (entry._1, (entry._2, entry._3, entry._4)))
 
-      val = global_Customer = sc.broadcast(customer_Rec.collectAsMap())
+      val global_Customer = sc.broadcast(customer_Rec.collectAsMap())
 
       val FinalValue = orders_Rec.cogroup(lineItem_Rec)
         .flatmap {
