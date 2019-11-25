@@ -47,7 +47,7 @@ object TrrainSpamClassifier {
 
     // read input data and split it
     val trainSamples = textSamples.map(line => {
-      val = splValues = line.split(" ")
+      val splValues = line.split(" ")
       val spamIdef = if (splValues(1) == "spam") 1 else 0
       val ftrList = splValues.drop(2)
       val ftrListEmit = ftrList.map(value => Int(value)) // convert value into an integer one
