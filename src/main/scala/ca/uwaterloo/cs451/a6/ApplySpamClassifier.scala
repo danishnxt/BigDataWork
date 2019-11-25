@@ -76,7 +76,7 @@ object ApplySpamClassifier {
       val valTestVal = if (spamValue > 0) 1d else 0d
 
       (doc, isSpam, spamValue, valTestVal)
-      })
+
     })
 
     finalTestValues.saveAsTextFile(outDirec) // save to file as where needed
