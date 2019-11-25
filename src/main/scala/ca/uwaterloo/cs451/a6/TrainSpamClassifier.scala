@@ -30,13 +30,13 @@ object TrrainSpamClassifier {
 
     // working directories
     val outDirec = new Path(args.model()) // output model file here
-    val inputFolder = args.input()
+    val inDirec = args.input()
 
     // if exist delete file
     FileSystem.get(sc.hadoopConfiguration).delete(outDirec, true)
 
     // input train data
-    val textSamples = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
+    val textSamples = sc.textFile(inDirec) // import from the file directly
 
     if (args.shuffle()) { // shuffle lines in the text file in place
       r = scala.util.Random
@@ -48,7 +48,7 @@ object TrrainSpamClassifier {
     // read input data and split it
     val trainSamples = textSamples.map(line => {
       val splValues = line.split(" ")
-      val spamIdef = if (splValues(1) == "spam") 1 else 0
+      val spamIdef = if (splValues(1) == "spam") 1d else 0d
       val ftrList = splValues.drop(2)
       val ftrListEmit = ftrList.map(value => Int(value)) // convert value into an integer one
       (0, (splValues(0), spamIdef, ftrListEmit))
@@ -67,7 +67,7 @@ object TrrainSpamClassifier {
     // This is the main learner: [TAKEN FROM HANDOUT]
     val delta = 0.002
 
-    trainSamples.map(sample => {
+    finalWeights = trainSamples.map(sample => {
 
       val isSpam = sample._2
       val features = sample._3 // list
@@ -87,7 +87,7 @@ object TrrainSpamClassifier {
       w // emit the weights
     })
 
-    trainSamples.saveAsTextFile(outDirec) // this just emits the weights in an RDD file // deal with it
+    finalWeights.saveAsTextFile(outDirec) // this just emits the weights in an RDD file // deal with it
 
   }
 }

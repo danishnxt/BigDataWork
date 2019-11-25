@@ -10,9 +10,10 @@ import org.rogach.scallop._
 
 import org.apache.spark.sql.SparkSession
 
-class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
+class Conf_q2(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, model, shuffle)
   val input = opt[String](descr = "input path", required = true)
+  val output = opt[String](descr = "output path", required = true)
   val model = opt[String](descr = "model path", required = true)
   verify() //
 }
@@ -22,30 +23,24 @@ object ApplySpamClassifier {
   val log = Logger.getLogger(getClass().getName())
 
   def main(argv: Array[String]) {
-    val args = new Conf_q1(argv)
+    val args = new Conf_q2(argv)
 
     val confA = new SparkConf().setAppName("ApplySpamClassifier")
     val sc = new SparkContext(confA)
 
     // working directories
-    val outDirec = new Path(args.model()) // output model file here
-    val inputFolder = args.input()
+    val inDirec = args.input()
+    val outDirec = new Path(args.output())
+    val modelPath = args.model()
 
     // if exist delete file
     FileSystem.get(sc.hadoopConfiguration).delete(outDirec, true)
 
     // input train data
-    val textSamples = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
-
-    if (args.shuffle()) { // shuffle lines in the text file in place
-      r = scala.util.Random
-      textSamples = textSamples.map(line => {
-        (r.nextInt, line)
-      }).sortByKey().map(value => value._2)
-    }
+    val textSamples = sc.textFile(inDirec) // import from the file directly
 
     // read input data and split it
-    val trainSamples = textSamples.map(line => {
+    val testSamples = textSamples.map(line => {
       val splValues = line.split(" ")
       val spamIdef = if (splValues(1) == "spam") 1 else 0
       val ftrList = splValues.drop(2)
@@ -56,6 +51,15 @@ object ApplySpamClassifier {
     // w is the weight vector (make sure the variable is within scope) [TAKEN FROM HANDOUT]
     val w = Map[Int, Double]()
 
+    // populate weight Vector
+    val modelValues = sc.textFile(modelPath)
+
+    modelValues.map(entry => {
+      w(Int(entry._1)) = Double(entry._2)
+    })
+
+    // weights loaded
+
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
     def spamminess(features: Array[Int]) : Double = {
       var score = 0d
@@ -63,30 +67,19 @@ object ApplySpamClassifier {
       score
     }
 
-    // This is the main learner: [TAKEN FROM HANDOUT]
-    val delta = 0.002
+    finalTestValues = testSamples.map(sample => {
 
-    trainSamples.map(sample => {
-
+      val doc = sample._1
       val isSpam = sample._2
       val features = sample._3 // list
+      val spamValue = spamminess(features)
+      val valTestVal = if (spamValue > 0) 1d else 0d
 
-      // Update the weights as follows: [TAKEN FROM HANDOUT]
-      val score = spamminess(features)
-      val prob = 1.0 / (1 + exp(-score))
-
-      features.foreach(f => {
-        if (w.contains(f)) {
-          w(f) += (isSpam - prob) * delta
-        } else {
-          w(f) = (isSpam - prob) * delta
-        }
-
+      (doc, isSpam, spamValue, valTestVal)
       })
-      w // emit the weights
     })
 
-    w.saveAsTextFile(outDirec) // save to file as where needed
+    finalTestValues.saveAsTextFile(outDirec) // save to file as where needed
 
   }
 }
