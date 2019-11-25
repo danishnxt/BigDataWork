@@ -37,12 +37,10 @@ object TrrainSpamClassifier {
 
     // input train data
     val textSamples = sc.textFile(inDirec) // import from the file directly
+    val r = scala.util.Random
 
-    if (args.shuffle()) { // shuffle lines in the text file in place
-      r = scala.util.Random
-      textSamples = textSamples.map(line => {
-        (r.nextInt, line)
-      }).sortByKey().map(value => value._2)
+    if (args.shuffle() == true) { // shuffle lines in the text file in place
+      textSamples = textSamples.map(line => (r.nextInt, line)).sortByKey().map(value => value._2)
     }
 
     // read input data and split it
