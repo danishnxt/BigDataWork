@@ -50,7 +50,7 @@ object TrrainSpamClassifier {
       val splValues = line.split(" ")
       val spamIdef = if (splValues(1) == "spam") 1d else 0d
       val ftrList = splValues.drop(2)
-      val ftrListEmit = ftrList.map(value => Int(value)) // convert value into an integer one
+      val ftrListEmit = ftrList.map(value => value.toInt) // convert value into an integer one
       (0, (splValues(0), spamIdef, ftrListEmit))
     }).groupByKey(1) // need everything passing thru same reducer
 

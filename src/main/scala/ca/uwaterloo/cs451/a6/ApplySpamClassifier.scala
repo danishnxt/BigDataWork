@@ -11,7 +11,7 @@ import org.rogach.scallop._
 import org.apache.spark.sql.SparkSession
 
 class Conf_q2(args: Seq[String]) extends ScallopConf(args) {
-  mainOptions = Seq(input, model, shuffle)
+  mainOptions = Seq(input, output, model)
   val input = opt[String](descr = "input path", required = true)
   val output = opt[String](descr = "output path", required = true)
   val model = opt[String](descr = "model path", required = true)
@@ -44,7 +44,7 @@ object ApplySpamClassifier {
       val splValues = line.split(" ")
       val spamIdef = if (splValues(1) == "spam") 1 else 0
       val ftrList = splValues.drop(2)
-      val ftrListEmit = ftrList.map(value => Int(value)) // convert value into an integer one
+      val ftrListEmit = ftrList.map(value => value.toInt) // convert value into an integer one
       (0, (splValues(0), spamIdef, ftrListEmit))
     }).groupByKey(1) // need everything passing thru same reducer
 
@@ -55,7 +55,7 @@ object ApplySpamClassifier {
     val modelValues = sc.textFile(modelPath)
 
     modelValues.map(entry => {
-      w(Int(entry._1)) = Double(entry._2)
+      w(entry._1.toInt) = entry._2.toDouble
     })
 
     // weights loaded
