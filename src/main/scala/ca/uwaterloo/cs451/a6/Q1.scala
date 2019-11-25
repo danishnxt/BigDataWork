@@ -11,43 +11,83 @@ import org.rogach.scallop._
 import org.apache.spark.sql.SparkSession
 
 class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
-  mainOptions = Seq(input, date, text, parquet)
+  mainOptions = Seq(input, model, shuffle)
   val input = opt[String](descr = "input path", required = true)
-  val date = opt[String](descr = "LineItem date - query value", required = true)
-  val text = opt[Boolean](required = false)
-  val parquet = opt[Boolean](required = false)
-  verify()
+  val model = opt[String](descr = "model path", required = true)
+  val shuffle = opt[Boolean](descr = "shuffleValues", required = true)
+  verify() // values in, good to go
 }
 
-object Q1 {
+object TrrainSpamClassifier {
 
   val log = Logger.getLogger(getClass().getName())
 
   def main(argv: Array[String]) {
     val args = new Conf_q1(argv)
 
-    val confA = new SparkConf().setAppName("Q1 - SQL - LineItem ship date")
+    val confA = new SparkConf().setAppName("TrainSpamClassifier")
     val sc = new SparkContext(confA)
 
-    val folder = args.input()
-    val date = args.date() // get the date out of the thinge
+    // working directories
+    val outDirec = new Path(args.model()) // output model file here
+    val inputFolder = args.input()
 
-    val textBool = args.text()
-    val parquetBool = args.parquet()
+    // if exist delete file
+    FileSystem.get(sc.hadoopConfiguration).delete(outDirec, true)
 
-    val dateLength = date.length() // all the cases
+    // input train data
+    val textSamples = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
 
-    if (textBool == true) {
-      val textFile = sc.textFile(folder + "/lineitem.tbl") // import from the file directly
-      val allEntriesA = textFile.filter(entry => (entry.split('|')(10)).substring(0,dateLength) == date)
-      val finalVal = allEntriesA.map(line => (1, 1)).reduceByKey(_+_).collect()
-      printf("ANSWER=%d\n", finalVal(0)._2)
-    } else {
-      val sparkSession = SparkSession.builder.getOrCreate
-      val lineitemDF = sparkSession.read.parquet(folder + "/lineitem")
-      val allEntriesB = lineitemDF.rdd.filter(entry => entry(10).toString().substring(0, dateLength) == date) // read for a parquet file
-      val finalValB = allEntriesB.map(line => (1, 1)).reduceByKey(_+_).collect()
-      printf("ANSWER=%d\n", finalValB(0)._2)
+    if (args.shuffle()) { // shuffle lines in the text file in place
+      r = scala.util.Random
+      textSamples = textSamples.map(line => {
+        (r.nextInt, line)
+      }).sortByKey().map(value => value._2)
     }
+
+    // read input data and split it
+    val trainSamples = textSamples.map(line => {
+      val = splValues = line.split(" ")
+      val spamIdef = if (splValues(1) == "spam") 1 else 0
+      val ftrList = splValues.drop(2)
+      val ftrListEmit = ftrList.map(value => Int(value)) // convert value into an integer one
+      (0, (splValues(0), spamIdef, ftrListEmit))
+    }).groupByKey(1) // need everything passing thru same reducer
+
+    // w is the weight vector (make sure the variable is within scope) [TAKEN FROM HANDOUT]
+    val w = Map[Int, Double]()
+
+    // Scores a document based on its list of features [TAKEN FROM HANDOUT]
+    def spamminess(features: Array[Int]) : Double = {
+      var score = 0d
+      features.foreach(f => if (w.contains(f)) score += w(f))
+      score
+    }
+
+    // This is the main learner: [TAKEN FROM HANDOUT]
+    val delta = 0.002
+
+    trainSamples.map(sample => {
+
+      val isSpam = sample._2
+      val features = sample._3 // list
+
+      // Update the weights as follows: [TAKEN FROM HANDOUT]
+      val score = spamminess(features)
+      val prob = 1.0 / (1 + exp(-score))
+
+      features.foreach(f => {
+        if (w.contains(f)) {
+          w(f) += (isSpam - prob) * delta
+        } else {
+          w(f) = (isSpam - prob) * delta
+        }
+
+      })
+      w // emit the weights
+    })
+
+    w.saveAsTextFile(outDirec) // save to file as where needed
+
   }
 }
