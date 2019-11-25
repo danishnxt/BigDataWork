@@ -65,7 +65,7 @@ object TrrainSpamClassifier {
     // This is the main learner: [TAKEN FROM HANDOUT]
     val delta = 0.002
 
-    val finalWeights = trainSamples.map(sample => {
+    val finalWeights = trainSamples._2.map(sample => {
 
       val isSpam = sample._2
       val features = sample._3 // list
