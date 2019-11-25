@@ -36,7 +36,7 @@ object TrrainSpamClassifier {
     FileSystem.get(sc.hadoopConfiguration).delete(outDirec, true)
 
     // input train data
-    val textSamples = sc.textFile(inDirec) // import from the file directly
+    var textSamples = sc.textFile(inDirec) // import from the file directly
     val r = scala.util.Random
 
     if (args.shuffle() == true) { // shuffle lines in the text file in place
@@ -65,7 +65,7 @@ object TrrainSpamClassifier {
     // This is the main learner: [TAKEN FROM HANDOUT]
     val delta = 0.002
 
-    finalWeights = trainSamples.map(sample => {
+    val finalWeights = trainSamples.map(sample => {
 
       val isSpam = sample._2
       val features = sample._3 // list
