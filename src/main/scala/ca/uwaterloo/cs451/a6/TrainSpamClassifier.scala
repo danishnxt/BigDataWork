@@ -2,7 +2,7 @@ package ca.uwaterloo.cs451.a6
 
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
-import scala.collection.mutable.HashMap
+import scala.collection.mutable.Map
 
 import org.apache.log4j._
 import org.apache.hadoop.fs._
@@ -87,7 +87,7 @@ object TrrainSpamClassifier {
       w // emit the weights
     })
 
-    w.saveAsTextFile(outDirec) // save to file as where needed
+    trainSamples.saveAsTextFile(outDirec) // this just emits the weights in an RDD file // deal with it
 
   }
 }
