@@ -49,21 +49,22 @@ object ApplySpamClassifier {
 
 
     // populate weight Vector
-//    var modelValues = sc.textFile(modelPath + "/part-00000")
-//
-//    modelValues = modelValues.map(entry => {
-//      val weight = entry.substring(1, entry.length - 1).split(",")
-//      (weight(0).toInt, weight(1).toDouble)
-//    }).collectAsMap()
-//
-//    val globalWeights = sc.broadcast(modelValues) // broadcast across all system nodes
+    var modelValues = sc.textFile(modelPath + "/part-00000")
+
+    val modelValues_new = modelValues.map(entry => {
+      val weight = entry.substring(1, entry.length - 1).split(",")
+      (weight(0).toInt, weight(1).toDouble)
+    })
+
+    val modelValues_new_b = modelValues_new.collectAsMap()
+    val globalWeights = sc.broadcast(modelValues_new_b) // broadcast across all system nodes
 
 
-    val globalWeights = sc.broadcast(sc.textFile(args.model() + "/part-00000")
-      .map(entry => {
-        val weight = entry.substring(1,entry.length()-1).split(",")
-        (weight(0).toInt, weight(1).toDouble)
-      }).collectAsMap())
+//    val globalWeights = sc.broadcast(sc.textFile(args.model() + "/part-00000")
+//      .map(entry => {
+//        val weight = entry.substring(1,entry.length()-1).split(",")
+//        (weight(0).toInt, weight(1).toDouble)
+//      }).collectAsMap())
 
 
 
