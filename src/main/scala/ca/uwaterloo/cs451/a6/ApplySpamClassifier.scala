@@ -59,11 +59,13 @@ object ApplySpamClassifier {
 //    val globalWeights = sc.broadcast(modelValues) // broadcast across all system nodes
 
 
-    val globalWeights = sc.broadcast(sc.textFile(args.model() + "/part-00000"))
+    val globalWeights = sc.broadcast(sc.textFile(args.model() + "/part-00000")
       .map(entry => {
         val weight = entry.substring(1,entry.length()-1).split(",")
         (weight(0).toInt, weight(1).toDouble)
-      }).collectAsMap()
+      }).collectAsMap())
+
+
 
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
     def spamminess(features: Array[Int]) : Double = {
