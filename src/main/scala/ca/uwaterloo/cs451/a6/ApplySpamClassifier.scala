@@ -53,8 +53,8 @@ object ApplySpamClassifier {
     var modelValues = sc.textFile(modelPath + "/part-00000")
 
     modelValues = modelValues.map(entry => {
-      val weight = entry.substring(1,entry.length - 1).split(",")
-      (weight(0).toInt, weight(1)toDouble)
+      val weight = entry.substring(1, entry.length - 1).split(",")
+      (weight(0).toInt, weight(1).toDouble)
     }).collectAsMap()
 
     val globalWeights = sc.broadcast(modelValues) // broadcast across all system nodes
