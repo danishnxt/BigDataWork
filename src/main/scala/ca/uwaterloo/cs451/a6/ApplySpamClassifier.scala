@@ -52,12 +52,14 @@ object ApplySpamClassifier {
     val w = Map[Int, Double]()
 
     // populate weight Vector
-    val modelValues = sc.textFile(modelPath)
+    val modelValues = sc.textFile(modelPath + "/part-00000")
 
     modelValues.map(entry => {
-      w(entry._1.toInt) = entry._2.toDouble
-    })
+      val weight = entry.substring(1,entry.length - 1).split(",")
+      (weight(0).toInt, weight(1)toDouble)
+    }).collectAsMap()
 
+    globalWeights = sc.broadcast(modelValues) // broadcast across all system nodes
     // weights loaded
 
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
