@@ -63,7 +63,7 @@ object ApplySpamClassifier {
       .map(entry => {
         val weight = entry.substring(1,entry.length()-1).split(",")
         (weight(0).toInt, weight(1).toDouble)
-      }).collectAsMap())
+      }).collectAsMap()
 
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
     def spamminess(features: Array[Int]) : Double = {
