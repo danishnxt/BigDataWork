@@ -65,24 +65,28 @@ object TrrainSpamClassifier {
     // This is the main learner: [TAKEN FROM HANDOUT]
     val delta = 0.002
 
-    val finalWeights = trainSamples._2.map(sample => {
+    val finalWeights = trainSamples.flatMap(p => {
+      p._2.foreach(sample => {
 
-      val isSpam = sample._2
-      val features = sample._3 // list
+        val isSpam = sample._2
+        val features = sample._3 // list
 
-      // Update the weights as follows: [TAKEN FROM HANDOUT]
-      val score = spamminess(features)
-      val prob = 1.0 / (1 + exp(-score))
+        // Update the weights as follows: [TAKEN FROM HANDOUT]
+        val score = spamminess(features)
+        val prob = 1.0 / (1 + exp(-score))
 
-      features.foreach(f => {
-        if (w.contains(f)) {
-          w(f) += (isSpam - prob) * delta
-        } else {
-          w(f) = (isSpam - prob) * delta
-        }
+        features.foreach(f => {
+          if (w.contains(f)) {
+            w(f) += (isSpam - prob) * delta
+          } else {
+            w(f) = (isSpam - prob) * delta
+          }
 
+        })
       })
+
       w // emit the weights
+
     })
 
     finalWeights.saveAsTextFile(outDirec) // this just emits the weights in an RDD file // deal with it
