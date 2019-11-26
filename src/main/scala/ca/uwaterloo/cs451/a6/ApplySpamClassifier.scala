@@ -2,7 +2,6 @@ package ca.uwaterloo.cs451.a6
 
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
-import scala.collection.Map
 
 import org.apache.log4j._
 import org.apache.hadoop.fs._
