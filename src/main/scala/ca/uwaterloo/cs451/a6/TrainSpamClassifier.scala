@@ -17,7 +17,7 @@ class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   verify() // values in, good to go
 }
 
-object TrrainSpamClassifier {
+object TrainSpamClassifier {
 
   val log = Logger.getLogger(getClass().getName())
 
