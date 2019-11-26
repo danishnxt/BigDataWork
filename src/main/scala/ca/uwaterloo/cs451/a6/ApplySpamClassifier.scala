@@ -45,11 +45,9 @@ object ApplySpamClassifier {
       val spamIdef = if (splValues(1) == "spam") 1 else 0
       val ftrList = splValues.drop(2)
       val ftrListEmit = ftrList.map(value => value.toInt) // convert value into an integer one
-      (0, (splValues(0), spamIdef, ftrListEmit))
-    }).groupByKey(1) // need everything passing thru same reducer
+      (splValues(0), spamIdef, ftrListEmit))
+    })
 
-    // w is the weight vector (make sure the variable is within scope) [TAKEN FROM HANDOUT]
-    val w = Map[Int, Double]()
 
     // populate weight Vector
     val modelValues = sc.textFile(modelPath + "/part-00000")
@@ -60,7 +58,6 @@ object ApplySpamClassifier {
     }).collectAsMap()
 
     val globalWeights = sc.broadcast(modelValues) // broadcast across all system nodes
-    // weights loaded
 
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
     def spamminess(features: Array[Int]) : Double = {
