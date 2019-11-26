@@ -41,7 +41,7 @@ object ApplySpamClassifier {
     // read input data and split it
     val testSamples = textSamples.map(line => {
       val splValues = line.split(" ")
-      val spamIdef = if (splValues(1) == "spam") 1 else 0
+      val spamIdef = splValues(1)
       val ftrList = splValues.drop(2)
       val ftrListEmit = ftrList.map(value => value.toInt) // convert value into an integer one
       (splValues(0), spamIdef, ftrListEmit)
@@ -73,7 +73,7 @@ object ApplySpamClassifier {
       val isSpam = sample._2
       val features = sample._3 // list
       val spamValue = spamminess(features)
-      val valTestVal = if (spamValue > 0) 1d else 0d
+      val valTestVal = if (spamValue > 0) "spam" else "ham"
 
       (doc, isSpam, spamValue, valTestVal)
 

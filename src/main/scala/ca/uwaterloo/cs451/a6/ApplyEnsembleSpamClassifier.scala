@@ -43,7 +43,7 @@ object ApplyEnsembleSpamClassifier {
     // read input data and split it
     val testSamples = textSamples.map(line => {
       val splValues = line.split(" ")
-      val spamIdef = if (splValues(1) == "spam") 1 else 0
+      val spamIdef = splValues(1)
       val ftrList = splValues.drop(2)
       val ftrListEmit = ftrList.map(value => value.toInt) // convert value into an integer one
       (splValues(0), spamIdef, ftrListEmit)
@@ -84,8 +84,18 @@ object ApplyEnsembleSpamClassifier {
       val features = sample._3 // list
       val spamValueX = spamminess(features, globalX.value)
       val spamValueY = spamminess(features, globalY.value)
-      val spamValueZ = spamminess(features, globalB.value)
+      val spamValueB = spamminess(features, globalB.value)
 
+      var score = 0d // init as VAR to update values
+
+      if (methodType == "average") {
+        score = (spamValueX + spamValueY + spamValueB) / 3
+      } else {
+        score = (if (spamValueX > 0) 1d else -1d) + (if (spamValueY > 0) 1d else -1d) + (if (spamValueB > 0) 1d else -1d)
+      }
+
+      val finalLabl = if (score > 0) "spam" else "ham"
+      (doc, isSpam, score, finalLabl)
     })
 
     finalTestValues.saveAsTextFile(args.output()) // save to file as where needed
