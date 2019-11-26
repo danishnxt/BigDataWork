@@ -59,7 +59,7 @@ object ApplySpamClassifier {
       (weight(0).toInt, weight(1)toDouble)
     }).collectAsMap()
 
-    globalWeights = sc.broadcast(modelValues) // broadcast across all system nodes
+    val globalWeights = sc.broadcast(modelValues) // broadcast across all system nodes
     // weights loaded
 
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
@@ -69,7 +69,7 @@ object ApplySpamClassifier {
       score
     }
 
-    finalTestValues = testSamples.map(sample => {
+    val finalTestValues = testSamples.map(sample => {
 
       val doc = sample._1
       val isSpam = sample._2
@@ -81,7 +81,7 @@ object ApplySpamClassifier {
 
     })
 
-    finalTestValues.saveAsTextFile(outDirec) // save to file as where needed
+    finalTestValues.saveAsTextFile(args.output()) // save to file as where needed
 
   }
 }
