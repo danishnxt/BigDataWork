@@ -52,7 +52,7 @@ object ApplySpamClassifier {
     // populate weight Vector
     val modelValues = sc.textFile(modelPath + "/part-00000")
 
-    modelValues.map(entry => {
+    modelValues = modelValues.map(entry => {
       val weight = entry.substring(1,entry.length - 1).split(",")
       (weight(0).toInt, weight(1)toDouble)
     }).collectAsMap()
