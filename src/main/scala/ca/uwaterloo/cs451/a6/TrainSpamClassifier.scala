@@ -7,8 +7,7 @@ import scala.collection.mutable.Map
 import org.apache.log4j._
 import org.apache.hadoop.fs._
 import org.rogach.scallop._
-
-import org.apache.spark.sql.SparkSession
+import scala.math.exp
 
 class Conf_q1(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, model, shuffle)
@@ -89,7 +88,7 @@ object TrrainSpamClassifier {
 
     })
 
-    finalWeights.saveAsTextFile(outDirec) // this just emits the weights in an RDD file // deal with it
+    finalWeights.saveAsTextFile(args.model()) // this just emits the weights in an RDD file // deal with it
 
   }
 }
