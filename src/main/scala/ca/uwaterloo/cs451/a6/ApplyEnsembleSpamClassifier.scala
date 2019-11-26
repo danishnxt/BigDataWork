@@ -50,23 +50,28 @@ object ApplyEnsembleSpamClassifier {
     })
 
     // populate weight Vectors
-    val modelValues_X = sc.broadcast(sc.textFile(modelPath + "/part-00000").map(entry => {
+    // doing thus difference to avoid getting
+    val modelValues_X = sc.textFile(modelPath + "/part-00000").map(entry => {
       val weight = entry.substring(1,entry.length - 1).split(",")
-      (weight(0).toInt, weight(1)toDouble)
-    }).collectAsMap())
+      (weight(0).toInt, weight(1).toDouble)
+    }).collectAsMap()
 
-    val modelValues_Y = sc.broadcast(sc.textFile(modelPath + "/part-00001").map(entry => {
+    val modelValues_Y = sc.textFile(modelPath + "/part-00001").map(entry => {
       val weight = entry.substring(1,entry.length - 1).split(",")
-      (weight(0).toInt, weight(1)toDouble)
-    }).collectAsMap())
+      (weight(0).toInt, weight(1).toDouble)
+    }).collectAsMap()
 
-    val modelValues_B = sc.broadcast(sc.textFile(modelPath + "/part-00002").map(entry => {
+    val modelValues_B = sc.textFile(modelPath + "/part-00002").map(entry => {
       val weight = entry.substring(1,entry.length - 1).split(",")
-      (weight(0).toInt, weight(1)toDouble)
-    }).collectAsMap())
+      (weight(0).toInt, weight(1).toDouble)
+    }).collectAsMap()
+
+    val globalX = sc.broadcast(modelValues_X)
+    val globalY = sc.broadcast(modelValues_Y)
+    val globalB = sc.broadcast(modelValues_B)
 
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
-    def spamminess(features: Array[Int], weight: scala.mutable.Map[Int, Double]) : Double = {
+    def spamminess(features: Array[Int], weight: scala.collection.Map[Int, Double]) : Double = {
       var score = 0d
       features.foreach(f => if (weight.contains(f)) score += weight(f))
       score
@@ -77,9 +82,9 @@ object ApplyEnsembleSpamClassifier {
       val doc = sample._1
       val isSpam = sample._2
       val features = sample._3 // list
-      val spamValueX = spamminess(features, modelValues_X.value)
-      val spamValueY = spamminess(features, modelValues_Y.value)
-      val spamValueZ = spamminess(features, modelValues_B.value)
+      val spamValueX = spamminess(features, globalX.value)
+      val spamValueY = spamminess(features, globalY.value)
+      val spamValueZ = spamminess(features, globalB.value)
 
     })
 
