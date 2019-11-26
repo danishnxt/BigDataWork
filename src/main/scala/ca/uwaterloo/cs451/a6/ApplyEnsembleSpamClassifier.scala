@@ -81,9 +81,9 @@ object ApplyEnsembleSpamClassifier {
       val doc = sample._1
       val isSpam = sample._2
       val features = sample._3 // list
-      val spamValueX = spamminess(features, globalWeights_X)
-      val spamValueY = spamminess(features, globalWeights_Y)
-      val spamValueZ = spamminess(features, globalWeights_Z)
+      val spamValueX = spamminess(features, globalWeights_X.value)
+      val spamValueY = spamminess(features, globalWeights_Y.value)
+      val spamValueZ = spamminess(features, globalWeights_Z.value)
 
 
 

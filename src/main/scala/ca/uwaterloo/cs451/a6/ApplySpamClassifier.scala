@@ -62,7 +62,7 @@ object ApplySpamClassifier {
     // Scores a document based on its list of features [TAKEN FROM HANDOUT]
     def spamminess(features: Array[Int]) : Double = {
       var score = 0d
-      features.foreach(f => if (w.contains(f)) score += w(f))
+      features.foreach(f => if (globalWeights.value.contains(f)) score += globalWeights.value(f))
       score
     }
 
