@@ -162,10 +162,11 @@ object TrendingArrivals {
 //    wc.saveAsTextFiles(args.output())
 
     val alpha_beta = wc.stateSnapshots()
+    val outd = args.output()
 
     alpha_beta.foreachRDD((rdd, curTime) => {
       var saveRDD = rdd.map(entry => (entry._1, (entry._2.current, entry._2.timeS, entry._2.pVal)))
-      saveRDD.saveAsTextFile(args.output() + "/part-" + "%08d".format(curTime.milliseconds))
+      saveRDD.saveAsTextFile(outd + "/part-" + "%08d".format(curTime.milliseconds))
     })
 
     // comment added to fix stuff
