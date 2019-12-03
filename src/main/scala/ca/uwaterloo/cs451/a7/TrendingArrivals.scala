@@ -159,7 +159,12 @@ object TrendingArrivals {
         (x: Int, y: Int) => x + y, (x: Int, y: Int) => x - y, Minutes(60), Minutes(60))
       .mapWithState(output)
 
-    wc.saveAsTextFiles(args.output())
+//    wc.saveAsTextFiles(args.output()) // output format specified in file
+
+      wc.stateSnapshots().foreachRDD((rdd, curTime) => {
+        var saveRDD = rdd.map(entry => (entry._1, (entry._2.current, entry._2.timeS, entry._2.pVal)))
+        saveRDD.saveAsTextFile(args.output() + "/part-" + "%08d".format(curTime.milliseconds))
+      })
 
     wc.foreachRDD(rdd => {
       numCompletedRDDs.add(1L)
