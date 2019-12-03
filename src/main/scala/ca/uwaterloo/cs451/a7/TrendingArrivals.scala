@@ -166,6 +166,8 @@ object TrendingArrivals {
       saveRDD.saveAsTextFile(args.output() + "/part-" + "%08d".format(curTime.milliseconds))
     })
 
+    // comment added to fix stuff
+
     wc.stateSnapshots().foreachRDD(rdd => {
       numCompletedRDDs.add(1L)
     })
