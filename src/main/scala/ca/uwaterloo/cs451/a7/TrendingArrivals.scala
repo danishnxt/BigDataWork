@@ -41,10 +41,10 @@ class TrendingArrivalsConf(args: Seq[String]) extends ScallopConf(args) {
   verify()
 }
 
-case class myTup(current: Int, timeS: String, pVal:Int) extends Serializable // makes it easier to avoid having to dump the same values in again and again and debug
-
 object TrendingArrivals {
   val log = Logger.getLogger(getClass().getName())
+
+  case class myTup(current: Int, timeS: String, pVal:Int) extends Serializable // makes it easier to avoid having to dump the same values in again and again and debug
 
   def udpateFunc(bTimes: Time, key: String, value: Option[Int], state: State[myTup]): Option[(String, myTup)] = {
 
@@ -60,9 +60,9 @@ object TrendingArrivals {
     var bTime = bTimes.milliseconds
     if ((c >= 10) && (c >= 2*p)) {
       if (key == ("goldman"))
-      println(s"Number of arrivals to Goldman Sachs has doubled from $p to $c at $bTime!")
+      println(s"Number of arrivals to Goldman Sachs has doubles from $p to $c at $bTime!")
       else
-      println(s"Number of arrivals to Citigroup has doubled from $p to $c at $bTime!")
+      println(s"Number of arrivals to Citigroup has doubles from $p to $c at $bTime!")
     }
     var t = myTup(current = c, timeS = "%08d".format(bTime), pVal = p)
     //      state.udpete*
@@ -86,7 +86,7 @@ object TrendingArrivals {
 
     val batchDuration = Minutes(1)
     val ssc = new StreamingContext(spark.sparkContext, batchDuration)
-    val batchListener = new StreamingContextBatchCompletionListener(ssc, 144)
+    val batchListener = new StreamingContextBatchCompletionListener(ssc, 24)
     ssc.addStreamingListener(batchListener)
 
     val rdds = buildMockStream(ssc.sparkContext, args.input())
@@ -156,17 +156,15 @@ object TrendingArrivals {
         }
       })
       .reduceByKeyAndWindow(
-        (x: Int, y: Int) => x + y, (x: Int, y: Int) => x - y, Minutes(10), Minutes(10))
+        (x: Int, y: Int) => x + y, (x: Int, y: Int) => x - y, Minutes(60), Minutes(60))
       .mapWithState(output)
 
-//    wc.saveAsTextFiles(args.output()) // output format specified in file
+    wc.saveAsTextFiles(args.output())
 
-      var savFile = wc.stateSnapshots()
-
-      savFile.foreachRDD((rdd, curTime) => {
-        var saveRDD = rdd.map(entry => (entry._1, (entry._2.current, entry._2.timeS, entry._2.pVal)))
-        saveRDD.saveAsTextFile(args.output() + "/part-" + "%08d".format(curTime.milliseconds))
-      })
+//    wc.stateSnapshots().foreachRDD((rdd, curTime) => {
+//      var saveRDD = rdd.map(entry => (entry._1, (entry._2.current, entry._2.timeS, entry._2.pVal)))
+//      saveRDD.saveAsTextFile(args.output() + "/part-" + "%08d".format(curTime.milliseconds))
+//    })
 
     wc.foreachRDD(rdd => {
       numCompletedRDDs.add(1L)
