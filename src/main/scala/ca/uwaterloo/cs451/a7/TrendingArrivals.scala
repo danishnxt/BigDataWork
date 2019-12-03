@@ -60,9 +60,9 @@ object TrendingArrivals {
     var bTime = bTimes.milliseconds
     if ((c >= 10) && (c >= 2*p)) {
       if (key == ("goldman"))
-      println(s"Number of arrivals to Goldman Sachs has doubles from $p to $c at $bTime!")
+      println(s"Number of arrivals to Goldman Sachs has doubled from $p to $c at $bTime!")
       else
-      println(s"Number of arrivals to Citigroup has doubles from $p to $c at $bTime!")
+      println(s"Number of arrivals to Citigroup has doubled from $p to $c at $bTime!")
     }
     var t = myTup(current = c, timeS = "%08d".format(bTime), pVal = p)
     //      state.udpete*
@@ -144,6 +144,7 @@ object TrendingArrivals {
         if ((long > -74.0144185) && (long < -74.013777) && (lat > 40.7138745) && (lat < 40.7152275)) {
           var myList = new ListBuffer[Tuple2[String, Int]]()
           var retVal:Tuple2[String, Int] = ("goldman", 1)
+          print "DANISH IS THE KING"
           myList += retVal
           myList
         } else if ((long > -74.012083) && (long < -74.009867) && (lat > 40.720053) && (lat < 40.7217236)) {
