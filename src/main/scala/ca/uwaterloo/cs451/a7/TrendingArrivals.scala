@@ -60,9 +60,9 @@ object TrendingArrivals {
     var bTime = bTimes.milliseconds
     if ((c >= 10) && (c >= 2*p)) {
       if (key == "goldman")
-        println(s"Number of arrivals to Goldman Sachs has doubles from $p to $c at $bTime!")
+        println(s"Number of arrivals to Goldman Sachs has doubled from $p to $c at $bTime!")
       else
-        println(s"Number of arrivals to Citigroup has doubles from $p to $c at $bTime!")
+        println(s"Number of arrivals to Citigroup has doubled from $p to $c at $bTime!")
     }
     var t = myTup(current = c, timeS = "%08d".format(bTime), pVal = p)
     //      state.udpete*
