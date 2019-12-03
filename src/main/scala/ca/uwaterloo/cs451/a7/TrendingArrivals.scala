@@ -157,7 +157,7 @@ object TrendingArrivals {
       })
       .reduceByKeyAndWindow(
         (x: Int, y: Int) => x + y, (x: Int, y: Int) => x - y, Minutes(60), Minutes(60))
-      .persist()
+      .mapWithState(output)
 
     wc.saveAsTextFiles(args.output())
 
