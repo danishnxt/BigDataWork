@@ -44,13 +44,13 @@ class TrendingArrivalsConf(args: Seq[String]) extends ScallopConf(args) {
 object TrendingArrivals {
   val log = Logger.getLogger(getClass().getName())
 
-  case class myTup(current: Int, time: String, p:Int) extends Serializable
+  case class myTup(current: Int, timeS: String, pVal:Int) extends Serializable
 
   def udpateFunc(bTimes: Time, key: String, value: Option[Int], state: State[myTup]): Option[(String, myTup)] = {
 
     var p = 0
     if (state.exists()) {
-      p = state.get
+      p = state.get().current
     }
 
     var c = value.getOrElse(0).toInt
@@ -61,7 +61,7 @@ object TrendingArrivals {
       else
       println(s"Number of arrivals to Citigroup has doubles from $p to $c at $bTime!")
     }
-    var t = myTup(current = c, time = "%08d".format(bTime), p = p)
+    var t = myTup(current = c, timeS = "%08d".format(bTime), pVal = p)
     //      state.udpete*
     //      state.update(c)
     state.update(t)
