@@ -141,12 +141,12 @@ object TrendingArrivals {
           lat = trip(9).toDouble
         } // filtering complete
 
-        if ((long > -74.0144185) && (long < -74.013777) && (lat > 40.7138745) && (lat < 40.7152275)) {
+        if ((long >= -74.0144185) && (long <= -74.013777) && (lat >= 40.7138745) && (lat <= 40.7152275)) {
           var myList = new ListBuffer[Tuple2[String, Int]]()
           var retVal:Tuple2[String, Int] = ("goldman", 1)
           myList += retVal
           myList
-        } else if ((long > -74.012083) && (long < -74.009867) && (lat > 40.720053) && (lat < 40.7217236)) {
+        } else if ((long >= -74.012083) && (long <= -74.009867) && (lat >= 40.720053) && (lat <= 40.7217236)) {
           var myList = new ListBuffer[Tuple2[String, Int]]()
           var retVal:Tuple2[String, Int] = ("citigroup", 1)
           myList += retVal

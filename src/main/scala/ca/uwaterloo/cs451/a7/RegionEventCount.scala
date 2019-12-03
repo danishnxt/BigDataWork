@@ -101,12 +101,12 @@ object RegionEventCount {
     val wc = stream.map(_.split(","))
       .map(trip => if (trip(0) == "yellow") (trip(10).toDouble, trip(11).toDouble) else (trip(8).toDouble, trip(9).toDouble)) // we have correct data now for g/y
       .filter(tripCord =>
-        ((tripCord._1.toDouble > -74.0144185) && (tripCord._1.toDouble < -74.013777) && (tripCord._2.toDouble > 40.7138745) && (tripCord._2.toDouble < 40.7152275)) // G_MAN
+        ((tripCord._1.toDouble >= -74.0144185) && (tripCord._1.toDouble <= -74.013777) && (tripCord._2.toDouble >= 40.7138745) && (tripCord._2.toDouble <= 40.7152275)) // G_MAN
         ||
-        ((tripCord._1.toDouble > -74.012083) && (tripCord._1.toDouble < -74.009867) && (tripCord._2.toDouble > 40.720053) && (tripCord._2.toDouble < 40.7217236)) // CITI
+        ((tripCord._1.toDouble >= -74.012083) && (tripCord._1.toDouble <= -74.009867) && (tripCord._2.toDouble >= 40.720053) && (tripCord._2.toDouble <= 40.7217236)) // CITI
       )
       .map(tripCord => {
-        if ((tripCord._1.toDouble > -74.0144185) && (tripCord._1.toDouble < -74.013777) && (tripCord._2.toDouble > 40.7138745) && (tripCord._2.toDouble < 40.7152275))
+        if ((tripCord._1.toDouble >= -74.0144185) && (tripCord._1.toDouble <= -74.013777) && (tripCord._2.toDouble >= 40.7138745) && (tripCord._2.toDouble <= 40.7152275))
           ("goldman", 1)
         else
           ("citigroup", 1)
