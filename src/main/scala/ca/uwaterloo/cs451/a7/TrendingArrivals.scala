@@ -166,7 +166,7 @@ object TrendingArrivals {
       saveRDD.saveAsTextFile(args.output() + "/part-" + "%08d".format(curTime.milliseconds))
     })
 
-    wc.foreachRDD(rdd => {
+    wc.stateSnapshots().foreachRDD(rdd => {
       numCompletedRDDs.add(1L)
     })
     ssc.checkpoint(args.checkpoint())
