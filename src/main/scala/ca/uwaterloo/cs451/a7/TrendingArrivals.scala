@@ -128,7 +128,7 @@ object TrendingArrivals {
     val wc = stream.map(_.split(","))
       .flatMap(trip => {
         var long = 0D
-        val lat = 0D
+        var lat = 0D
         if (trip(0) == "yellow")
         {
           long = trip(10).toDouble
@@ -142,12 +142,12 @@ object TrendingArrivals {
           var myList = new ListBuffer[Tuple2[String, Int]]()
           var retVal:Tuple2[String, Int] = ("goldman", 1)
           myList += retVal
-          retVal
+          myList
         } else if ((long > C_CD_X_MIN) && (long < C_CD_X_MAX) && (lat > C_CD_Y_MIN) && (lat < C_CD_Y_MAX)) {
           var myList = new ListBuffer[Tuple2[String, Int]]()
           var retVal:Tuple2[String, Int] = ("citigroup", 1)
           myList += retVal
-          retVal
+          myList
         } else {
           List()
         }
