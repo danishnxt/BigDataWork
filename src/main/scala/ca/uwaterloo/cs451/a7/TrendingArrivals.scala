@@ -56,7 +56,7 @@ object TrendingArrivals {
     var c = value.getOrElse(0).toInt
     var bTime = bTimes.milliseconds
     if ((c >= 10) && (c >= 2*p)) {
-      if key == ("goldman")
+      if (key == ("goldman"))
       println(s"Number of arrivals to Goldman Sachs has doubles from $p to $c at $bTime!")
       else
       println(s"Number of arrivals to Citigroup has doubles from $p to $c at $bTime!")
