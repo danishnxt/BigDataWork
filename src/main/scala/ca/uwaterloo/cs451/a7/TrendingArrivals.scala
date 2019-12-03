@@ -46,7 +46,7 @@ object TrendingArrivals {
 
   case class myTup(current: Int, time: String, p:Int) extends Serializable
 
-  def udpateFunc(bTimes: Time, key: String, value: Option[Int], state: State[myTup]): Option[(String, temptupleClass)] = {
+  def udpateFunc(bTimes: Time, key: String, value: Option[Int], state: State[myTup]): Option[(String, myTup)] = {
 
     var p = 0
     if (state.exists()) {
