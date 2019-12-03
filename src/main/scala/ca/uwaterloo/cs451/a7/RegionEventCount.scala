@@ -72,11 +72,11 @@ object RegionEventCount {
     // range x val => D // B
     // range y val => C // B
 
-    val G_CD_X_MIN = BB_1_CORD_G_D(0)
-    val G_CD_X_MAX = BB_1_CORD_G_B(0)
+    val G_CD_X_MIN = BB_1_CORD_G_D._1
+    val G_CD_X_MAX = BB_1_CORD_G_B._1
 
-    val G_CD_Y_MIN = BB_1_CORD_G_C(1)
-    val G_CD_Y_MAX = BB_1_CORD_G_B(1)
+    val G_CD_Y_MIN = BB_1_CORD_G_C._2
+    val G_CD_Y_MAX = BB_1_CORD_G_B._2
 
     // CITI CO-ORDINATES
     val BB_2_CORD_C_A = (-74.011869, 40.7217236)
@@ -87,24 +87,24 @@ object RegionEventCount {
     // range x val => D // B
     // range y val => C // A
 
-    val C_CD_X_MIN = BB_2_CORD_C_D(0)
-    val C_CD_X_MAX = BB_2_CORD_C_B(0)
+    val C_CD_X_MIN = BB_2_CORD_C_D._1
+    val C_CD_X_MAX = BB_2_CORD_C_B._1
 
-    val C_CD_Y_MIN = BB_2_CORD_C_C(1)
-    val C_CD_Y_MAX = BB_2_CORD_C_A(1)
+    val C_CD_Y_MIN = BB_2_CORD_C_C._2
+    val C_CD_Y_MAX = BB_2_CORD_C_A._2
 
       // few things to do
       // 1 check for green or not green?
 
     val wc = stream.map(_.split(","))
-      .map(trip => if (trip(0) == "yellow") List(trip(10).toDouble, trip(11).toDouble) else List(trip(8).toDouble, trip(9).toDouble)) // we have correct data now for g/y
+      .map(trip => if (trip(0) == "yellow") (trip(10).toDouble, trip(11).toDouble) else (trip(8).toDouble, trip(9).toDouble)) // we have correct data now for g/y
       .filter(tripCord =>
-        ((tripCord(0) > G_CD_X_MIN) && (tripCord(0) < G_CD_X_MAX) && (tripCord(1) > G_CD_Y_MIN) && (tripCord(1) < G_CD_Y_MAX)) // G_MAN
+        ((tripCord._1 > G_CD_X_MIN) && (tripCord._1 < G_CD_X_MAX) && (tripCord._2 > G_CD_Y_MIN) && (tripCord._2 < G_CD_Y_MAX)) // G_MAN
         ||
-        ((tripCord(0) > C_CD_X_MIN) && (tripCord(0) < C_CD_X_MAX) && (tripCord(1) > C_CD_Y_MIN) && (tripCord(1) < C_CD_Y_MAX)) // CITI
+        ((tripCord._1 > C_CD_X_MIN) && (tripCord._1 < C_CD_X_MAX) && (tripCord._2 > C_CD_Y_MIN) && (tripCord._2 < C_CD_Y_MAX)) // CITI
       )
       .map(tripCord => {
-        if ((tripCord(0) > G_CD_X_MIN) && (tripCord(0) < G_CD_X_MAX) && (tripCord(1) > G_CD_Y_MIN) && (tripCord(1) < G_CD_Y_MAX))
+        if ((tripCord._1 > G_CD_X_MIN) && (tripCord._1 < G_CD_X_MAX) && (tripCord._2 > G_CD_Y_MIN) && (tripCord._2 < G_CD_Y_MAX))
           ("goldman", 1)
         else
           ("citigroup", 1)
