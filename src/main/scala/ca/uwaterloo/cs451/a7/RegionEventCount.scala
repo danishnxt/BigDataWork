@@ -96,6 +96,8 @@ object RegionEventCount {
       // few things to do
       // 1 check for green or not green?
 
+    // Explanining the unsued variables above, I didn't time to bebug my OWN typos so I just transplanted the values in here directly
+
     val wc = stream.map(_.split(","))
       .map(trip => if (trip(0) == "yellow") (trip(10).toDouble, trip(11).toDouble) else (trip(8).toDouble, trip(9).toDouble)) // we have correct data now for g/y
       .filter(tripCord =>

@@ -44,9 +44,12 @@ class TrendingArrivalsConf(args: Seq[String]) extends ScallopConf(args) {
 object TrendingArrivals {
   val log = Logger.getLogger(getClass().getName())
 
-  case class myTup(current: Int, timeS: String, pVal:Int) extends Serializable
+  case class myTup(current: Int, timeS: String, pVal:Int) extends Serializable // makes it easier to avoid having to dump the same values in again and again and debug
 
   def udpateFunc(bTimes: Time, key: String, value: Option[Int], state: State[myTup]): Option[(String, myTup)] = {
+
+    // function runs off same prototype and will state consistent during
+    // data processing to constantly update values -> thru queries
 
     var p = 0
     if (state.exists()) {
@@ -138,12 +141,12 @@ object TrendingArrivals {
           lat = trip(9).toDouble
         } // filtering complete
 
-        if ((long > G_CD_X_MIN) && (long < G_CD_X_MAX) && (lat > G_CD_Y_MIN) && (lat < G_CD_Y_MAX)) {
+        if ((long > -74.0144185) && (long < -74.013777) && (lat > 40.7138745) && (lat < 40.7152275)) {
           var myList = new ListBuffer[Tuple2[String, Int]]()
           var retVal:Tuple2[String, Int] = ("goldman", 1)
           myList += retVal
           myList
-        } else if ((long > C_CD_X_MIN) && (long < C_CD_X_MAX) && (lat > C_CD_Y_MIN) && (lat < C_CD_Y_MAX)) {
+        } else if ((long > -74.012083) && (long < -74.009867) && (lat > 40.720053) && (lat < 40.7217236)) {
           var myList = new ListBuffer[Tuple2[String, Int]]()
           var retVal:Tuple2[String, Int] = ("citigroup", 1)
           myList += retVal
