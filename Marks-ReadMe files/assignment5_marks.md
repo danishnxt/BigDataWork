@@ -16,9 +16,9 @@ github:danishnxt
 
 **Test 5** Q1 test 2 (Linux/Text) mark: 1.25/1.25
 
-**Test 6** Q2 test 1 (Linux/Parquet) mark: 0.0/1.25
+**Test 6** Q2 test 1 (Linux/Parquet) mark: 1.25/1.25
 
-**Test 7** Q2 test 1 (Linux/Text) mark: 0.0/1.25
+**Test 7** Q2 test 1 (Linux/Text) mark: 1.25/1.25
 
 **Test 8** Q2 test 2 (Linux/Parquet) mark: 1.25/1.25
 
@@ -68,11 +68,11 @@ github:danishnxt
 
 **Test 31** Q1 test 2 (Datasci/Text) mark: 1.25/1.25
 
-**Test 32** Q2 test 1 (Datasci/Parquet) mark: 0.0/1.25
+**Test 32** Q2 test 1 (Datasci/Parquet) mark: 1.25/1.25
 
-**Test 33** Q2 test 1 (Datasci/Text) mark: 0.0/1.25
+**Test 33** Q2 test 1 (Datasci/Text) mark: 1.25/1.25
 
-**Test 34** Q2 test 2 (Datasci/Parquet) mark: 0.0/1.25
+**Test 34** Q2 test 2 (Datasci/Parquet) mark: 1.25/1.25
 
 **Test 35** Q2 test 2 (Datasci/Text) mark: 1.25/1.25
 
@@ -116,7 +116,9 @@ github:danishnxt
 
 **Feedback :** Q2 is off by a single line but the delta is quite large. No bonus awarded for date format.
 
-**Final grade**
-mark: 95.0/100.0
+**Revision**: Q2 output in logs are correct. Bonus awarded for date format.
 
-summary: 20837628,d2farid,danishnxt,95.0/100.0
+**Final grade**
+mark: 105.0/100.0
+
+summary: 20837628,d2farid,danishnxt,105.0/100.0
