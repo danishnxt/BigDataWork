@@ -8,5 +8,6 @@ ASSIGNMENTS:
   All assignment and marking files are in a folder 
  
 FINAL PROJECT:
+  "Analysis of TMDB Movie database"
   Please find the final report included in this repository
-  - Running analysis on TMDB movie dataset
+  
