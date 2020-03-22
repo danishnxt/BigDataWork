@@ -1,10 +1,6 @@
-# bigdataf2019
+Danish Farid
 
-Danish Farid CS651  
-U Waterloo  
-Grad Student - Masters of Data Science and AI (MDSAI)  
-
-ASSIGNMENTS: 
+Course ASIs: 
   * All assignment and marking files are in a folder named as such
  
 FINAL PROJECT:
